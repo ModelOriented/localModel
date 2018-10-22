@@ -1,5 +1,31 @@
 #' @export
 
+encode_data_frame <- function(explainer, data, prediction_quantiles) {
+  whatif_curves <- lapply(
+    colnames(data),
+    function(x) {
+      ceterisParibus::ceteris_paribus(explainer,
+                                      observation,
+                                      variables = x,
+                                      grid_points = nrow(data))[, c(x, "_yhat_")]
+    })
+
+  encoded_data <- data
+  for(x in 1:ncol(data)) {
+    encoded_data[, x][order(data[, x])] <- ifelse(
+      whatif_curves[[x]]$`_yhat_` <= prediction_quantiles[[x]][1],
+      "lower",
+      ifelse(whatif_curves[[x]]$`_yhat_` > prediction_quantiles[[x]][1] &
+               whatif_curves[[x]]$`_yhat_` <= prediction_quantiles[[x]][2],
+             "baseline",
+             "higher"))
+  }
+
+  encoded_data
+}
+
+#' @export
+
 local_approximation <- function(explainer, observation,
                                 size, fixed_variables = NULL,
                                 seed = NULL, feature_selection = FALSE,
@@ -7,22 +33,51 @@ local_approximation <- function(explainer, observation,
                                 predict_function = predict, ...) {
   # check_conditions(data, explained_instance, size)
 
-  similar_list <- generate_neighbourhood(explainer$data, observation,
-                                    size, fixed_variables, seed)
-  similar <- similar_list$data
-  indices <- similar_list$indices
+  whatif_curves <- lapply(
+    colnames(dplyr::select_if(explainer$data, is.numeric)),
+    function(x) {
+      ceterisParibus::ceteris_paribus(explainer,
+                                      observation,
+                                      variables = x,
+                                      grid_points = nrow(explainer$data))[, c(x, "_yhat_")]
+    })
 
-  # for(i in 1:nrow(similar)) {
-  #   similar[i, ] <- encode_ceteris(similar, ceterisParibus)
-  # }
+  prediction_quantiles <- lapply(whatif_curves,
+                                 function(x) {
+                                   quantile(x$`_yhat_`, probs = c(1/3, 2/3))
+                                 })
 
-  model_response <- predict_function(explainer$model, similar)[, 1]
-  median_predictions <- tapply(model_response, as.factor(as.character(indices)), median)
+  encoded_observation <- encode_data_frame(explainer, dplyr::select_if(observation, is.numeric),
+                                           prediction_quantiles)
 
-  # for(index in indices) {
-  #
-  # }
+  encoded_data <- encode_data_frame(explainer, dplyr::select_if(explainer$data, is.numeric),
+                                    prediction_quantiles)
 
+  encode_data_frame(explainer, dplyr::select_if(HR, is.numeric),
+                    prediction_quantiles)
+
+  means_by_group <- vector("list", ncol(encoded_data))
+  for(x in 1:ncol(numerical_data)) {
+    means_by_group[[x]] <- tapply(numerical_data[, x], encoded_data[, x], mean)
+  }
+#
+#   table(encoded_data[, 4])
+#   sum(whatif_curves[[2]]$`_yhat_` <= prediction_quantiles[[2]][1])
+#   sum(whatif_curves[[4]]$`_yhat_` > prediction_quantiles[[4]][1])
+#   sum(whatif_curves[[4]]$`_yhat_` <= prediction_quantiles[[4]][2])
+#   table(whatif_curves[[4]]$`_yhat_`)
+#   sum(whatif_curves[[4]]$`_yhat_` > prediction_quantiles[[4]][1] &
+#         whatif_curves[[4]]$`_yhat_` <= prediction_quantiles[[4]][2])
+#
+#   hist(whatif_curves[[4]]$`_yhat_`)
+#   boxplot(whatif_curves[[4]]$`_yhat_`)
+
+  similar <- dplyr::bind_rows(
+    lapply(
+      1:size,
+      function(x) encoded_observation
+    )
+  )
 
   explorer <- list(data = similar,
                    target = model_response,
