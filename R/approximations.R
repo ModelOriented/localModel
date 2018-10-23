@@ -60,17 +60,6 @@ local_approximation <- function(explainer, observation,
   for(x in 1:ncol(numerical_data)) {
     means_by_group[[x]] <- tapply(numerical_data[, x], encoded_data[, x], mean)
   }
-#
-#   table(encoded_data[, 4])
-#   sum(whatif_curves[[2]]$`_yhat_` <= prediction_quantiles[[2]][1])
-#   sum(whatif_curves[[4]]$`_yhat_` > prediction_quantiles[[4]][1])
-#   sum(whatif_curves[[4]]$`_yhat_` <= prediction_quantiles[[4]][2])
-#   table(whatif_curves[[4]]$`_yhat_`)
-#   sum(whatif_curves[[4]]$`_yhat_` > prediction_quantiles[[4]][1] &
-#         whatif_curves[[4]]$`_yhat_` <= prediction_quantiles[[4]][2])
-#
-#   hist(whatif_curves[[4]]$`_yhat_`)
-#   boxplot(whatif_curves[[4]]$`_yhat_`)
 
   similar <- dplyr::bind_rows(
     lapply(
