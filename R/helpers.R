@@ -81,18 +81,10 @@ generate_neighbourhood <- function(data, explained_instance, size, fixed_variabl
 #' Fit white box model to the simulated data.
 #'
 #' @param live_object List return by add_predictions function.
-#' @param white_box String, learner name recognized by mlr package.
 #' @param kernel function which will be used to calculate distance between simulated
 #'        observations and explained instance.
-#' @param standardize If TRUE, numerical variables will be scaled to have mean 0, variance 1
-#'        before fitting explanation model.
-#' @param selection If TRUE, variable selection based on glmnet implementation of LASSO
-#'        will be performed.
 #' @param response_family family argument to glmnet (and then glm) function.
 #'        Default value is "gaussian"
-#' @param predict_type Argument passed to mlr::makeLearner() argument "predict.type".
-#'        Defaults to "response".
-#' @param hyperpars Optional list of values of hyperparameteres of a model.
 #'
 #' @return List consting of
 #' \item{data}{Dataset used to fit explanation model (may have less column than the original)}
@@ -100,8 +92,6 @@ generate_neighbourhood <- function(data, explained_instance, size, fixed_variabl
 #' \item{explained_instance}{Instance that is being explained}
 #'
 #' @export
-#'
-#' @import mlr
 #'
 #' @examples
 #' \dontrun{

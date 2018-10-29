@@ -15,19 +15,6 @@ observations and explained instance.}
 
 \item{response_family}{family argument to glmnet (and then glm) function.
 Default value is "gaussian"}
-
-\item{white_box}{String, learner name recognized by mlr package.}
-
-\item{standardize}{If TRUE, numerical variables will be scaled to have mean 0, variance 1
-before fitting explanation model.}
-
-\item{selection}{If TRUE, variable selection based on glmnet implementation of LASSO
-will be performed.}
-
-\item{predict_type}{Argument passed to mlr::makeLearner() argument "predict.type".
-Defaults to "response".}
-
-\item{hyperpars}{Optional list of values of hyperparameteres of a model.}
 }
 \value{
 List consting of
