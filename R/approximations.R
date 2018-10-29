@@ -1,4 +1,4 @@
-encode_data_frame <- function(explainer, data, prediction_quantiles) {
+tencode_data_frame <- function(explainer, data, prediction_quantiles) {
   whatif_curves <- lapply(
     colnames(data),
     function(x) {
