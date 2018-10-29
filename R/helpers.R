@@ -74,69 +74,9 @@ generate_neighbourhood <- function(data, explained_instance, size, fixed_variabl
     data.table::set(neighbourhood, i = as.integer(k), j = as.integer(chosen_indices[k]),
                     data[sample(1:nrow(data), 1), chosen_indices[k], with = FALSE])
   }
-  list(data = as.data.frame(set_constant_variables(neighbourhood, explained_instance,
-                                                   fixed_variables)),
-       indices = chosen_indices)
-  
-}
-#' Calculate weights for explanation model
-#'
-#' @param simulated_dataset Dataset simulated by sample_locally function.
-#' @param explained_instance Instance to be explained.
-#' @param kernel Chosen kernel function.
-#'
-#' @return Numeric vector of weights for each row in simulated dataset.
-#'
-
-calculate_weights <- function(simulated_dataset, explained_instance, kernel) {
-  for_weights_x <- dplyr::bind_rows(simulated_dataset, explained_instance)
-  for_weights_x <- dplyr::mutate_if(for_weights_x, is.character, as.factor)
-  proxy_response <- rep(1, nrow(for_weights_x))
-  for_weights <- dplyr::bind_cols(y = proxy_response, for_weights_x)
-  proxy_model <- stats::lm(y ~., data = for_weights)
-  model_matrix <- stats::model.matrix(proxy_model)
-  explained_instance_coords <- model_matrix[nrow(model_matrix), ]
-  other_observations_coords <- model_matrix[1:(nrow(model_matrix) - 1), ]
-  sapply(as.data.frame(t(other_observations_coords)),
-         function(x) kernel(explained_instance_coords, x))
+  as.data.frame(set_constant_variables(neighbourhood, explained_instance, fixed_variables))
 }
 
-#' Select variables for explanation model.
-#'
-#' @param source_data Simulated dataset.
-#' @param target Name of the response variable.
-#' @param response_family Name of distribution family to be used in lasso/glm fit.
-#'
-#' @importFrom stats as.formula model.matrix
-#'
-#' @return Character vector of names of selected variables
-#'
-
-select_variables <- function(source_data, target, response_family) {
-  form <- as.formula(paste(target, "~."))
-  explained_var_col <- which(colnames(source_data) == target)
-  lasso_fit <- glmnet::cv.glmnet(model.matrix(form, data = source_data),
-                                 as.matrix(source_data[, explained_var_col]),
-                                 family = response_family,
-                                 nfolds = 5, alpha = 1)
-  coefs_lasso <- glmnet::coef.cv.glmnet(lasso_fit)
-  nonzero_coefs <- row.names(coefs_lasso)[which(as.numeric(coefs_lasso) != 0)]
-  nonzero_coefs <- nonzero_coefs[nonzero_coefs != "(Intercept)"]
-  factors <- colnames(source_data)[sapply(source_data,
-                                          function(x)
-                                            is.character(x) | is.factor(x))]
-  selected_vars <- colnames(source_data)[colnames(source_data) %in% nonzero_coefs]
-  
-  if(length(factors) != 0) {
-    selected_vars <- selected_vars[!is.na(selected_vars)]
-    factors_lasso <- setdiff(nonzero_coefs, selected_vars)
-    selected_factors_lgl <- sapply(factors, function(x) any(grepl(x, factors_lasso)))
-    selected_factors <- names(selected_factors_lgl)[selected_factors_lgl]
-    selected_vars <- c(selected_vars,
-                       selected_factors)
-  }
-  selected_vars
-}
 
 #' Fit white box model to the simulated data.
 #'
@@ -169,32 +109,20 @@ select_variables <- function(source_data, target, response_family) {
 #' }
 #'
 
-fit_explanation <- function(live_object, kernel = gaussian_kernel, 
-                            selection = FALSE, response_family = "gaussian") {
-  
+fit_explanation <- function(live_object, kernel = gaussian_kernel,
+                            response_family = "gaussian") {
+
   source_data <- dplyr::select_if(live_object$data,
                                   function(x) dplyr::n_distinct(x) > 1)
   # source_data <- dplyr::mutate_if(source_data, is.factor, droplevels)
-  source_data <- dplyr::bind_cols(live_object$data, y = live_object$target)
+  source_data <- dplyr::bind_cols(source_data, y = live_object$target)
+  model_matrix <- model.matrix(y ~ ., data = source_data)
 
-  # if(selection) {
-  #   selected_vars <- select_variables(source_data, live_object$target,
-  #                                     response_family)
-  # } else {
-  #   selected_vars <- colnames(source_data)
-  # }
-  
-  # if(grepl("glm", white_box) & !(response_family == "poisson" | response_family == "binomial")) {
-  #   hyperpars <- c(hyperpars, family = response_family)
-  # }
-  # lrn <- mlr::makeLearner(white_box, predict.type = predict_type, par.vals = hyperpars)
-  
   explainer <- list(data = source_data,
-                    model = lm(y ~., data = source_data),
-                    explained_instance = live_object$explained_instance,
-                    # weights = live_weights,
-                    selected_variables = selection)
-  
+                    model = glmnet::cv.glmnet(model_matrix[, -1], live_object$target,
+                                              family = response_family, alpha = 1),
+                    explained_instance = live_object$explained_instance)
+
   class(explainer) <- c("live_explainer", "list")
   explainer
 }
@@ -206,7 +134,7 @@ fit_explanation <- function(live_object, kernel = gaussian_kernel,
 #'                  on which type of plot is to be created.
 #' @param fitted_model glm or lm object.
 #' @param explained_instance Observation around which model was fitted.
-#' @param classif logical, if TRUE, probabilities will be plotted 
+#' @param classif logical, if TRUE, probabilities will be plotted
 #'
 #' @importFrom graphics plot
 #'
