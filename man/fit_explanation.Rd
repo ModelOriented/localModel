@@ -5,16 +5,13 @@
 \title{Fit white box model to the simulated data.}
 \usage{
 fit_explanation(live_object, kernel = gaussian_kernel,
-  selection = FALSE, response_family = "gaussian")
+  response_family = "gaussian")
 }
 \arguments{
 \item{live_object}{List return by add_predictions function.}
 
 \item{kernel}{function which will be used to calculate distance between simulated
 observations and explained instance.}
-
-\item{selection}{If TRUE, variable selection based on glmnet implementation of LASSO
-will be performed.}
 
 \item{response_family}{family argument to glmnet (and then glm) function.
 Default value is "gaussian"}
@@ -23,6 +20,9 @@ Default value is "gaussian"}
 
 \item{standardize}{If TRUE, numerical variables will be scaled to have mean 0, variance 1
 before fitting explanation model.}
+
+\item{selection}{If TRUE, variable selection based on glmnet implementation of LASSO
+will be performed.}
 
 \item{predict_type}{Argument passed to mlr::makeLearner() argument "predict.type".
 Defaults to "response".}
