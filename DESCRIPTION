@@ -13,3 +13,4 @@ Imports: data.table,
     breakDown,
     ceterisParibus
 RoxygenNote: 6.1.0
+Suggests: covr
