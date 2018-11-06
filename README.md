@@ -6,3 +6,11 @@
 
 
 Local explanations of Machine Learning models for tabular data.
+
+
+To get started, install the newest version from GitHub.
+
+```
+devtools::install_github("DrWhy2/localExplanations")
+```
+
