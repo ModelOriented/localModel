@@ -1,4 +1,4 @@
-tencode_data_frame <- function(explainer, data, prediction_quantiles) {
+encode_data_frame <- function(explainer, data, prediction_quantiles) {
   whatif_curves <- lapply(
     colnames(data),
     function(x) {
@@ -111,7 +111,7 @@ local_approximation <- function(explainer, observation,
                    target = model_response,
                    explained_instance = observation)
 
-  model <- fit_explanation(explorer, kernel, response_family = "multinomial")
+  model <- fit_explanation(explorer, kernel, response_family = response_family)
   class(model) <- c("live_explainer", class(model))
   model
 }

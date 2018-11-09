@@ -1,4 +1,4 @@
-Package: localExplanations
+Package: localModel
 Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
 Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
@@ -10,7 +10,11 @@ LazyData: true
 Imports: data.table,
     glmnet,
     forestmodel,
-    breakDown,
     ceterisParibus
 RoxygenNote: 6.1.0
-Suggests: covr
+Suggests: covr,
+    knitr,
+    rmarkdown,
+    randomForest,
+    DALEX
+VignetteBuilder: knitr
