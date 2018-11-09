@@ -1,0 +1,38 @@
+---
+title: "Example usage"
+author: "Mateusz Staniak"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example usage}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r ex}
+library(DALEX)
+library(ceterisParibus)
+library(randomForest)
+library(localModel)
+library(glmnet)
+
+data('HR')
+HR$evaluation <- as.factor(as.character(HR$evaluation))
+mrf <- randomForest(status ~., data = HR, ntree = 100)
+
+explainer <- explain(mrf, HR, HR$status,
+                     predict_function = function(x, y) predict(x, y, type = "prob")[, 1])
+
+observation <- HR[10, ]
+size <- 1000
+
+model_lok <- local_approximation(explainer, HR[10, ], 2000, n_points = 100,
+                                 response_family = "gaussian")
+coef(model_lok$model, s = "lambda.min")
+```
