@@ -1,9 +1,9 @@
 ---
-title: "Example usage"
+title: "Explaining classification models with localModel package"
 author: "Mateusz Staniak"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Example usage}
+  %\VignetteIndexEntry{Explaining classification models with localModel package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -1,0 +1,26 @@
+---
+title: "Explaining regression models with localModel package"
+author: "Mateusz Staiak"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Explaining regression models with localModel package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r pkgs}
+library(DALEX)
+library(localModel)
+library(randomForest)
+data('apartments')
+
+mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
+```
+
