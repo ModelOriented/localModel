@@ -12,24 +12,6 @@ check_for_na <- function(data, explained_instance) {
 }
 
 
-#' Check if data, explained instance and size make sense.
-#'
-#' @param data Data frame from which observations will be sampled.
-#' @param explained_instance Instance around which points will be sampled.
-#' @param size Number of observation in simulated dataset
-#'
-#' @return Produces an error if any of conditions aren't met.
-#'
-
-check_conditions <- function(data, explained_instance, size) {
-  if(nrow(data) == 0) stop("Empty data frame")
-  if(ncol(data) == 0) stop("Data frame has no columns")
-  if(size <= 0 | !is.finite(size)) stop("Size has to be a positive integer")
-  if(any(colnames(data) != colnames(explained_instance)))
-    stop("Explained instance must have the same variables as data")
-}
-
-
 #' Set date values to one value
 #'
 #' @param data Data frame to change.
@@ -167,4 +149,16 @@ plot.live_explainer <- function(x, type = "waterfall", ...) {
   trained_model <- x$model
   plot_regression(type, trained_model, x$explained_instance)
 }
+
+merge_factor_levels <- function(response, factor, ...) {
+  factor_levels <- sort(levels(factor))
+  mf_result <- factorMerger::mergeFactors(response, factor)
+  partition_df <- getOptimalPartitionDf(mf_result)
+  original_levels <- partition_df[, 2]
+  names(original_levels) <- partition_df[, 1]
+
+}
+#
+# factor <- as.factor(letters[factor])
+# factor <- to_predict$evaluation
 

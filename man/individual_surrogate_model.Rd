@@ -5,8 +5,8 @@
 \title{Local surrogate model}
 \usage{
 individual_surrogate_model(x, new_observation, size, seed = NULL,
-  response_family = "gaussian", n_points = nrow(x$data),
-  smoothness = 0.3, ...)
+  response_family = "gaussian", kernel = gaussian_kernel,
+  n_points = nrow(x$data), smoothness = 0.3, ...)
 }
 \arguments{
 \item{x}{an explainer created with function `DALEX2::explain()`}
@@ -19,6 +19,8 @@ Columns in should correspond to columns in the data element of explainer.}
 \item{seed}{Argument to set.seed, if not specified, results will not be reproducible.}
 
 \item{response_family}{Family argument to glmnet function.}
+
+\item{kernel}{kernel function which will be used to weight distances between observations.}
 
 \item{n_points}{Number of points, at which ceteris paribus curves will be calculated.}
 

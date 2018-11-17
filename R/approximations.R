@@ -1,11 +1,11 @@
-encode_data_frame <- function(explainer, data, prediction_quantiles) {
+encode_data_frame <- function(explainer, observation, data, prediction_quantiles) {
   whatif_curves <- lapply(
     colnames(data),
-    function(x) {
+    function(y) {
       ceterisParibus::ceteris_paribus(explainer,
                                       observation,
-                                      variables = x,
-                                      grid_points = nrow(data))[, c(x, "_yhat_")]
+                                      variables = y,
+                                      grid_points = nrow(data))[, c(y, "_yhat_")]
     })
 
   encoded_data <- data
@@ -23,31 +23,12 @@ encode_data_frame <- function(explainer, data, prediction_quantiles) {
 }
 
 
-#' Local surrogate model
-#'
-#' @param x an explainer created with function `DALEX2::explain()`
-#' @param new_observation an observation/observations to be explained.
-#'        Columns in should correspond to columns in the data element of explainer.
-#' @param size Number of instance to simulate.
-#' @param seed Argument to set.seed, if not specified, results will not be reproducible.
-#' @param response_family Family argument to glmnet function.
-#' @param n_points Number of points, at which ceteris paribus curves will be calculated.
-#' @param smoothness Span argument to loess function.
-#'
-#' @return glmnet model object
-#'
-#' @importFrom stats predict loess quantile
-#'
-#' @export
-#'
-
-individual_surrogate_model <- function(x, new_observation,
-                                       size, seed = NULL,
-                                       response_family =  "gaussian",
-                                       kernel = gaussian_kernel,
-                                       n_points = nrow(x$data),
-                                       smoothness = 0.3, ...) {
-  check_conditions(x$data, new_observation, size)
+single_column_local_surrogate <- function(x, new_observation,
+                                          size, seed = NULL,
+                                          response_family =  "gaussian",
+                                          kernel = gaussian_kernel,
+                                          n_points = nrow(x$data),
+                                          smoothness = 0.3, ...) {
   numerical_data <- dplyr::select_if(x$data, is.numeric)
   categorical_data <- dplyr::select_if(x$data,
                                        function(y) is.factor(y) | is.character(y))
@@ -70,6 +51,7 @@ individual_surrogate_model <- function(x, new_observation,
                                  })
 
   encoded_observation <- encode_data_frame(x,
+                                           new_observation,
                                            dplyr::select_if(new_observation,
                                                             is.numeric),
                                            prediction_quantiles)
@@ -78,6 +60,7 @@ individual_surrogate_model <- function(x, new_observation,
                                                            function(y) !is.numeric(y)))
 
   encoded_data <- encode_data_frame(x,
+                                    new_observation,
                                     numerical_data,
                                     prediction_quantiles)
 
@@ -95,6 +78,7 @@ individual_surrogate_model <- function(x, new_observation,
     )
   )
 
+  if(!is.null(seed)) set.seed(seed)
   for(i in 1:size) {
     j <- sample(1:ncol(similar), size = 1)
     if(dplyr::n_distinct(encoded_data[, j]) > 1) {
@@ -119,5 +103,54 @@ individual_surrogate_model <- function(x, new_observation,
   model <- fit_explanation(explorer, kernel, response_family = response_family)
   class(model) <- c("live_explainer", class(model))
   model
+}
+
+#' Local surrogate model
+#'
+#' @param x an explainer created with function `DALEX2::explain()`
+#' @param new_observation an observation/observations to be explained.
+#'        Columns in should correspond to columns in the data element of explainer.
+#' @param size Number of instance to simulate.
+#' @param seed Argument to set.seed, if not specified, results will not be reproducible.
+#' @param response_family Family argument to glmnet function.
+#' @param kernel kernel function which will be used to weight distances between observations.
+#' @param n_points Number of points, at which ceteris paribus curves will be calculated.
+#' @param smoothness Span argument to loess function.
+#'
+#' @return glmnet model object
+#'
+#' @importFrom stats predict loess quantile
+#'
+#' @export
+#'
+
+individual_surrogate_model <- function(x, new_observation,
+                                       size, seed = NULL,
+                                       response_family =  "gaussian",
+                                       kernel = gaussian_kernel,
+                                       n_points = nrow(x$data),
+                                       smoothness = 0.3, ...) {
+  if(is.factor(x$y)) {
+    lapply(unique(x$y), function(unique_level) {
+      internal_explainer <- x
+      internal_explainer$predict_function <- function(model, newdata) {
+        x$predict_function(model, newdata)[, unique_level]
+      }
+      single_column_local_surrogate(internal_explainer, new_observation,
+                                    size, seed, response_family, kernel,
+                                    n_points, smoothness)
+    })
+  } else {
+    if(is.numeric(x$y)) {
+      single_column_local_surrogate(internal_explainer, new_observation,
+                                    size, seed, response_family, kernel,
+                                    n_points, smoothness)
+
+    } else {
+      stop("Response must be numeric or factor vector")
+    }
+  }
+
+
 }
 

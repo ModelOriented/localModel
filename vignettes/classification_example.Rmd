@@ -26,11 +26,17 @@ data('HR')
 HR$evaluation <- as.factor(as.character(HR$evaluation))
 mrf <- randomForest(status ~., data = HR, ntree = 100)
 
-explainer <- explain(mrf, HR, HR$status,
-                     predict_function = function(x, y) predict(x, y, type = "prob")[, 1])
+explainer <- explain(mrf, 
+                     HR,
+                     HR$status,
+                     predict_function = function(x, y)
+                       as.data.frame(predict(x, y, type = "prob")))
 
 observation <- HR[10, ]
 size <- 1000
+
+head(as.data.frame(predict(mrf, type = "prob")))
+class(predict(mrf, type = "prob"))
 
 model_lok <- individual_surrogate_model(explainer, observation, 2000, n_points = 100,
                                         response_family = "gaussian")
