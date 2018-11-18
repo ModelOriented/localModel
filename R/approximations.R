@@ -101,8 +101,7 @@ single_column_local_surrogate <- function(x, new_observation,
                    explained_instance = new_observation)
 
   model <- fit_explanation(explorer, kernel, response_family = response_family)
-  class(model) <- c("live_explainer", class(model))
-  model
+
 }
 
 #' Local surrogate model
@@ -131,26 +130,34 @@ individual_surrogate_model <- function(x, new_observation,
                                        n_points = nrow(x$data),
                                        smoothness = 0.3, ...) {
   if(is.factor(x$y)) {
-    lapply(unique(x$y), function(unique_level) {
+    explainer <- lapply(unique(x$y), function(unique_level) {
       internal_explainer <- x
       internal_explainer$predict_function <- function(model, newdata) {
         x$predict_function(model, newdata)[, unique_level]
       }
-      single_column_local_surrogate(internal_explainer, new_observation,
+      result <- single_column_local_surrogate(internal_explainer, new_observation,
                                     size, seed, response_family, kernel,
                                     n_points, smoothness)
+      result$model_coefs[, "response"] <- unique_level
+      result
     })
   } else {
     if(is.numeric(x$y)) {
-      single_column_local_surrogate(internal_explainer, new_observation,
-                                    size, seed, response_family, kernel,
-                                    n_points, smoothness)
+      local_surrogate_result <- single_column_local_surrogate(
+        x, new_observation,
+        size, seed, response_family, kernel,
+        n_points, smoothness
+      )
+      local_surrogate_result$model_coefs[, "response"] <- ""
+      explainer <- list(
+        local_surrogate = local_surrogate_result
+      )
 
     } else {
       stop("Response must be numeric or factor vector")
     }
   }
-
-
+  class(explainer) <- c("local_surrogate_explainer", class(explainer))
+  explainer
 }
 
