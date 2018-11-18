@@ -90,65 +90,44 @@ fit_explanation <- function(live_object, kernel = gaussian_kernel,
   source_data <- dplyr::bind_cols(source_data, y = live_object$target)
   model_matrix <- model.matrix(y ~ ., data = source_data)
 
-  explainer <- list(data = source_data,
-                    model = glmnet::cv.glmnet(model_matrix[, -1], live_object$target,
-                                              family = response_family, alpha = 1),
-                    explained_instance = live_object$explained_instance)
+  model <- glmnet::cv.glmnet(model_matrix[, -1], live_object$target,
+                             family = response_family, alpha = 1)
 
-  class(explainer) <- c("live_explainer", "list")
-  explainer
+  var_names <- data.frame("variable" = rownames(coef(model)))
+  coefs <- as.data.frame(as.matrix(coef(model)))
+
+  list(simulated_data = source_data,
+       model_coefs = dplyr::bind_cols(var_names, coefs) ,
+       explained_instance = live_object$explained_instance)
 }
 
+#' @import ggplot2
 
-#' Waterfall plot or forestplot for lm/glm explanations.
-#'
-#' @param plot_type Chr, "forest" or "waterfall" depending
-#'                  on which type of plot is to be created.
-#' @param fitted_model glm or lm object.
-#' @param explained_instance Observation around which model was fitted.
-#' @param classif logical, if TRUE, probabilities will be plotted
-#'
-#' @importFrom graphics plot
-#'
-#' @return plot (ggplot2 or lattice)
-#'
-
-plot_regression <- function(plot_type, fitted_model, explained_instance, classif) {
-  if(plot_type == "forest") {
-    forestmodel::forest_model(fitted_model)
+plot.local_surrogate_explainer <- function(x, ...) {
+  if(length(x) == 1) {
+    binded_levels <- x[[1]]$model_coefs
   } else {
-    plot(breakDown::broken(fitted_model, explained_instance, baseline = "Intercept"))
+    just_coefs <- lapply(x, function(y) y$model_coefs)
+    binded_levels <- suppressWarnings(dplyr::bind_rows(just_coefs))
   }
+  colnames(binded_levels)[2] <- "estimated"
+  var_names <- unique(binded_levels$variable)
+  ggplot(binded_levels, aes(x = reorder(variable, abs(estimated)),
+                            y = estimated)) +
+    theme_bw() +
+    geom_hline(data = data.frame(variable = rep(var_names, times = 3),
+                                 estimated = 0,
+                                 response = rep(unique(binded_levels$response),
+                                                each = length(var_names))),
+               aes(yintercept = estimated),
+               size = 1.1)  +
+    geom_pointrange(aes(ymin = 0, ymax = estimated)) +
+    facet_wrap(~response) +
+    coord_flip() +
+    ylab("Estimated effect") +
+    xlab("Variable / level")
 }
 
-
-#' Plotting white box models.
-#'
-#' @param x List returned by fit_explanation function.
-#' @param type Chr, "forest" or "waterfall" depending
-#'        on which type of plot is to be created.
-#'        if lm/glm model is used as interpretable approximation.
-#' @param ... Additional parameters.
-#'
-#' @return plot (ggplot2 or base)
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' # Forest plot for regression
-#' plot(fitted_explanation1, type = "forest")
-#' # Waterfall plot
-#' plot(fitted_explanation1, type = "waterfall")
-#' # Plot decision tree
-#' plot(fitted_explanation2)
-#' }
-#'
-
-plot.live_explainer <- function(x, type = "waterfall", ...) {
-  trained_model <- x$model
-  plot_regression(type, trained_model, x$explained_instance)
-}
 
 merge_factor_levels <- function(response, factor, ...) {
   factor_levels <- sort(levels(factor))
@@ -158,7 +137,3 @@ merge_factor_levels <- function(response, factor, ...) {
   names(original_levels) <- partition_df[, 1]
 
 }
-#
-# factor <- as.factor(letters[factor])
-# factor <- to_predict$evaluation
-
