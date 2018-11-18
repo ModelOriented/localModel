@@ -35,22 +35,7 @@ explainer <- explain(mrf,
 observation <- HR[10, ]
 size <- 1000
 
-head(as.data.frame(predict(mrf, type = "prob")))
-class(predict(mrf, type = "prob"))
-
 model_lok <- individual_surrogate_model(explainer, observation, 2000, n_points = 100,
                                         response_family = "gaussian")
-coef(model_lok$model, s = "lambda.min")
+plot(model_lok)
 ```
-
-
-Local model issues:
-  * execution time (smoothing in particular)
-  * factor variables (add merging by factorMerger?)
-    - without merging, factors with large number of levels overshadow discretized variables
-  * idea: identify regions, where linear approximations looks fine based on ceterisParibus?
-  * ceterisParibus for categorical response needs to use scores, but it would be best to predict classes (same problem as in lime package & egalitarian)
-  * quantile-based cutpoints ignore the data (while adaptive cutpoints are basically lime)
-  * flexibility is small (for example one cutpoint vs two cutpoints -> how to assign labels automatically? What about bigger number of cutpoints?)
-  
-  
