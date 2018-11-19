@@ -102,6 +102,7 @@ fit_explanation <- function(live_object, kernel = gaussian_kernel,
 }
 
 #' @import ggplot2
+#' @export
 
 plot.local_surrogate_explainer <- function(x, ...) {
   if(length(x) == 1) {
@@ -133,7 +134,7 @@ merge_factor_levels <- function(response, factor, ...) {
   mf_result <- factorMerger::mergeFactors(response, factor)
   old_levels <- mf_result$map$original
   names(old_levels) <- mf_result$map$recoded
-  partition_df <- getOptimalPartitionDf(mf_result)
+  partition_df <- factorMerger::getOptimalPartitionDf(mf_result)
   partition_df$original_levels <- old_levels[as.character(partition_df$orig)]
   partition_df$pred <- stringr::str_replace_all(partition_df$pred,
                                                 "\\)\\(", "_")

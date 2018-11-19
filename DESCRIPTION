@@ -12,7 +12,8 @@ Imports: data.table,
     forestmodel,
     ceterisParibus,
     factorMerger,
-    stringr
+    stringr,
+    ggplot2
 RoxygenNote: 6.1.0
 Suggests: covr,
     knitr,
