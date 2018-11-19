@@ -115,8 +115,7 @@ single_column_local_surrogate <- function(x, new_observation,
                    target = model_response,
                    explained_instance = new_observation)
 
-  model <- fit_explanation(explorer, kernel, response_family = response_family)
-
+  fit_explanation(explorer, kernel, response_family = response_family)
 }
 
 #' Local surrogate model
