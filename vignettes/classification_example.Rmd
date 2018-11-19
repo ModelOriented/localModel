@@ -17,13 +17,12 @@ knitr::opts_chunk$set(
 
 ```{r ex}
 library(DALEX)
-library(ceterisParibus)
 library(randomForest)
 library(localModel)
-library(glmnet)
 
 data('HR')
 HR$evaluation <- as.factor(as.character(HR$evaluation))
+# HR <- dplyr::mutate_if(HR, is.numeric, function(x) as.numeric(scale(x)))
 mrf <- randomForest(status ~., data = HR, ntree = 100)
 
 explainer <- explain(mrf, 
@@ -32,10 +31,11 @@ explainer <- explain(mrf,
                      predict_function = function(x, y)
                        as.data.frame(predict(x, y, type = "prob")))
 
-observation <- HR[10, -6]
+new_observation <- HR[10, -6]
 size <- 1000
 
-model_lok <- individual_surrogate_model(explainer, observation, size, n_points = 100,
+model_lok <- individual_surrogate_model(explainer, new_observation, size, 
+                                        n_points = 100,
                                         response_family = "gaussian")
 plot(model_lok)
 ```

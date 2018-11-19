@@ -6,7 +6,7 @@
 \usage{
 individual_surrogate_model(x, new_observation, size, seed = NULL,
   response_family = "gaussian", kernel = gaussian_kernel,
-  n_points = nrow(x$data), smoothness = 0.3, ...)
+  n_points = nrow(x$data), smoothness = 0.3)
 }
 \arguments{
 \item{x}{an explainer created with function `DALEX2::explain()`}

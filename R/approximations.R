@@ -31,17 +31,6 @@ single_column_local_surrogate <- function(x, new_observation,
                                           smoothness = 0.3, ...) {
   numerical_data <- dplyr::select_if(x$data, is.numeric)
   categorical_data <- dplyr::select_if(x$data, is.factor)
-  # categorical_data <- dplyr::mutate_all(categorical_data,
-  #                                       function(y) {
-  #                                         if(dplyr::n_distinct(y) > 3) {
-  #                                           merge_factor_levels(
-  #                                             x$predict_function(x$model, x$data),
-  #                                             y
-  #                                           )
-  #                                         } else {
-  #                                           y
-  #                                         }
-  #                                       })
 
   whatif_curves <- lapply(
     colnames(numerical_data),
@@ -92,9 +81,11 @@ single_column_local_surrogate <- function(x, new_observation,
   for(i in 1:size) {
     j <- sample(1:ncol(similar), size = 1)
     if(dplyr::n_distinct(encoded_data[, j]) > 1) {
-      similar[i, j] <- sample(setdiff(unique(encoded_data[, j]), similar[i, j]),
-                              size = 1, prob = rep(1/dplyr::n_distinct(encoded_data[, j]),
-                                                   times = dplyr::n_distinct(encoded_data[, j]) - 1))
+      props <- prop.table(table(encoded_data[, j]))
+      probs <- props[-which(names(props) == similar[i, j])]
+      similar[i, j] <- sample(setdiff(sort(unique(encoded_data[, j])), similar[i, j]),
+                              size = 1,
+                              prob = probs)
     }
   }
 
@@ -106,6 +97,20 @@ single_column_local_surrogate <- function(x, new_observation,
   }
 
   model_response <- x$predict_function(x$model, to_predict)
+
+  similar[, colnames(similar) %in% colnames(categorical_data)] <- dplyr::mutate_all(
+    similar[, colnames(similar) %in% colnames(categorical_data), drop = F],
+    function(y) {
+      if(dplyr::n_distinct(y) > 3) {
+        merge_factor_levels(
+          model_response,
+          y
+        )
+      } else {
+        y
+      }
+    })
+
   explorer <- list(data = similar,
                    target = model_response,
                    explained_instance = new_observation)
@@ -138,7 +143,7 @@ individual_surrogate_model <- function(x, new_observation,
                                        response_family =  "gaussian",
                                        kernel = gaussian_kernel,
                                        n_points = nrow(x$data),
-                                       smoothness = 0.3, ...) {
+                                       smoothness = 0.3) {
   if(is.factor(x$y)) {
     explainer <- lapply(unique(x$y), function(unique_level) {
       internal_explainer <- x

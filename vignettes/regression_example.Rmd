@@ -20,15 +20,17 @@ library(DALEX)
 library(localModel)
 library(randomForest)
 data('apartments')
+data('apartmentsTest')
 
 mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
 
 explainer <- DALEX::explain(model = mrf,
                             data = apartmentsTest[, -1],
                             y = apartmentsTest$m2.price)
+new_observation <- apartmentsTest[5, -1]
 
-model_lok <- individual_surrogate_model(explainer, apartmentsTest[5, -1],
-                                        2000, n_points = 100,
+model_lok <- individual_surrogate_model(explainer, new_observation,
+                                        size= 2000, n_points = 100,
                                         response_family = "gaussian")
 plot(model_lok)
 ```

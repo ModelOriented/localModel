@@ -73,6 +73,8 @@ generate_neighbourhood <- function(data, explained_instance, size, fixed_variabl
 #' \item{model}{Fitted explanation model}
 #' \item{explained_instance}{Instance that is being explained}
 #'
+#' @importFrom stats model.matrix coef
+#'
 #' @export
 #'
 #' @examples
@@ -102,9 +104,11 @@ fit_explanation <- function(live_object, kernel = gaussian_kernel,
 }
 
 #' @import ggplot2
+#' @importFrom stats reorder
 #' @export
 
 plot.local_surrogate_explainer <- function(x, ...) {
+  variable <- estimated <- NULL
   if(length(x) == 1) {
     binded_levels <- x[[1]]$model_coefs
   } else {
@@ -130,7 +134,7 @@ plot.local_surrogate_explainer <- function(x, ...) {
 }
 
 
-merge_factor_levels <- function(response, factor, ...) {
+merge_factor_levels <- function(response, factor) {
   mf_result <- factorMerger::mergeFactors(response, factor)
   old_levels <- mf_result$map$original
   names(old_levels) <- mf_result$map$recoded
