@@ -130,10 +130,16 @@ plot.local_surrogate_explainer <- function(x, ...) {
 
 
 merge_factor_levels <- function(response, factor, ...) {
-  factor_levels <- sort(levels(factor))
   mf_result <- factorMerger::mergeFactors(response, factor)
+  old_levels <- mf_result$map$original
+  names(old_levels) <- mf_result$map$recoded
   partition_df <- getOptimalPartitionDf(mf_result)
-  original_levels <- partition_df[, 2]
-  names(original_levels) <- partition_df[, 1]
-
+  partition_df$original_levels <- old_levels[as.character(partition_df$orig)]
+  partition_df$pred <- stringr::str_replace_all(partition_df$pred,
+                                                "\\)\\(", "_")
+  partition_df$pred <- stringr::str_replace_all(partition_df$pred,
+                                                "[()]", "")
+  merged_levels <- partition_df$pred
+  names(merged_levels) <- partition_df$original_levels
+  as.factor(merged_levels[as.character(factor)])
 }

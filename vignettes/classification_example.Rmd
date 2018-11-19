@@ -27,15 +27,15 @@ HR$evaluation <- as.factor(as.character(HR$evaluation))
 mrf <- randomForest(status ~., data = HR, ntree = 100)
 
 explainer <- explain(mrf, 
-                     HR,
+                     HR[, -6],
                      HR$status,
                      predict_function = function(x, y)
                        as.data.frame(predict(x, y, type = "prob")))
 
-observation <- HR[10, ]
+observation <- HR[10, -6]
 size <- 1000
 
-model_lok <- individual_surrogate_model(explainer, observation, 2000, n_points = 100,
+model_lok <- individual_surrogate_model(explainer, observation, size, n_points = 100,
                                         response_family = "gaussian")
 plot(model_lok)
 ```

@@ -30,8 +30,18 @@ single_column_local_surrogate <- function(x, new_observation,
                                           n_points = nrow(x$data),
                                           smoothness = 0.3, ...) {
   numerical_data <- dplyr::select_if(x$data, is.numeric)
-  categorical_data <- dplyr::select_if(x$data,
-                                       function(y) is.factor(y) | is.character(y))
+  categorical_data <- dplyr::select_if(x$data, is.factor)
+  # categorical_data <- dplyr::mutate_all(categorical_data,
+  #                                       function(y) {
+  #                                         if(dplyr::n_distinct(y) > 3) {
+  #                                           merge_factor_levels(
+  #                                             x$predict_function(x$model, x$data),
+  #                                             y
+  #                                           )
+  #                                         } else {
+  #                                           y
+  #                                         }
+  #                                       })
 
   whatif_curves <- lapply(
     colnames(numerical_data),
