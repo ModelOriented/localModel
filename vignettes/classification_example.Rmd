@@ -22,7 +22,6 @@ library(localModel)
 
 data('HR')
 HR$evaluation <- as.factor(as.character(HR$evaluation))
-# HR <- dplyr::mutate_if(HR, is.numeric, function(x) as.numeric(scale(x)))
 mrf <- randomForest(status ~., data = HR, ntree = 100)
 
 explainer <- explain(mrf, 
