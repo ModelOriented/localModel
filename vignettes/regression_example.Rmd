@@ -30,7 +30,7 @@ explainer <- DALEX::explain(model = mrf,
 new_observation <- apartmentsTest[5, -1]
 
 model_lok <- individual_surrogate_model(explainer, new_observation,
-                                        size= 2000, n_points = 100,
+                                        size= 2000, grid_points = 100,
                                         response_family = "gaussian")
 plot(model_lok)
 ```

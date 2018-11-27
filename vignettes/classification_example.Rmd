@@ -38,15 +38,10 @@ new_observation <- HR[10, -6]
 size <- 1000
 
 model_lok <- individual_surrogate_model(explainer, new_observation, size, 
-                                        n_points = 100,
+                                        grid_points = 100,
                                         response_family = "gaussian")
-# n_points -> grid_points
-# Sprawdzić, czy można ustawić liczbę zmiennych do wyboru w glmnet
-# Ew. pozwolić ustawiać więcej parametróW 
+# Pozwolić ustawiać karę lasso.
 # Ew. usunąć zbędne zależności dla stabilności
-# Podzielić kod komentarzami logicznzie
-# similar można utworzyc przez encoded_obs[rep(1m size), ]
-# Eksperymentować ze zmianą więcej niż jednej kolumny za jednym razem (liczba zmian: parametr)
 # cutTree zamiast optimalPartition
 # lime pokazuje tylko jeden przedział dla danej zmiennej
 # zaznaczyć, która z wartości była w danych

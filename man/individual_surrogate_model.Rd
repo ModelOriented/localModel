@@ -6,7 +6,7 @@
 \usage{
 individual_surrogate_model(x, new_observation, size, seed = NULL,
   response_family = "gaussian", kernel = gaussian_kernel,
-  n_points = nrow(x$data), smoothness = 0.3)
+  grid_points = nrow(x$data), smoothness = 0.3)
 }
 \arguments{
 \item{x}{an explainer created with function `DALEX2::explain()`}
@@ -22,7 +22,7 @@ Columns in should correspond to columns in the data element of explainer.}
 
 \item{kernel}{kernel function which will be used to weight distances between observations.}
 
-\item{n_points}{Number of points, at which ceteris paribus curves will be calculated.}
+\item{grid_points}{Number of points, at which ceteris paribus curves will be calculated.}
 
 \item{smoothness}{Span argument to loess function.}
 }
