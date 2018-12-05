@@ -65,8 +65,6 @@ generate_neighbourhood <- function(data, explained_instance, size, fixed_variabl
 #' @param live_object List return by add_predictions function.
 #' @param kernel function which will be used to calculate distance between simulated
 #'        observations and explained instance.
-#' @param response_family family argument to glmnet (and then glm) function.
-#'        Default value is "gaussian"
 #'
 #' @return List consting of
 #' \item{data}{Dataset used to fit explanation model (may have less column than the original)}
@@ -83,8 +81,7 @@ generate_neighbourhood <- function(data, explained_instance, size, fixed_variabl
 #' }
 #'
 
-fit_explanation <- function(live_object, kernel = gaussian_kernel,
-                            response_family = "gaussian") {
+fit_explanation <- function(live_object, kernel = gaussian_kernel) {
 
   source_data <- dplyr::select_if(live_object$data,
                                   function(x) dplyr::n_distinct(x) > 1)
@@ -93,7 +90,7 @@ fit_explanation <- function(live_object, kernel = gaussian_kernel,
   model_matrix <- model.matrix(y ~ ., data = source_data)
 
   model <- glmnet::cv.glmnet(model_matrix[, -1], live_object$target,
-                             family = response_family, alpha = 1)
+                             family = "gaussian", alpha = 1)
 
   var_names <- data.frame("variable" = rownames(coef(model)))
   coefs <- as.data.frame(as.matrix(coef(model)))
