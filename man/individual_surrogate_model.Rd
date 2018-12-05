@@ -4,9 +4,9 @@
 \alias{individual_surrogate_model}
 \title{Local surrogate model}
 \usage{
-individual_surrogate_model(x, new_observation, size, seed = NULL,
-  response_family = "gaussian", kernel = gaussian_kernel,
-  grid_points = nrow(x$data), smoothness = 0.3)
+individual_surrogate_model(x, new_observation, size, levels = "two",
+  seed = NULL, kernel = gaussian_kernel, grid_points = nrow(x$data),
+  smoothness = NULL)
 }
 \arguments{
 \item{x}{an explainer created with function `DALEX2::explain()`}
@@ -16,15 +16,17 @@ Columns in should correspond to columns in the data element of explainer.}
 
 \item{size}{Number of instance to simulate.}
 
-\item{seed}{Argument to set.seed, if not specified, results will not be reproducible.}
+\item{levels}{Should two levels of each variable be created ("baseline", "lower"
+or "higher") or three levels ("baseline", "lower" and "higher").}
 
-\item{response_family}{Family argument to glmnet function.}
+\item{seed}{Argument to set.seed, if not specified, results will not be reproducible.}
 
 \item{kernel}{kernel function which will be used to weight distances between observations.}
 
 \item{grid_points}{Number of points, at which ceteris paribus curves will be calculated.}
 
-\item{smoothness}{Span argument to loess function.}
+\item{smoothness}{Span argument to loess function. If NULL, smoothing won't be applied
+to results of ceteris_paribus function.}
 }
 \value{
 glmnet model object

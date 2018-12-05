@@ -4,17 +4,13 @@
 \alias{fit_explanation}
 \title{Fit white box model to the simulated data.}
 \usage{
-fit_explanation(live_object, kernel = gaussian_kernel,
-  response_family = "gaussian")
+fit_explanation(live_object, kernel = gaussian_kernel)
 }
 \arguments{
 \item{live_object}{List return by add_predictions function.}
 
 \item{kernel}{function which will be used to calculate distance between simulated
 observations and explained instance.}
-
-\item{response_family}{family argument to glmnet (and then glm) function.
-Default value is "gaussian"}
 }
 \value{
 List consting of
