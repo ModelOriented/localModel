@@ -147,7 +147,7 @@ plot.local_surrogate_explainer <- function(x, ...) {
                             color = variable,
                             label = variable)) +
     theme_bw() +
-    geom_hline(data = data.frame(variable = rep(binded_levels$colname, times = 3),
+    geom_hline(data = data.frame(variable = rep(unique(binded_levels$colname), times = 3),
                                  estimated = 0,
                                  response = rep(unique(binded_levels$response),
                                                 each = length(var_names))),
