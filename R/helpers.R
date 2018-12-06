@@ -106,6 +106,7 @@ fit_explanation <- function(live_object, kernel = gaussian_kernel, penalty = NUL
        explained_instance = live_object$explained_instance)
 }
 
+
 get_original_colnames <- function(transformed_names, original_names) {
   unlist(sapply(transformed_names,
                 function(name) {
@@ -113,6 +114,7 @@ get_original_colnames <- function(transformed_names, original_names) {
                   extracted[!is.na(extracted)]
                 }))
 }
+
 
 #' @import ggplot2
 #' @importFrom stats reorder
@@ -150,7 +152,7 @@ plot.local_surrogate_explainer <- function(x, ...) {
     geom_hline(data = data.frame(variable = rep(unique(binded_levels$colname), times = 3),
                                  estimated = 0,
                                  response = rep(unique(binded_levels$response),
-                                                each = length(var_names))),
+                                                each = length(unique(binded_levels$colname)))),
                aes(yintercept = estimated),
                size = 1.1)  +
     geom_pointrange(aes(ymin = 0, ymax = estimated)) +
