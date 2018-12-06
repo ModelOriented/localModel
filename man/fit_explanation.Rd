@@ -4,7 +4,7 @@
 \alias{fit_explanation}
 \title{Fit white box model to the simulated data.}
 \usage{
-fit_explanation(live_object, kernel = gaussian_kernel)
+fit_explanation(live_object, kernel = gaussian_kernel, penalty = NULL)
 }
 \arguments{
 \item{live_object}{List return by add_predictions function.}

@@ -57,7 +57,8 @@ single_column_local_surrogate <- function(explainer,
                                           seed = NULL,
                                           kernel = gaussian_kernel,
                                           grid_points = nrow(explainer$data),
-                                          smoothness = NULL, ...) {
+                                          smoothness = NULL,
+                                          penalty = NULL) {
   numerical_data <- dplyr::select_if(explainer$data, is.numeric)
   categorical_data <- dplyr::select_if(explainer$data, is.factor)
 
@@ -170,7 +171,7 @@ single_column_local_surrogate <- function(explainer,
                    target = model_response,
                    explained_instance = new_observation)
 
-  fit_explanation(explorer, kernel)
+  fit_explanation(explorer, kernel, penalty)
 }
 
 #' Local surrogate model
@@ -186,6 +187,8 @@ single_column_local_surrogate <- function(explainer,
 #' @param grid_points Number of points, at which ceteris paribus curves will be calculated.
 #' @param smoothness Span argument to loess function. If NULL, smoothing won't be applied
 #' to results of ceteris_paribus function.
+#' @param Sequence of lambdas (penalties) to glmnet.
+#' If NULL, penalty will be chosen via cross validation.
 #'
 #' @return glmnet model object
 #'
@@ -200,7 +203,8 @@ individual_surrogate_model <- function(x, new_observation,
                                        seed = NULL,
                                        kernel = gaussian_kernel,
                                        grid_points = nrow(x$data),
-                                       smoothness = NULL) {
+                                       smoothness = NULL,
+                                       penalty = NULL) {
   try_predict <- x$predict_function(x$model, x$data[1:5, ])
   if(is.factor(x$y) | (!is.null(ncol(try_predict)))) {
     explainer <- lapply(unique(colnames(try_predict)), function(unique_level) {

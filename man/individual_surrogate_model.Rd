@@ -6,7 +6,7 @@
 \usage{
 individual_surrogate_model(x, new_observation, size, levels = "two",
   seed = NULL, kernel = gaussian_kernel, grid_points = nrow(x$data),
-  smoothness = NULL)
+  smoothness = NULL, penalty = NULL)
 }
 \arguments{
 \item{x}{an explainer created with function `DALEX2::explain()`}
@@ -27,6 +27,9 @@ or "higher") or three levels ("baseline", "lower" and "higher").}
 
 \item{smoothness}{Span argument to loess function. If NULL, smoothing won't be applied
 to results of ceteris_paribus function.}
+
+\item{Sequence}{of lambdas (penalties) to glmnet.
+If NULL, penalty will be chosen via cross validation.}
 }
 \value{
 glmnet model object

@@ -39,7 +39,6 @@ size <- 500
 
 model_lok <- individual_surrogate_model(explainer, new_observation, size, 
                                         grid_points = 100)
-# Pozwolić ustawiać karę lasso.
 # Ew. usunąć zbędne zależności dla stabilności
 # cutTree zamiast optimalPartition
 # lime pokazuje tylko jeden przedział dla danej zmiennej
