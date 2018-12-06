@@ -81,7 +81,7 @@ generate_neighbourhood <- function(data, explained_instance, size, fixed_variabl
 #' }
 #'
 
-fit_explanation <- function(live_object, kernel = gaussian_kernel) {
+fit_explanation <- function(live_object, kernel = gaussian_kernel, penalty = NULL) {
 
   source_data <- dplyr::select_if(live_object$data,
                                   function(x) dplyr::n_distinct(x) > 1)
@@ -89,8 +89,14 @@ fit_explanation <- function(live_object, kernel = gaussian_kernel) {
   source_data <- dplyr::bind_cols(source_data, y = live_object$target)
   model_matrix <- model.matrix(y ~ ., data = source_data)
 
-  model <- glmnet::cv.glmnet(model_matrix[, -1], live_object$target,
-                             family = "gaussian", alpha = 1)
+  if(is.null(penalty)) {
+    model <- glmnet::cv.glmnet(model_matrix[, -1], live_object$target,
+                               family = "gaussian", alpha = 1)
+  } else {
+    model <- glmnet::glmnet(model_matrix[, -1], live_object$target,
+                            family = "gaussian", alpha = 1, lambda = penalty)
+  }
+
 
   var_names <- data.frame("variable" = rownames(coef(model)))
   coefs <- as.data.frame(as.matrix(coef(model)))
@@ -98,6 +104,14 @@ fit_explanation <- function(live_object, kernel = gaussian_kernel) {
   list(simulated_data = source_data,
        model_coefs = dplyr::bind_cols(var_names, coefs) ,
        explained_instance = live_object$explained_instance)
+}
+
+get_original_colnames <- function(transformed_names, original_names) {
+  unlist(sapply(transformed_names,
+                function(name) {
+                  extracted <- stringr::str_extract(name, original_names)
+                  extracted[!is.na(extracted)]
+                }))
 }
 
 #' @import ggplot2
@@ -113,11 +127,27 @@ plot.local_surrogate_explainer <- function(x, ...) {
     binded_levels <- suppressWarnings(dplyr::bind_rows(just_coefs))
   }
   colnames(binded_levels)[2] <- "estimated"
+  binded_levels <- binded_levels[binded_levels$variable != "(Intercept)", ]
+  binded_levels$variable <- sort(binded_levels$variable)
+  binded_levels$colname <- sort(get_original_colnames(binded_levels$variable,
+                                                 colnames(x[[1]]$explained_instance)))
   var_names <- unique(binded_levels$variable)
-  ggplot(binded_levels, aes(x = reorder(variable, abs(estimated)),
-                            y = estimated)) +
+  binded_levels$variable <- as.character(binded_levels$variable)
+
+  for(i in 1:nrow(binded_levels)) {
+    binded_levels$variable[i] <- stringr::str_replace_all(
+      binded_levels$variable[i],
+      binded_levels$colname[i],
+      ""
+    )
+  }
+
+   ggplot(binded_levels, aes(x = reorder(colname, abs(estimated)),
+                            y = estimated,
+                            color = variable,
+                            label = variable)) +
     theme_bw() +
-    geom_hline(data = data.frame(variable = rep(var_names, times = 3),
+    geom_hline(data = data.frame(variable = rep(binded_levels$colname, times = 3),
                                  estimated = 0,
                                  response = rep(unique(binded_levels$response),
                                                 each = length(var_names))),
@@ -127,7 +157,8 @@ plot.local_surrogate_explainer <- function(x, ...) {
     facet_wrap(~response) +
     coord_flip() +
     ylab("Estimated effect") +
-    xlab("Variable / level")
+    xlab("Variable / level") +
+    geom_text()
 }
 
 
