@@ -1,3 +1,8 @@
+# localExplanations 0.1.1
+
+* Improved plot labels.
+
+
 # localExplanation 0.1
 
 * Added possibility of coding variables as (baseline / lower or higher) or ( baseline / lower / higher).
