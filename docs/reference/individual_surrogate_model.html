@@ -103,7 +103,7 @@
 
     <pre class="usage"><span class='fu'>individual_surrogate_model</span>(<span class='no'>x</span>, <span class='no'>new_observation</span>, <span class='no'>size</span>, <span class='kw'>levels</span> <span class='kw'>=</span> <span class='st'>"two"</span>,
   <span class='kw'>seed</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='no'>gaussian_kernel</span>, <span class='kw'>grid_points</span> <span class='kw'>=</span> <span class='fu'>nrow</span>(<span class='no'>x</span>$<span class='no'>data</span>),
-  <span class='kw'>smoothness</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+  <span class='kw'>smoothness</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>penalty</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -142,6 +142,11 @@ or "higher") or three levels ("baseline", "lower" and "higher").</p></td>
       <th>smoothness</th>
       <td><p>Span argument to loess function. If NULL, smoothing won't be applied
 to results of ceteris_paribus function.</p></td>
+    </tr>
+    <tr>
+      <th>Sequence</th>
+      <td><p>of lambdas (penalties) to glmnet.
+If NULL, penalty will be chosen via cross validation.</p></td>
     </tr>
     </table>
     
