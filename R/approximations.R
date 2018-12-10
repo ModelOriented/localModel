@@ -14,11 +14,11 @@ encode_data_frame_two_levels <- function(explainer, observation, data,
     if(explainer$predict_function(explainer$model, observation) <= prediction_quantiles[[column]]) {
       encoded_data[, column][order(data[, column])] <- ifelse(
         whatif_curves[[column]]$`_yhat_` <= prediction_quantiles[[column]],
-        "baseline", "higher")
+        "lower", "baseline")
     } else {
       encoded_data[, column][order(data[, column])] <- ifelse(
         whatif_curves[[column]]$`_yhat_` <= prediction_quantiles[[column]],
-        "lower", "baseline")
+        "baseline", "higher")
     }
   }
   encoded_data
@@ -83,19 +83,12 @@ single_column_local_surrogate <- function(explainer,
                                    function(y) median(y$`_yhat_`))
 
     # Encode observation and data into "baseline"/"lower"/"higher" based on the quantiles.
-    encoded_observation <- encode_data_frame_two_levels(explainer,
-                                             new_observation,
-                                             dplyr::select_if(new_observation,
-                                                              is.numeric),
-                                             prediction_quantiles)
-    encoded_observation <- dplyr::bind_cols(encoded_observation,
-                                            dplyr::select_if(new_observation,
-                                                             function(y) !is.numeric(y)))
     encoded_data <- encode_data_frame_two_levels(explainer,
                                       new_observation,
-                                      numerical_data,
+                                      rbind(dplyr::select_if(new_observation,
+                                                             is.numeric),
+                                            numerical_data),
                                       prediction_quantiles)
-
   } else {
     # Calculate median of predicted values for each curve.
     prediction_quantiles <- lapply(whatif_curves,
@@ -104,28 +97,25 @@ single_column_local_surrogate <- function(explainer,
                                    })
 
     # Encode observation and data into "baseline"/"lower"/"higher" based on the quantiles.
-    encoded_observation <- encode_data_frame(explainer,
-                                             new_observation,
-                                             dplyr::select_if(new_observation,
-                                                              is.numeric),
-                                             prediction_quantiles)
-    encoded_observation <- dplyr::bind_cols(encoded_observation,
-                                            dplyr::select_if(new_observation,
-                                                             function(y) !is.numeric(y)))
-
     encoded_data <- encode_data_frame(explainer,
                                       new_observation,
-                                      numerical_data,
+                                      rbind(dplyr::select_if(new_observation,
+                                                             is.numeric),
+                                            numerical_data),
                                       prediction_quantiles)
   }
+  encoded_data <- cbind(encoded_data,
+                        rbind(dplyr::select_if(new_observation,
+                                               function(y) !is.numeric(y)),
+                              categorical_data))
+  encoded_observation <- encoded_data[1, ]
+  encoded_data <- encoded_data[-1, ]
 
   # Find mean prediction for each level of a factor ("baseline" etc).
   means_by_group <- vector("list", ncol(encoded_data))
   for(y in 1:ncol(numerical_data)) {
     means_by_group[[y]] <- tapply(numerical_data[, y], encoded_data[, y], mean)
   }
-
-  encoded_data <- dplyr::bind_cols(encoded_data, categorical_data)
 
   # Sample new observations.
   similar <- encoded_observation[rep(1, times = size), ]
@@ -170,8 +160,9 @@ single_column_local_surrogate <- function(explainer,
   explorer <- list(data = similar,
                    target = model_response,
                    explained_instance = new_observation)
-
-  fit_explanation(explorer, kernel, penalty)
+  result <- fit_explanation(explorer, kernel, penalty)
+  result$observation = encoded_observation
+  result
 }
 
 #' Local surrogate model
@@ -217,6 +208,10 @@ individual_surrogate_model <- function(x, new_observation,
                                     size, levels, seed, kernel,
                                     grid_points, smoothness)
       result$model_coefs[, "response"] <- unique_level
+      result$predicted_value <- internal_explainer$predict_function(
+        internal_explainer$model,
+        new_observation
+      )
       result
     })
   } else {
@@ -227,6 +222,11 @@ individual_surrogate_model <- function(x, new_observation,
         grid_points, smoothness
       )
       local_surrogate_result$model_coefs[, "response"] <- ""
+      local_surrogate_result$predicted_value <- x$predict_function(
+        x$model,
+        new_observation
+      )
+
       explainer <- list(
         local_surrogate = local_surrogate_result
       )
