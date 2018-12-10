@@ -123,14 +123,18 @@ get_original_colnames <- function(transformed_names, original_names) {
 plot.local_surrogate_explainer <- function(x, ...) {
   variable <- estimated <- NULL
   if(length(x) == 1) {
-    binded_levels <- x[[1]]$model_coefs
+    binded_levels <- cbind(x[[1]]$model_coefs,
+                           data.frame(prediction = x[[1]]$predicted_value))
   } else {
-    just_coefs <- lapply(x, function(y) y$model_coefs)
+    just_coefs <- lapply(x,
+                         function(y)
+                           cbind(y$model_coefs,
+                                 prediction = y$predicted_value))
     binded_levels <- suppressWarnings(dplyr::bind_rows(just_coefs))
   }
   colnames(binded_levels)[2] <- "estimated"
   binded_levels <- binded_levels[binded_levels$variable != "(Intercept)", ]
-  binded_levels$variable <- sort(binded_levels$variable)
+  binded_levels <- dplyr::arrange(binded_levels, variable)
   binded_levels$colname <- sort(get_original_colnames(binded_levels$variable,
                                                  colnames(x[[1]]$explained_instance)))
   var_names <- unique(binded_levels$variable)
@@ -144,9 +148,31 @@ plot.local_surrogate_explainer <- function(x, ...) {
     )
   }
 
-   ggplot(binded_levels, aes(x = reorder(colname, abs(estimated)),
+   # binded_levels$actual_value <- sapply(binded_levels$colname,
+   #                                      function(y) x[[1]]$explained_instance[, y])
+
+   binded_levels$colname2 <- paste(
+     binded_levels$colname,
+     binded_levels$variable,
+     sep = " = "
+   )
+   binded_levels$response <- paste(
+     binded_levels$response,
+     "predicted value: ",
+     binded_levels$prediction
+   )
+
+   for(i in 1:nrow(binded_levels)) {
+     binded_levels[i, "colname2"] <- paste0(
+       binded_levels[i, "colname2"],
+       " (",
+       x[[1]]$observation[1, binded_levels[i, "colname"]],
+       ")"
+     )
+   }
+
+   ggplot(binded_levels, aes(x = reorder(colname2, abs(estimated)),
                             y = estimated,
-                            color = variable,
                             label = variable)) +
     theme_bw() +
     geom_hline(data = data.frame(variable = rep(unique(binded_levels$colname), times = 3),
@@ -156,11 +182,10 @@ plot.local_surrogate_explainer <- function(x, ...) {
                aes(yintercept = estimated),
                size = 1.1)  +
     geom_pointrange(aes(ymin = 0, ymax = estimated)) +
-    facet_wrap(~response) +
+    facet_wrap(~response, ncol = 1, scales = "free_y") +
     coord_flip() +
     ylab("Estimated effect") +
-    xlab("Variable / level") +
-    geom_text()
+    xlab("Variable / level")
 }
 
 
