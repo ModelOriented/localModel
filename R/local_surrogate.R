@@ -59,13 +59,15 @@ single_column_surrogate <- function(x, new_observation, size, seed = NULL,
              if(is.numeric(x$data[, column])) {
                ifelse(simulated_data[, column] == "baseline",
                       sample(x$data[baseline_indices, column],
-                             how_many_baselines, replace = TRUE),
+                             how_many_baselines,
+                             replace = TRUE),
                       rep(new_observation[, column], size - how_many_baselines)
                )
              } else {
                ifelse(simulated_data[, column] == "baseline",
                       as.character(sample(x$data[baseline_indices, column],
-                                          how_many_baselines)),
+                                          how_many_baselines,
+                                          replace = TRUE)),
                       as.character(rep(new_observation[, column],
                                        size - how_many_baselines))
                )
