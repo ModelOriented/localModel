@@ -1,3 +1,7 @@
+# localModel 0.2.4
+
+* Sets seed in tests.
+
 # localModel 0.2.3
 
 * Minor updates to documentation (including paper/paper.md) and unit tests.
