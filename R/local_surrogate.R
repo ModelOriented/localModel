@@ -1,3 +1,5 @@
+#' @importFrom stats as.formula coef model.matrix
+
 single_column_surrogate <- function(x, new_observation, size, seed = NULL,
                                     sampling = "uniform") {
   feature_representations <- lapply(
@@ -10,13 +12,15 @@ single_column_surrogate <- function(x, new_observation, size, seed = NULL,
   )
 
   encoded_data <- as.data.frame(feature_representations)
-  colnames(encoded_data) <- colnames(new_observation)
+  colnames(encoded_data) <- intersect(colnames(new_observation),
+                                      colnames(x$data))
 
   p <- ncol(encoded_data)
-  simulated_data <- as.data.frame(lapply(encoded_data,
-                                         function(column) {
-                                           as.character(rep(levels(column)[2], size))
-                                         }), stringsAsFactors = FALSE)
+  simulated_data <- as.data.frame(
+    lapply(encoded_data,
+           function(column) {
+             as.character(rep(levels(column)[2], size))
+           }), stringsAsFactors = FALSE)
 
   probs <- lapply(encoded_data,
                   function(column) {
@@ -47,35 +51,34 @@ single_column_surrogate <- function(x, new_observation, size, seed = NULL,
   }
 
   n_rows <- nrow(encoded_data)
-  to_predict <- data.frame(lapply(colnames(simulated_data),
-                                  function(column) {
-                                    how_many_baselines <- sum(simulated_data[, column] == "baseline")
-                                    baseline_indices <- which(encoded_data[, column] == "baseline")
-                                    if(is.numeric(explainer$data[, column])) {
-                                      ifelse(simulated_data[, column] == "baseline",
-                                             sample(explainer$data[baseline_indices, column],
-                                                    how_many_baselines),
-                                             rep(new_observation[, column], size - how_many_baselines)
-                                      )
-                                    } else {
-                                      ifelse(simulated_data[, column] == "baseline",
-                                             as.character(sample(explainer$data[baseline_indices, column],
-                                                                 how_many_baselines)),
-                                             as.character(rep(new_observation[, column],
-                                                              size - how_many_baselines))
-                                      )
-
-                                    }
-                                  }))
+  to_predict <- data.frame(
+    lapply(colnames(simulated_data),
+           function(column) {
+             how_many_baselines <- sum(simulated_data[, column] == "baseline")
+             baseline_indices <- which(encoded_data[, column] == "baseline")
+             if(is.numeric(x$data[, column])) {
+               ifelse(simulated_data[, column] == "baseline",
+                      sample(x$data[baseline_indices, column],
+                             how_many_baselines, replace = TRUE),
+                      rep(new_observation[, column], size - how_many_baselines)
+               )
+             } else {
+               ifelse(simulated_data[, column] == "baseline",
+                      as.character(sample(x$data[baseline_indices, column],
+                                          how_many_baselines)),
+                      as.character(rep(new_observation[, column],
+                                       size - how_many_baselines))
+               )
+             }
+           }))
   colnames(to_predict) <- colnames(simulated_data)
-  for(i in 1:p) {
-    if(is.numeric(x$data[, i])) {
-      to_predict[, i] <- as.numeric(to_predict[, i])
+  for(colname in colnames(simulated_data)) {
+    if(is.numeric(x$data[, colname])) {
+      to_predict[, colname] <- as.numeric(to_predict[, colname])
     } else {
-      to_predict[, i] <- factor(to_predict[, i],
-                                levels = levels(x$data[, i]))
+      to_predict[, colname] <- factor(to_predict[, colname],
+                                levels = levels(x$data[, colname]))
     }
-    class(to_predict[, i]) <- class(x$data[, i])
   }
   predicted_scores <- x$predict_function(x$model, to_predict)
   simulated_data <- simulated_data[, sapply(simulated_data,
@@ -130,7 +133,6 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
       result
     })
   } else {
-    if(is.null(ncol(try_predict))) {
       explainer <- single_column_surrogate(
         x, new_observation,
         size, seed, sampling
@@ -140,9 +142,6 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
         x$model,
         new_observation
       )
-    } else {
-      stop("Response must be numeric or factor vector")
-    }
   }
   if(!is.null(ncol(try_predict))) {
     explainer <- do.call("rbind", explainer)
@@ -158,7 +157,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 #' @export
 
 plot.local_surrogate_explainer <- function(x, ...) {
-  variable <- estimated <- NULL
+  variable <- estimated <- intercept <- NULL
 
   x$response <- paste(
     x$response,

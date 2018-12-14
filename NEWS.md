@@ -1,6 +1,11 @@
+# localModel 0.2.2
+
+* Fixed bugs related to column names in case when response in is new_observation.
+* Unit tests init.
+
 # localModel 0.2.1
 
-* Adds vignettes.
+* Vignettes added.
 
 # localModel 0.2.0
 
