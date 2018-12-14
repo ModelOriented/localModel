@@ -51,5 +51,5 @@ model_lok <- individual_surrogate_model(explainer, new_observation,
 plot(model_lok)
 ```
 
-The plot shows, how predictions for different classes are influenced by different features.
+The plot shows how predictions for different classes are influenced by different features.
 For the actually predicted class, hours and evaluation have a strong positive effect.
