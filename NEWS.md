@@ -9,7 +9,7 @@
 
 # localModel 0.2.0
 
-* Minor changes: interpretable features are created using decision trees-based discretization. 
+* Major changes: interpretable features are created using decision trees-based discretization. 
 * Now-unnecessary dependencies dropped.
 * Plots are now drawn around intercept.
 
