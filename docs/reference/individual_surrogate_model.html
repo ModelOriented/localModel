@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Local surrogate model — individual_surrogate_model • localModel</title>
+<title>LIME-like explanations based on Ceteris Paribus curves — individual_surrogate_model • localModel</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -48,7 +48,7 @@
 	  <a class = "navbar-mi2logo" href="http://mi2.mini.pw.edu.pl/">
         <img src = "https://github.com/mi2-warsaw/MI2template/blob/master/inst/pkgdown/assets/MI2logo.jpg?raw=true" alt = "MI2" height = 46 title = "MI2">
 	  </a>
-      <a class="navbar-brand navbar-mi2" href="../index.html">Local surrogate model</a>
+      <a class="navbar-brand navbar-mi2" href="../index.html">LIME-like explanations based on Ceteris Paribus curves</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="navbar-mi2 nav navbar-nav">
@@ -94,65 +94,44 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Local surrogate model</h1>
+    <h1>LIME-like explanations based on Ceteris Paribus curves</h1>
     </div>
 
     
-    <p>Local surrogate model</p>
+    <p>LIME-like explanations based on Ceteris Paribus curves</p>
     
 
-    <pre class="usage"><span class='fu'>individual_surrogate_model</span>(<span class='no'>x</span>, <span class='no'>new_observation</span>, <span class='no'>size</span>, <span class='kw'>levels</span> <span class='kw'>=</span> <span class='st'>"two"</span>,
-  <span class='kw'>seed</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='no'>gaussian_kernel</span>, <span class='kw'>grid_points</span> <span class='kw'>=</span> <span class='fu'>nrow</span>(<span class='no'>x</span>$<span class='no'>data</span>),
-  <span class='kw'>smoothness</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>penalty</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>individual_surrogate_model</span>(<span class='no'>x</span>, <span class='no'>new_observation</span>, <span class='no'>size</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>sampling</span> <span class='kw'>=</span> <span class='st'>"uniform"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>an explainer created with function `DALEX2::explain()`</p></td>
+      <td><p>an explainer created with function DALEX2::explain().</p></td>
     </tr>
     <tr>
       <th>new_observation</th>
-      <td><p>an observation/observations to be explained.
-Columns in should correspond to columns in the data element of explainer.</p></td>
+      <td><p>an observation to be explained. Columns in should correspond to columns in the data argument to x.</p></td>
     </tr>
     <tr>
       <th>size</th>
-      <td><p>Number of instance to simulate.</p></td>
-    </tr>
-    <tr>
-      <th>levels</th>
-      <td><p>Should two levels of each variable be created ("baseline", "lower"
-or "higher") or three levels ("baseline", "lower" and "higher").</p></td>
+      <td><p>number of similar observation to be sampled.</p></td>
     </tr>
     <tr>
       <th>seed</th>
-      <td><p>Argument to set.seed, if not specified, results will not be reproducible.</p></td>
+      <td><p>If not NULL, seed will be set to this value for reproducibility.</p></td>
     </tr>
     <tr>
-      <th>kernel</th>
-      <td><p>kernel function which will be used to weight distances between observations.</p></td>
-    </tr>
-    <tr>
-      <th>grid_points</th>
-      <td><p>Number of points, at which ceteris paribus curves will be calculated.</p></td>
-    </tr>
-    <tr>
-      <th>smoothness</th>
-      <td><p>Span argument to loess function. If NULL, smoothing won't be applied
-to results of ceteris_paribus function.</p></td>
-    </tr>
-    <tr>
-      <th>Sequence</th>
-      <td><p>of lambdas (penalties) to glmnet.
-If NULL, penalty will be chosen via cross validation.</p></td>
+      <th>sampling</th>
+      <td><p>Parameter that controls sampling while creating new observations.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>glmnet model object</p>
+    <p>data.frame of class local_surrogate_explainer</p>
     
 
   </div>

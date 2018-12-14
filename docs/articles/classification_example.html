@@ -105,8 +105,7 @@ explainer &lt;-<span class="st"> </span><span class="kw">explain</span>(mrf,
 new_observation &lt;-<span class="st"> </span>HR[<span class="dv">10</span>, <span class="op">-</span><span class="dv">6</span>]
 size &lt;-<span class="st"> </span><span class="dv">500</span>
 
-model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation, size, 
-                                        <span class="dt">grid_points =</span> <span class="dv">100</span>)
+model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation, size)
 <span class="co"># Ew. usunąć zbędne zależności dla stabilności</span>
 <span class="co"># cutTree zamiast optimalPartition</span>
 <span class="co"># lime pokazuje tylko jeden przedział dla danej zmiennej</span>

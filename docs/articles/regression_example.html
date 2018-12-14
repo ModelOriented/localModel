@@ -90,18 +90,6 @@
 <span class="kw">data</span>(<span class="st">'apartments'</span>)
 <span class="kw">data</span>(<span class="st">'apartmentsTest'</span>)
 
-apartments &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise_all.html">mutate_all</a></span>(apartments, 
-                                <span class="cf">function</span>(x) {
-                                  <span class="cf">if</span>(dplyr<span class="op">::</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(x) <span class="op">&lt;</span><span class="st"> </span><span class="dv">10</span>) <span class="kw">as.factor</span>(<span class="kw">as.character</span>(x))
-                                  <span class="cf">else</span> x
-                                })
-apartmentsTest &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise_all.html">mutate_all</a></span>(apartmentsTest, 
-                                <span class="cf">function</span>(x) {
-                                  <span class="cf">if</span>(dplyr<span class="op">::</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/n_distinct.html">n_distinct</a></span>(x) <span class="op">&lt;</span><span class="st"> </span><span class="dv">10</span>) <span class="kw">as.factor</span>(<span class="kw">as.character</span>(x))
-                                  <span class="cf">else</span> x
-                                })
-
-
 mrf &lt;-<span class="st"> </span><span class="kw">randomForest</span>(m2.price <span class="op">~</span>., <span class="dt">data =</span> apartments, <span class="dt">ntree =</span> <span class="dv">50</span>)
 
 explainer &lt;-<span class="st"> </span>DALEX<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DALEX/topics/explain">explain</a></span>(<span class="dt">model =</span> mrf,
@@ -110,8 +98,7 @@ explainer &lt;-<span class="st"> </span>DALEX<span class="op">::</span><span cla
 new_observation &lt;-<span class="st"> </span>apartmentsTest[<span class="dv">5</span>, <span class="op">-</span><span class="dv">1</span>]
 
 model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation,
-                                        <span class="dt">size =</span> <span class="dv">500</span>, <span class="dt">grid_points =</span> <span class="dv">100</span>,
-                                        <span class="dt">smoothness =</span> <span class="ot">NULL</span>)
+                                        <span class="dt">size =</span> <span class="dv">500</span>)
 <span class="kw">plot</span>(model_lok)</code></pre></div>
 <p><img src="regression_example_files/figure-html/pkgs-1.png" width="700"></p>
   </div>

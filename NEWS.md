@@ -1,3 +1,9 @@
+# localMOdel 0.2.0
+
+* Minor changes: interpretable features are created using decision trees-based discretization. 
+* Now-unnecessary dependencies dropped.
+* Plots are now drawn around intercept.
+
 # localModel 0.1.2
 
 * Fixes bug in observation enconding.

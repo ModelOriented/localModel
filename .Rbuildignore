@@ -5,3 +5,4 @@
 ^\.pkgdown\.yml$
 ^\docs$
 ^docs$
+^_pkgdown\.yml$
