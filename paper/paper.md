@@ -26,7 +26,10 @@ TODO: diagram podsumowujacy LIME
 
 In [@laugel_defining_2018], it was noted that _LIME_ explanations are often dominated by global behavior of the model, despite their locality.
 Author proposed a modified method of sampling for local exploration based on _localSurrogate_ algorithm.
-In this paper, we introduce an R package that provides explanations based on the idea of LIME, but using features extracted from Ceteris Paribus profiles ([@ceteris]), that describe the relationship between a single predictor and model response on an individual (observation) level.
+In this paper, we introduce an R package that provides explanations based on the idea of _LIME_, but using features extracted from Ceteris Paribus profiles ([@ceteris]), that describe the relationship between a single predictor and model response on an individual (observation) level.
+Interpretable inputs in _LIME_ are created either disregarding this relationship or by using global relationship (Partial Dependency Plot).
+In the presence of interactions, Ceteris Paribus profiles can be very different from their average - the PD curve.
+In such cases, more accurate features can be extracted from the Ceteris Paribus curves.
 
 
 # Overview of the methodolody
