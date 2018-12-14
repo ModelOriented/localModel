@@ -22,18 +22,6 @@ library(randomForest)
 data('apartments')
 data('apartmentsTest')
 
-apartments <- dplyr::mutate_all(apartments, 
-                                function(x) {
-                                  if(dplyr::n_distinct(x) < 10) as.factor(as.character(x))
-                                  else x
-                                })
-apartmentsTest <- dplyr::mutate_all(apartmentsTest, 
-                                function(x) {
-                                  if(dplyr::n_distinct(x) < 10) as.factor(as.character(x))
-                                  else x
-                                })
-
-
 mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
 
 explainer <- DALEX::explain(model = mrf,
@@ -42,8 +30,7 @@ explainer <- DALEX::explain(model = mrf,
 new_observation <- apartmentsTest[5, -1]
 
 model_lok <- individual_surrogate_model(explainer, new_observation,
-                                        size = 500, grid_points = 100,
-                                        smoothness = NULL)
+                                        size = 500)
 plot(model_lok)
 ```
 

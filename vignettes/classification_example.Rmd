@@ -37,12 +37,6 @@ explainer <- explain(mrf,
 new_observation <- HR[10, -6]
 size <- 500
 
-model_lok <- individual_surrogate_model(explainer, new_observation, size, 
-                                        grid_points = 100)
-# Ew. usunąć zbędne zależności dla stabilności
-# cutTree zamiast optimalPartition
-# lime pokazuje tylko jeden przedział dla danej zmiennej
-# zaznaczyć, która z wartości była w danych
-# różne modele, różne cechy, różne poziomy odpowiedzi mają różne interpretowalne cechy
+model_lok <- individual_surrogate_model(explainer, new_observation, size)
 plot(model_lok)
 ```
