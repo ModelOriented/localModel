@@ -147,6 +147,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
     explainer <- do.call("rbind", explainer)
   }
   attr(explainer, "new_observation") <- new_observation
+  explainer$model <- x$label
   class(explainer) <- c("local_surrogate_explainer", class(explainer))
   explainer
 }
