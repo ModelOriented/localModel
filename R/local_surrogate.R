@@ -19,7 +19,7 @@ single_column_surrogate <- function(x, new_observation, size, seed = NULL,
   simulated_data <- as.data.frame(
     lapply(encoded_data,
            function(column) {
-             as.character(rep(levels(column)[2], size))
+             as.character(rep(levels(column)[max(1, length(levels(column)))], size))
            }), stringsAsFactors = FALSE)
 
   probs <- lapply(encoded_data,

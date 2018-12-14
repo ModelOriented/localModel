@@ -1,3 +1,7 @@
+# localModel 0.2.5
+
+* Fixes bug related to number of levels when sampling new observation.
+
 # localModel 0.2.4
 
 * Sets seed in tests.
