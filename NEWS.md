@@ -1,3 +1,7 @@
+# localModel 0.2.7
+
+* Updates link in README.
+
 # localModel 0.2.6
 
 * Adds help for the package.

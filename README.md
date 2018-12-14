@@ -10,6 +10,8 @@ Local explanations of Machine Learning models for tabular data.
 To get started, install the newest version from GitHub.
 
 ```
-devtools::install_github("DrWhy2/localModel")
+devtools::install_github("ModelOriented/localModel")
 ```
+
+To get help, see package websites and vignettes.
 
