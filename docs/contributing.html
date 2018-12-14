@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Changelog • localModel</title>
+<title>NA • localModel</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -20,9 +20,9 @@
 
 
 <!-- pkgdown -->
-<link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
-<script src="../pkgdown.js"></script>
+<link href="pkgdown.css" rel="stylesheet">
+<script src="jquery.sticky-kit.min.js"></script>
+<script src="pkgdown.js"></script>
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -35,7 +35,7 @@
   </head>
 
   <body>
-    <div class="container template-news">
+    <div class="container template-title-body">
       <header>
       <div class="navbar navbar-default navbar-fixed-top navbar-mi2" role="navigation">
   <div class="container">
@@ -48,18 +48,18 @@
 	  <a class = "navbar-mi2logo" href="http://mi2.mini.pw.edu.pl/">
         <img src = "https://github.com/mi2-warsaw/MI2template/blob/master/inst/pkgdown/assets/MI2logo.jpg?raw=true" alt = "MI2" height = 46 title = "MI2">
 	  </a>
-      <a class="navbar-brand navbar-mi2" href="../index.html"></a>
+      <a class="navbar-brand navbar-mi2" href="index.html"></a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="navbar-mi2 nav navbar-nav">
         <li>
-  <a href="../index.html">
+  <a href="index.html">
     <span class="fa fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -69,15 +69,15 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/classification_example.html">Explaining classification models with localModel package</a>
+      <a href="articles/classification_example.html">Explaining classification models with localModel package</a>
     </li>
     <li>
-      <a href="../articles/regression_example.html">Introduction to localModel package</a>
+      <a href="articles/regression_example.html">Introduction to localModel package</a>
     </li>
   </ul>
 </li>
 <li>
-  <a href="../news/index.html">Changelog</a>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -97,88 +97,51 @@
       </header>
 
       <div class="row">
-
-  <div class="col-md-9">
+  <div class="contents col-md-9">
     <div class="page-header">
-      <h1>Change log <small></small></h1>
+      <h1>NA</h1>
     </div>
 
-    <div class="contents">
-    <div id="localmodel-0-2-2" class="section level1">
-<h1 class="page-header">
-<a href="#localmodel-0-2-2" class="anchor"></a>localModel 0.2.2</h1>
+<div id="how-to-contribute-to-survxai" class="section level2">
+<h2 class="hasAnchor">
+<a href="#how-to-contribute-to-survxai" class="anchor"></a>How to contribute to survxai</h2>
+<div id="did-you-find-a-bug" class="section level4">
+<h4 class="hasAnchor">
+<a href="#did-you-find-a-bug" class="anchor"></a><strong>Did you find a bug?</strong>
+</h4>
+<p>Please follow these rules when reporting bugs:</p>
 <ul>
-<li>Fixed bugs related to column names in case when response in is new_observation.</li>
-<li>Unit tests added.</li>
+<li><p>Install to the latest version of <a href="https://github.com/ModelOriented/localModel">localModel from GitHub</a> and check whether the problem still occurs.</p></li>
+<li><p><strong>Check, if the bug was not already reported</strong> by searching <a href="https://github.com/ModelOriented/localModel/issues">Issues</a>.</p></li>
+<li><p>If you’re unable to find an open issue addressing the problem, <a href="https://github.com/ModelOriented/localModel/issues/new">open a new one</a>. Be sure to include a <strong>title and clear description</strong>, and a <strong>sample code</strong> demonstrating the problem.</p></li>
 </ul>
 </div>
-    <div id="localmodel-0-2-1" class="section level1">
-<h1 class="page-header">
-<a href="#localmodel-0-2-1" class="anchor"></a>localModel 0.2.1</h1>
+<div id="did-you-fix-a-bug" class="section level4">
+<h4 class="hasAnchor">
+<a href="#did-you-fix-a-bug" class="anchor"></a><strong>Did you fix a bug?</strong>
+</h4>
 <ul>
-<li>Vignettes added.</li>
+<li><p>Make sure that changes meet the requirements of <a href="http://style.tidyverse.org">The tidyverse style guide</a> and relevant tests are added.</p></li>
+<li><p>Open a new GitHub pull request with the solution.</p></li>
+<li><p>Ensure the PR clearly describes the problem and solution. Include the relevant issue number if applicable.</p></li>
 </ul>
 </div>
-    <div id="localmodel-0-2-0" class="section level1">
-<h1 class="page-header">
-<a href="#localmodel-0-2-0" class="anchor"></a>localModel 0.2.0</h1>
+<div id="do-you-intend-to-add-a-new-feature-or-change-an-existing-one" class="section level4">
+<h4 class="hasAnchor">
+<a href="#do-you-intend-to-add-a-new-feature-or-change-an-existing-one" class="anchor"></a><strong>Do you intend to add a new feature or change an existing one?</strong>
+</h4>
 <ul>
-<li>Major changes: interpretable features are created using decision trees-based discretization.</li>
-<li>Now-unnecessary dependencies dropped.</li>
-<li>Plots are now drawn around intercept.</li>
+<li>Suggest your change in the <a href="https://github.com/ModelOriented/localModel/issues">Issues</a> and start writing code.</li>
 </ul>
+<p>Thanks!</p>
+<p>MI2 team</p>
 </div>
-    <div id="localmodel-0-1-2" class="section level1">
-<h1 class="page-header">
-<a href="#localmodel-0-1-2" class="anchor"></a>localModel 0.1.2</h1>
-<ul>
-<li>Fixes bug in observation enconding.</li>
-<li>Improves and simplifies encoding.</li>
-<li>Improves plot.</li>
-</ul>
 </div>
-    <div id="localmodel-0-1-1" class="section level1">
-<h1 class="page-header">
-<a href="#localmodel-0-1-1" class="anchor"></a>localModel 0.1.1</h1>
-<ul>
-<li>Improved plot labels.</li>
-</ul>
-</div>
-    <div id="localmodel-0-1" class="section level1">
-<h1 class="page-header">
-<a href="#localmodel-0-1" class="anchor"></a>localModel 0.1</h1>
-<ul>
-<li>Added possibility of coding variables as (baseline / lower or higher) or ( baseline / lower / higher).</li>
-<li>Added option to skip loess smoothing.</li>
-<li>Removed option of setting <code>family</code> argument in glmnet.</li>
-</ul>
-</div>
-    <div id="localmodel-0-0-0-9000" class="section level1">
-<h1 class="page-header">
-<a href="#localmodel-0-0-0-9000" class="anchor"></a>localModel 0.0.0.9000</h1>
-<ul>
-<li>Added a <code>NEWS.md</code> file to track changes to the package.</li>
-</ul>
-</div>
-    </div>
-  </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <div id="tocnav">
-      <h2>Contents</h2>
-      <ul class="nav nav-pills nav-stacked contents-mi2">
-        <li><a href="#localmodel-0-2-2">0.2.2</a></li>
-        <li><a href="#localmodel-0-2-1">0.2.1</a></li>
-        <li><a href="#localmodel-0-2-0">0.2.0</a></li>
-        <li><a href="#localmodel-0-1-2">0.1.2</a></li>
-        <li><a href="#localmodel-0-1-1">0.1.1</a></li>
-        <li><a href="#localmodel-0-1">0.1</a></li>
-        <li><a href="#localmodel-0-0-0-9000">0.0.0.9000</a></li>
-      </ul>
-    </div>
   </div>
 
 </div>
+
 
       <footer>
       <div class="copyright">
