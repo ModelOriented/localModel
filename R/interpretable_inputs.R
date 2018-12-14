@@ -1,8 +1,12 @@
 extract_numerical_feature <- function(rule, observation) {
   feature_name <- unique(rule[, 3])
   actual_value <- observation[, feature_name]
-  rule <- rule[, c(5, 7)]
-  colnames(rule) <- c("endpoint_1", "endpoint_2")
+  if(ncol(rule) == 7) {
+    rule <- rule[, c(5, 7)]
+  } else {
+    rule <- data.frame(a = c(rule[1, 5], ""),
+                       b = c("", rule[2, 5]), stringsAsFactors = FALSE)
+  }
   rule$is_correct_interval <- FALSE
   for(row_number in 1:nrow(rule)) {
     if(rule[row_number, 1] != "" & rule[row_number, 2] != "") {
@@ -16,16 +20,16 @@ extract_numerical_feature <- function(rule, observation) {
     }
   }
   interval_as_data_frame <- rule[rule$is_correct_interval, ]
-  if(rule[1, 1] != "" & rule[1, 2] != "") {
-    label <- paste(rule[1, 1], "<=", feature_name, "< ", rule[1, 2])
-    interval_ends <- c(rule[1, 1], rule[1, 2])
+  if(interval_as_data_frame[1, 1] != "" & interval_as_data_frame[1, 2] != "") {
+    label <- paste(interval_as_data_frame[1, 1], "<=", feature_name, "< ", interval_as_data_frame[1, 2])
+    interval_ends <- c(interval_as_data_frame[1, 1], interval_as_data_frame[1, 2])
   } else {
-    if(rule[1, 1] == "") {
-      label <- paste(feature_name, ">=", rule[1, 2])
-      interval_ends <- c(rule[1, 2], Inf)
+    if(interval_as_data_frame[1, 1] == "") {
+      label <- paste(feature_name, ">=", interval_as_data_frame[1, 2])
+      interval_ends <- c(interval_as_data_frame[1, 2], Inf)
     } else {
-      label <- paste(feature_name, "<", rule[1, 1])
-      interval_ends <- c(-Inf, rule[1, 1])
+      label <- paste(feature_name, "<", interval_as_data_frame[1, 1])
+      interval_ends <- c(-Inf, interval_as_data_frame[1, 1])
     }
   }
   list(
@@ -66,14 +70,19 @@ feature_representation <- function(explainer, new_observation, feature_name) {
                                 maxdepth = 2)
     fitted_rule <- as.data.frame(rpart.plot::rpart.rules(fitted_tree))
 
-    interpretable_input <- extract_numerical_feature(fitted_rule,
+    if(nrow(fitted_rule) > 1) {
+      interpretable_input <- extract_numerical_feature(fitted_rule,
                                                        new_observation)
-    encoded_feature <- ifelse(interpretable_input$interval_ends[1] <= explainer$data[, feature_name]
-                              & explainer$data[, feature_name] < interpretable_input$interval_ends[2],
-                              interpretable_input$label,
-                              "baseline")
-    encoded_feature <- factor(encoded_feature,
-                              levels = c("baseline", interpretable_input$label))
+      encoded_feature <- ifelse(interpretable_input$interval_ends[1] <= explainer$data[, feature_name]
+                                & explainer$data[, feature_name] < interpretable_input$interval_ends[2],
+                                interpretable_input$label,
+                                "baseline")
+      encoded_feature <- factor(encoded_feature,
+                                levels = c("baseline", interpretable_input$label))
+    } else {
+      encoded_feature <- as.factor(rep("baseline",
+                                       length(explainer$data[, feature_name])))
+    }
   } else {
     if(length(unique(explainer$data[, feature_name])) == 2) {
       encoded_feature <- ifelse(
@@ -96,15 +105,20 @@ feature_representation <- function(explainer, new_observation, feature_name) {
                                   maxdepth = 1)
       fitted_rule <- rpart.plot::rpart.rules(fitted_tree)
 
-      interpretable_input <- extract_categorical_feature(fitted_rule,
-                                                         new_observation)
-      encoded_feature <- ifelse(
-        explainer$data[, feature_name] %in% interpretable_input$values,
-        interpretable_input$label,
-        "baseline"
-      )
-      encoded_feature <- factor(encoded_feature,
-                                levels = c("baseline", interpretable_input$label))
+      if(nrow(fitted_rule) > 1) {
+        interpretable_input <- extract_categorical_feature(fitted_rule,
+                                                           new_observation)
+        encoded_feature <- ifelse(
+          explainer$data[, feature_name] %in% interpretable_input$values,
+          interpretable_input$label,
+          "baseline"
+        )
+        encoded_feature <- factor(encoded_feature,
+                                  levels = c("baseline", interpretable_input$label))
+      } else {
+        encoded_feature <- as.factor(rep("baseline",
+                                         length(explainer$data[, feature_name])))
+      }
     }
     }
 

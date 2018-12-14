@@ -66,8 +66,6 @@ single_column_surrogate <- function(x, new_observation, size, seed = NULL,
                                       )
 
                                     }
-                                    # sample(explainer$data[setdiff(1:n_rows, baseline_indices), column],
-                                    # size - how_many_baselines) # tak tez mozna losowac
                                   }))
   colnames(to_predict) <- colnames(simulated_data)
   for(i in 1:p) {
@@ -80,6 +78,8 @@ single_column_surrogate <- function(x, new_observation, size, seed = NULL,
     class(to_predict[, i]) <- class(x$data[, i])
   }
   predicted_scores <- x$predict_function(x$model, to_predict)
+  simulated_data <- simulated_data[, sapply(simulated_data,
+                                            function(col) length(unique(col)) > 1)]
   simulated_data[["y"]] <- 1
   fitted_model <- glmnet::cv.glmnet(model.matrix(y ~., data =  simulated_data)[, -1],
                                     predicted_scores,
@@ -144,11 +144,11 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
       stop("Response must be numeric or factor vector")
     }
   }
-  if(is.factor(x$y) | (!is.null(ncol(try_predict)))) {
+  if(!is.null(ncol(try_predict))) {
     explainer <- do.call("rbind", explainer)
   }
-  class(explainer) <- c("local_surrogate_explainer", class(explainer))
   attr(explainer, "new_observation") <- new_observation
+  class(explainer) <- c("local_surrogate_explainer", class(explainer))
   explainer
 }
 
