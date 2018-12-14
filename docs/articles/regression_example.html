@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Explaining regression models with localModel package • localModel</title>
+<title>Introduction to localModel package • localModel</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
@@ -50,7 +50,7 @@
       <a href="../articles/classification_example.html">Explaining classification models with localModel package</a>
     </li>
     <li>
-      <a href="../articles/regression_example.html">Explaining regression models with localModel package</a>
+      <a href="../articles/regression_example.html">Introduction to localModel package</a>
     </li>
   </ul>
 </li>
@@ -58,7 +58,14 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/ModelOriented/localModel">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -70,37 +77,40 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Explaining regression models with localModel package</h1>
-                        <h4 class="author">Mateusz Staiak</h4>
+      <h1>Introduction to localModel package</h1>
+                        <h4 class="author">Mateusz Staniak</h4>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/ModelOriented/localModel/blob/master/vignettes/regression_example.Rmd"><code>vignettes/regression_example.Rmd</code></a></small>
       <div class="hidden name"><code>regression_example.Rmd</code></div>
 
     </div>
 
     
     
+<p>This vignette shows how <code>localModel</code> package can be used to explain regression models. We will use the <code>apartments</code> dataset from <code>DALEX</code> package. For more information about the dataset, please refer to the <a href="https://pbiecek.github.io/DALEX_docs/">Gentle introduction to DALEX</a>.</p>
+<p>We will use <code>localModel</code> and <code>DALEX</code> packages, random forest from <code>randomForest</code> package will serve as an example model.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(DALEX)
-<span class="co">#&gt; Welcome to DALEX (version: 0.2.4).</span>
 <span class="kw">library</span>(localModel)
 <span class="kw">library</span>(randomForest)
-<span class="co">#&gt; randomForest 4.6-14</span>
-<span class="co">#&gt; Type rfNews() to see new features/changes/bug fixes.</span>
 <span class="kw">data</span>(<span class="st">'apartments'</span>)
 <span class="kw">data</span>(<span class="st">'apartmentsTest'</span>)
-
-mrf &lt;-<span class="st"> </span><span class="kw">randomForest</span>(m2.price <span class="op">~</span>., <span class="dt">data =</span> apartments, <span class="dt">ntree =</span> <span class="dv">50</span>)
-
-explainer &lt;-<span class="st"> </span>DALEX<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DALEX/topics/explain">explain</a></span>(<span class="dt">model =</span> mrf,
-                            <span class="dt">data =</span> apartmentsTest[, <span class="op">-</span><span class="dv">1</span>],
-                            <span class="dt">y =</span> apartmentsTest<span class="op">$</span>m2.price)
+mrf &lt;-<span class="st"> </span><span class="kw">randomForest</span>(m2.price <span class="op">~</span>., <span class="dt">data =</span> apartments, <span class="dt">ntree =</span> <span class="dv">50</span>)</code></pre></div>
+<p>First, we need to create an explainer object, using the <code>explain</code> function. We will explain the prediction for fifth observation in the test dataset.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">explainer &lt;-<span class="st"> </span>DALEX<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/DALEX/topics/explain">explain</a></span>(<span class="dt">model =</span> mrf,
+                            <span class="dt">data =</span> apartmentsTest[, <span class="op">-</span><span class="dv">1</span>])
 new_observation &lt;-<span class="st"> </span>apartmentsTest[<span class="dv">5</span>, <span class="op">-</span><span class="dv">1</span>]
-
-model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation,
-                                        <span class="dt">size =</span> <span class="dv">500</span>)
-<span class="kw">plot</span>(model_lok)</code></pre></div>
-<p><img src="regression_example_files/figure-html/pkgs-1.png" width="700"></p>
+new_observation
+<span class="co">#&gt;      construction.year surface floor no.rooms district</span>
+<span class="co">#&gt; 1005              1978     102     4        4   Bemowo</span></code></pre></div>
+<p>Local explanation is created via <code>individual_surrogate_model</code> function, which takes the explainer, observation of interest and number of new observations to simulate as argument. Optionally, we can set seed using the <code>seed</code> parameter for reproducibility.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation,
+                                        <span class="dt">size =</span> <span class="dv">500</span>, <span class="dt">seed =</span> <span class="dv">17</span>)</code></pre></div>
+<p>First, local interpretable features are created. Numerical features are discretized by using decision tree to model relationship between the feature and the corresponding Ceteris Paribus profile. Categorical features are also discretized by merging levels using the marginal relationship between the feature and the model response. Then, new dataset is simulated by switching a random number of interpretable inputs in the explained instance. This procedure mimics “graying out” areas (superpixels) in the original LIME method. LASSO regression model is fitted to the model response for these new observations, which makes the final explanations sparse and thus readable.</p>
+<p>The explanation can be plotted using generic <code>plot</code> function. The plot shows interpretable features and weights associated with them, starting at the model intercept. Negative weights are associated with features that decrease the apartment price, while positive weights increase it.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(model_lok)</code></pre></div>
+<p><img src="regression_example_files/figure-html/plot-1.png" width="700"></p>
+<p>We can see that for this observation, the predicted price is negatively influeced mostly by the district and construction year.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -1,4 +1,8 @@
-# localMOdel 0.2.0
+# localModel 0.2.1
+
+* Adds vignettes.
+
+# localModel 0.2.0
 
 * Minor changes: interpretable features are created using decision trees-based discretization. 
 * Now-unnecessary dependencies dropped.

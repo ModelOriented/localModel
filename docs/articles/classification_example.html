@@ -50,7 +50,7 @@
       <a href="../articles/classification_example.html">Explaining classification models with localModel package</a>
     </li>
     <li>
-      <a href="../articles/regression_example.html">Explaining regression models with localModel package</a>
+      <a href="../articles/regression_example.html">Introduction to localModel package</a>
     </li>
   </ul>
 </li>
@@ -58,7 +58,14 @@
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/ModelOriented/localModel">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
 </div>
 <!--/.nav-collapse -->
   </div>
@@ -74,45 +81,38 @@
                         <h4 class="author">Mateusz Staniak</h4>
             
       
-      
+      <small class="dont-index">Source: <a href="https://github.com/ModelOriented/localModel/blob/master/vignettes/classification_example.Rmd"><code>vignettes/classification_example.Rmd</code></a></small>
       <div class="hidden name"><code>classification_example.Rmd</code></div>
 
     </div>
 
     
     
+<p>Explaining classification models with the <code>localModel</code> package is just as simple as explaining regression. It is enough to work with predicted scores (class probabilities) rather than classes. In multiclass setting, a separate explanation is provided for each class probability.</p>
+<p>We will work with the <code>HR</code> dataset from <code>DALEX</code> package. As in the regression example from <em>Introduction to the localModel package</em>, we will first create a random forest model and a <code>DALEX</code> explainer.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(DALEX)
-<span class="co">#&gt; Welcome to DALEX (version: 0.2.4).</span>
 <span class="kw">library</span>(randomForest)
-<span class="co">#&gt; randomForest 4.6-14</span>
-<span class="co">#&gt; Type rfNews() to see new features/changes/bug fixes.</span>
 <span class="kw">library</span>(localModel)
 
 <span class="kw">data</span>(<span class="st">'HR'</span>)
-HR<span class="op">$</span>evaluation &lt;-<span class="st"> </span><span class="kw">as.factor</span>(<span class="kw">as.character</span>(HR<span class="op">$</span>evaluation))
-mrf &lt;-<span class="st"> </span><span class="kw">randomForest</span>(status <span class="op">~</span>., <span class="dt">data =</span> HR, <span class="dt">ntree =</span> <span class="dv">100</span>)
+<span class="co"># HR$evaluation &lt;- as.factor(as.character(HR$evaluation))</span>
 
+mrf &lt;-<span class="st"> </span><span class="kw">randomForest</span>(status <span class="op">~</span>., <span class="dt">data =</span> HR, <span class="dt">ntree =</span> <span class="dv">100</span>)
 explainer &lt;-<span class="st"> </span><span class="kw">explain</span>(mrf, 
                      HR[, <span class="op">-</span><span class="dv">6</span>],
                      HR<span class="op">$</span>status,
                      <span class="dt">predict_function =</span> <span class="cf">function</span>(x, y)
                        <span class="kw">as.data.frame</span>(<span class="kw">predict</span>(x, y, <span class="dt">type =</span> <span class="st">"prob"</span>)))
-<span class="co"># DALEX2: explainer nie wymaga predict_function dla RF</span>
-<span class="co"># Lepsze rozwiązanie, żeby podać y w par. data:</span>
-<span class="co"># https://github.com/ModelOriented/ceterisParibus2/blob/master/R/ceteris_paribus.R</span>
-<span class="co">#</span>
-
 new_observation &lt;-<span class="st"> </span>HR[<span class="dv">10</span>, <span class="op">-</span><span class="dv">6</span>]
-size &lt;-<span class="st"> </span><span class="dv">500</span>
-
-model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation, size)
-<span class="co"># Ew. usunąć zbędne zależności dla stabilności</span>
-<span class="co"># cutTree zamiast optimalPartition</span>
-<span class="co"># lime pokazuje tylko jeden przedział dla danej zmiennej</span>
-<span class="co"># zaznaczyć, która z wartości była w danych</span>
-<span class="co"># różne modele, różne cechy, różne poziomy odpowiedzi mają różne interpretowalne cechy</span>
+new_observation
+<span class="co">#&gt;    gender      age    hours evaluation salary</span>
+<span class="co">#&gt; 12 female 33.16119 55.08747          4      4</span></code></pre></div>
+<p>Notice, that a custom <code>predict_function</code> was provided for the explainer. It returns class probabilities.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation, 
+                                        <span class="dt">size =</span> <span class="dv">500</span>, <span class="dt">seed =</span> <span class="dv">17</span>)
 <span class="kw">plot</span>(model_lok)</code></pre></div>
-<p><img src="classification_example_files/figure-html/ex-1.png" width="700"></p>
+<p><img src="classification_example_files/figure-html/explanation-1.png" width="700"></p>
+<p>The plot shows, how predictions for different classes are influenced by different features. For the actually predicted class, hours and evaluation have a strong positive effect.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
