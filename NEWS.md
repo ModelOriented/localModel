@@ -1,3 +1,7 @@
+# localModel 0.2.3
+
+* Minor updates to documentation (including paper/paper.md) and unit tests.
+
 # localModel 0.2.2
 
 * Fixed bugs related to column names in case when response in is new_observation.
