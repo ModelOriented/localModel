@@ -24,3 +24,17 @@ data.frame of class local_surrogate_explainer
 \description{
 LIME-like explanations based on Ceteris Paribus curves
 }
+\examples{
+\dontrun{
+#' @examples
+\dontrun{
+# Example based on apartments data from DALEX package.
+mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
+explainer <- DALEX::explain(model = mrf,
+                            data = apartmentsTest[, -1])
+model_lok <- individual_surrogate_model(explainer, new_observation,
+                                        size = 500, seed = 17)
+}
+}
+
+}

@@ -114,6 +114,20 @@ single_column_surrogate <- function(x, new_observation, size, seed = NULL,
 #'
 #' @export
 #'
+#' @examples
+#' \dontrun{
+#' #' @examples
+#' \dontrun{
+#' # Example based on apartments data from DALEX package.
+#' mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
+#' explainer <- DALEX::explain(model = mrf,
+#'                             data = apartmentsTest[, -1])
+#' model_lok <- individual_surrogate_model(explainer, new_observation,
+#'                                         size = 500, seed = 17)
+#' }
+
+#' }
+#'
 
 individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
                                        sampling = "uniform") {
@@ -155,9 +169,28 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 }
 
 
+#' Generic plot function for local surrogate explainers
+#'
+#' @param x object of class local_surrogate_explainer
+#' @param ... currently ignored
+#'
 #' @import ggplot2
+#'
 #' @importFrom stats reorder
+#'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Example based on apartments data from DALEX package.
+#' mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
+#' explainer <- DALEX::explain(model = mrf,
+#'                             data = apartmentsTest[, -1])
+#' model_lok <- individual_surrogate_model(explainer, new_observation,
+#'                                         size = 500, seed = 17)
+#' plot(model_lok)
+#' }
+#'
 
 plot.local_surrogate_explainer <- function(x, ...) {
   variable <- estimated <- intercept <- NULL
