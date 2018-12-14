@@ -6,3 +6,4 @@
 ^\docs$
 ^docs$
 ^_pkgdown\.yml$
+^paper/*
