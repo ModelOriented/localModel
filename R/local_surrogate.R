@@ -226,5 +226,5 @@ plot.local_surrogate_explainer <- function(x, ...) {
     facet_wrap(~response, ncol = 1, scales = "free_y") +
     coord_flip() +
     ylab("Estimated effect") +
-    xlab("Variable / level")
+    xlab("")
 }
