@@ -16,9 +16,9 @@ ap_explainer <- explain(m_rf_ap, apartments[1:500, ])
 
 local_model_explainer_hr <- individual_surrogate_model(hr_explainer,
                                                        HR[5, -6],
-                                                       size = 500)
+                                                       size = 50)
 local_model_explainer_ap <- individual_surrogate_model(ap_explainer,
                                                        apartments[5, -1],
-                                                       size = 500)
+                                                       size = 50)
 
 test_check("localModel")
