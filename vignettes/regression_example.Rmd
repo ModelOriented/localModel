@@ -1,5 +1,5 @@
 ---
-title: "Explaining regression models with localModel package"
+title: "Introduction to localModel package."
 author: "Mateusz Staiak"
 output: rmarkdown::html_vignette
 vignette: >
