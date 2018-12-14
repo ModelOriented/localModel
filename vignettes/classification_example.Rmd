@@ -11,32 +11,45 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warnings = FALSE,
+  message = FALSE,
+  error = FALSE
 )
 ```
 
-```{r ex}
+Explaining classification models with the `localModel` package is just as simple as explaining regression.
+It is enough to work with predicted scores (class probabilities) rather than classes. 
+In multiclass setting, a separate explanation is provided for each class probability.
+
+We will work with the `HR` dataset from `DALEX` package.
+As in the regression example from _Introduction to the localModel package_, we will first create a random forest model and a `DALEX` explainer.
+
+```{r model}
 library(DALEX)
 library(randomForest)
 library(localModel)
 
 data('HR')
-HR$evaluation <- as.factor(as.character(HR$evaluation))
-mrf <- randomForest(status ~., data = HR, ntree = 100)
+# HR$evaluation <- as.factor(as.character(HR$evaluation))
 
+mrf <- randomForest(status ~., data = HR, ntree = 100)
 explainer <- explain(mrf, 
                      HR[, -6],
                      HR$status,
                      predict_function = function(x, y)
                        as.data.frame(predict(x, y, type = "prob")))
-# DALEX2: explainer nie wymaga predict_function dla RF
-# Lepsze rozwiązanie, żeby podać y w par. data:
-# https://github.com/ModelOriented/ceterisParibus2/blob/master/R/ceteris_paribus.R
-#
-
 new_observation <- HR[10, -6]
-size <- 500
+new_observation
+```
 
-model_lok <- individual_surrogate_model(explainer, new_observation, size)
+Notice, that a custom `predict_function` was provided for the explainer. It returns class probabilities.
+
+```{r explanation}
+model_lok <- individual_surrogate_model(explainer, new_observation, 
+                                        size = 500, seed = 17)
 plot(model_lok)
 ```
+
+The plot shows, how predictions for different classes are influenced by different features.
+For the actually predicted class, hours and evaluation have a strong positive effect.
