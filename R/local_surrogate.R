@@ -113,7 +113,7 @@ single_column_surrogate <- function(x, new_observation, size, seed = NULL,
 individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
                                        sampling = "uniform") {
   try_predict <- x$predict_function(x$model, x$data[1:5, ])
-  if(is.factor(x$y) | (!is.null(ncol(try_predict)))) {
+  if(!is.null(ncol(try_predict))) {
     explainer <- lapply(unique(colnames(try_predict)), function(unique_level) {
       internal_explainer <- x
       internal_explainer$predict_function <- function(model, newdata) {
@@ -130,7 +130,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
       result
     })
   } else {
-    if(is.numeric(x$y) | is.null(ncol(try_predict))) {
+    if(is.null(ncol(try_predict))) {
       explainer <- single_column_surrogate(
         x, new_observation,
         size, seed, sampling
@@ -166,6 +166,7 @@ plot.local_surrogate_explainer <- function(x, ...) {
     x$predicted_value
   )
 
+  x <- x[x$estimated != 0, ]
   x$estimated <- unlist(tapply(x$estimated,
                                x$response,
                                function(y) {
