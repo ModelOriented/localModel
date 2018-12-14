@@ -1,9 +1,9 @@
 ---
-title: "Introduction to localModel package."
-author: "Mateusz Staiak"
+title: "Introduction to localModel package"
+author: "Mateusz Staniak"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Explaining regression models with localModel package}
+  %\VignetteIndexEntry{Introduction to localModel package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,7 +11,10 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE,
+  error = FALSE
 )
 ```
 

@@ -12,7 +12,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  warnings = FALSE,
+  warning = FALSE,
   message = FALSE,
   error = FALSE
 )
