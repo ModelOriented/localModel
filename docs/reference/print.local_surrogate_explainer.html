@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • localModel</title>
+<title>Generic print function for local surrogate explainers — print.local_surrogate_explainer • localModel</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -35,7 +35,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top navbar-mi2" role="navigation">
   <div class="container">
@@ -48,7 +48,7 @@
 	  <a class = "navbar-mi2logo" href="http://mi2.mini.pw.edu.pl/">
         <img src = "https://github.com/mi2-warsaw/MI2template/blob/master/inst/pkgdown/assets/MI2logo.jpg?raw=true" alt = "MI2" height = 46 title = "MI2">
 	  </a>
-      <a class="navbar-brand navbar-mi2" href="../index.html"></a>
+      <a class="navbar-brand navbar-mi2" href="../index.html">Generic print function for local surrogate explainers</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="navbar-mi2 nav navbar-nav">
@@ -97,83 +97,52 @@
       </header>
 
       <div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>
-        Reference
-        <small>version&nbsp;0.2.7</small>
-      </h1>
+    <h1>Generic print function for local surrogate explainers</h1>
     </div>
 
-    <div class="contents">
-      <table class="ref-index">
+    
+    <p>Generic print function for local surrogate explainers</p>
+    
 
-      <colgroup>
-        <col class="alias" />
-        <col class="title" />
-      </colgroup>
+    <pre class="usage"><span class='co'># S3 method for local_surrogate_explainer</span>
+<span class='fu'>print</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>object of class local_surrogate_explainer</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>currently ignored</p></td>
+    </tr>
+    </table>
+    
 
-      <tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-            <p class="section-desc"></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="euclidean_kernel.html">euclidean_kernel()</a></code> </p>
-          </td>
-          <td><p>LIME kernel equal to the inverse of euclidean distance.</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="gaussian_kernel.html">gaussian_kernel()</a></code> </p>
-          </td>
-          <td><p>LIME kernel from the original article with sigma = 1.</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="identity_kernel.html">identity_kernel()</a></code> </p>
-          </td>
-          <td><p>LIME kernel that treats all observations as equally similar to 
-observation of interest.</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="individual_surrogate_model.html">individual_surrogate_model()</a></code> </p>
-          </td>
-          <td><p>LIME-like explanations based on Ceteris Paribus curves</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="localModel.html">localModel</a></code> </p>
-          </td>
-          <td><p>localModel: LIME-like explanations with interpretable features based on Ceteris Paribus profiles</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="plot.local_surrogate_explainer.html">plot(<i>&lt;local_surrogate_explainer&gt;</i>)</a></code> </p>
-          </td>
-          <td><p>Generic plot function for local surrogate explainers</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="print.local_surrogate_explainer.html">print(<i>&lt;local_surrogate_explainer&gt;</i>)</a></code> </p>
-          </td>
-          <td><p>Generic print function for local surrogate explainers</p></td>
-        </tr>
-      </tbody>
-      </table>
-    </div>
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='co'># Example based on apartments data from DALEX package.</span>
+<span class='no'>mrf</span> <span class='kw'>&lt;-</span> <span class='fu'>randomForest</span>(<span class='no'>m2.price</span> ~<span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>, <span class='kw'>ntree</span> <span class='kw'>=</span> <span class='fl'>50</span>)
+<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DALEX</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DALEX/topics/explain'>explain</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>mrf</span>,
+                            <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartmentsTest</span>[, -<span class='fl'>1</span>])
+<span class='no'>model_lok</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='individual_surrogate_model.html'>individual_surrogate_model</a></span>(<span class='no'>explainer</span>, <span class='no'>new_observation</span>,
+                                        <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>17</span>)
+<span class='no'>model_lok</span>
+<span class='co'># }</span><div class='input'>
+</div></pre>
   </div>
-
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked contents-mi2">
-      <li><a href="#section-all-functions">All functions</a></li>
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+            
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 

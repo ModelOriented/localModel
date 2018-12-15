@@ -228,3 +228,29 @@ plot.local_surrogate_explainer <- function(x, ...) {
     ylab("Estimated effect") +
     xlab("")
 }
+
+
+#' Generic print function for local surrogate explainers
+#'
+#' @param x object of class local_surrogate_explainer
+#' @param ... currently ignored
+#'
+#' @export
+#'
+#' @importFrom utils head
+#'
+#' @examples
+#' \dontrun{
+#' # Example based on apartments data from DALEX package.
+#' mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
+#' explainer <- DALEX::explain(model = mrf,
+#'                             data = apartmentsTest[, -1])
+#' model_lok <- individual_surrogate_model(explainer, new_observation,
+#'                                         size = 500, seed = 17)
+#' model_lok
+#' }
+#'
+
+print.local_surrogate_explainer <- function(x, ...) {
+  print(head(as.data.frame(x)))
+}

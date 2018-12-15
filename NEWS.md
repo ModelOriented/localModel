@@ -1,3 +1,7 @@
+# localModel 0.2.8
+
+* Print method added.
+
 # localModel 0.2.7
 
 * Updates link in README.
