@@ -71,7 +71,6 @@ single_column_surrogate <- function(x, new_observation,
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Example based on apartments data from DALEX2 package.
 #' library(DALEX)
 #' library(randomForest)
@@ -82,7 +81,8 @@ single_column_surrogate <- function(x, new_observation,
 #'                      data = apartments[, -1])
 #' model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
 #'                                         size = 500, seed = 17)
-#' }
+#' model_lok
+#' plot(model_lok)
 #'
 
 individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
@@ -239,7 +239,6 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' # Example based on apartments data from DALEX2 package.
 #' library(DALEX2)
 #' library(randomForest)
@@ -250,8 +249,8 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 #'                      data = apartments[, -1])
 #' model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
 #'                                         size = 500, seed = 17)
+#' model_lok
 #' plot(model_lok)
-#' }
 #'
 
 plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
@@ -356,7 +355,6 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
 #' @importFrom utils head
 #'
 #' @examples
-#' \dontrun{
 #' # Example based on apartments data from DALEX2 package.
 #' library(DALEX2)
 #' library(randomForest)
@@ -367,8 +365,8 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
 #'                      data = apartments[, -1])
 #' model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
 #'                                         size = 500, seed = 17)
+#' plot(model_lok)
 #' model_lok
-#' }
 #'
 
 print.local_surrogate_explainer <- function(x, ...) {

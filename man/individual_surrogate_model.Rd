@@ -36,7 +36,6 @@ This way, explanations are simplified and include only the most important featur
 More details about the methodology can be found in the vignettes.
 }
 \examples{
-\dontrun{
 # Example based on apartments data from DALEX2 package.
 library(DALEX)
 library(randomForest)
@@ -47,6 +46,7 @@ explainer <- explain(model = mrf,
                      data = apartments[, -1])
 model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
                                         size = 500, seed = 17)
-}
+model_lok
+plot(model_lok)
 
 }

@@ -20,7 +20,6 @@ Other custom functions can be used. Such functions take two vectors and
 return a single number.
 }
 \examples{
-\dontrun{
 library(DALEX2)
 library(randomForest)
 library(localModel)
@@ -33,6 +32,7 @@ model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
                                         kernel = kernel_identity)
 # In this case each simulated observation has equal weight
 # when explanation model (LASSO) is fitted.
-}
+model_lok
+plot(model_lok)
 
 }

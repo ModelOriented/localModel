@@ -22,7 +22,6 @@ Other custom functions can be used. Such functions take two vectors and
 return a single number.
 }
 \examples{
-\dontrun{
 library(DALEX2)
 library(randomForest)
 library(localModel)
@@ -36,6 +35,7 @@ model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
 # In this case each simulated observation has weight
 # that is small when the distance from original observation is large,
 # so closer observation have more weight.
-}
+model_lok
+plot(model_lok)
 
 }

@@ -15,7 +15,6 @@
 Generic print function for local surrogate explainers
 }
 \examples{
-\dontrun{
 # Example based on apartments data from DALEX2 package.
 library(DALEX2)
 library(randomForest)
@@ -26,7 +25,7 @@ explainer <- explain(model = mrf,
                      data = apartments[, -1])
 model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
                                         size = 500, seed = 17)
+plot(model_lok)
 model_lok
-}
 
 }

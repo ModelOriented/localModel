@@ -12,7 +12,6 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' library(DALEX2)
 #' library(randomForest)
 #' library(localModel)
@@ -25,7 +24,8 @@
 #'                                         kernel = kernel_identity)
 #' # In this case each simulated observation has equal weight
 #' # when explanation model (LASSO) is fitted.
-#' }
+#' model_lok
+#' plot(model_lok)
 #'
 
 identity_kernel <- function(explained_instance, simulated_instance) {
@@ -49,7 +49,6 @@ identity_kernel <- function(explained_instance, simulated_instance) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' library(DALEX2)
 #' library(randomForest)
 #' library(localModel)
@@ -63,7 +62,8 @@ identity_kernel <- function(explained_instance, simulated_instance) {
 #' # In this case each simulated observation has weight
 #' # that is small when the distance from original observation is large,
 #' # so closer observation have more weight.
-#' }
+#' model_lok
+#' plot(model_lok)
 #'
 
 gaussian_kernel <- function(explained_instance, simulated_instance) {

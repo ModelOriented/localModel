@@ -1,3 +1,7 @@
+# localModel 0.3.6
+
+* Improved examples.
+
 # localModel 0.3.5
 
 * Fixed issues with examples.
