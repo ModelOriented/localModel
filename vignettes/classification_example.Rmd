@@ -45,6 +45,7 @@ In DALEX2, we have built-in predict functions for some type of models. Random Fo
 model_lok <- individual_surrogate_model(explainer, new_observation, 
                                         size = 500, seed = 17)
 plot(model_lok)
+plot(model_lok, geom = "bar")
 ```
 
 The plot shows how predictions for different classes are influenced by different features.
