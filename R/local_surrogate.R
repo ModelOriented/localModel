@@ -72,7 +72,7 @@ single_column_surrogate <- function(x, new_observation,
 #'
 #' @examples
 #' # Example based on apartments data from DALEX2 package.
-#' library(DALEX)
+#' library(DALEX2)
 #' library(randomForest)
 #' library(localModel)
 #' data('apartments')

@@ -37,7 +37,7 @@ More details about the methodology can be found in the vignettes.
 }
 \examples{
 # Example based on apartments data from DALEX2 package.
-library(DALEX)
+library(DALEX2)
 library(randomForest)
 library(localModel)
 data('apartments')

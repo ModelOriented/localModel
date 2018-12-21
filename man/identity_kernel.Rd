@@ -29,7 +29,7 @@ explainer <- explain(model = mrf,
                      data = apartments[, -1])
 model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
                                         size = 500, seed = 17,
-                                        kernel = kernel_identity)
+                                        kernel = identity_kernel)
 # In this case each simulated observation has equal weight
 # when explanation model (LASSO) is fitted.
 model_lok
