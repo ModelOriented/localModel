@@ -1,3 +1,7 @@
+# localModel 0.3.1
+
+* Improvements to plots 
+
 # localModel 0.3.0
 
 * Multi-model plot option added.

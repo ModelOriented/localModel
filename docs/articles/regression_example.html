@@ -95,20 +95,25 @@
 <span class="kw">library</span>(randomForest)
 <span class="kw">data</span>(<span class="st">'apartments'</span>)
 <span class="kw">data</span>(<span class="st">'apartmentsTest'</span>)
-mrf &lt;-<span class="st"> </span><span class="kw">randomForest</span>(m2.price <span class="op">~</span>., <span class="dt">data =</span> apartments, <span class="dt">ntree =</span> <span class="dv">50</span>)</code></pre></div>
+mrf &lt;-<span class="st"> </span><span class="kw">randomForest</span>(m2.price <span class="op">~</span>., <span class="dt">data =</span> apartments, <span class="dt">ntree =</span> <span class="dv">50</span>)
+mlm &lt;-<span class="st"> </span><span class="kw">lm</span>(m2.price <span class="op">~</span>., <span class="dt">data =</span> apartments)</code></pre></div>
 <p>First, we need to create an explainer object, using the <code>explain</code> function. We will explain the prediction for fifth observation in the test dataset.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">explainer &lt;-<span class="st"> </span><span class="kw">explain</span>(<span class="dt">model =</span> mrf,
                      <span class="dt">data =</span> apartments_test[, <span class="op">-</span><span class="dv">1</span>])
+explainer2 &lt;-<span class="st"> </span><span class="kw">explain</span>(<span class="dt">model =</span> mlm, 
+                      <span class="dt">data =</span> apartments_test[, <span class="op">-</span><span class="dv">1</span>])
 new_observation &lt;-<span class="st"> </span>apartments_test[<span class="dv">5</span>, <span class="op">-</span><span class="dv">1</span>]
 new_observation
 <span class="co">#&gt;      construction.year surface floor no.rooms district</span>
 <span class="co">#&gt; 1005              1978     102     4        4   Bemowo</span></code></pre></div>
 <p>Local explanation is created via <code>individual_surrogate_model</code> function, which takes the explainer, observation of interest and number of new observations to simulate as argument. Optionally, we can set seed using the <code>seed</code> parameter for reproducibility.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation,
-                                        <span class="dt">size =</span> <span class="dv">500</span>, <span class="dt">seed =</span> <span class="ot">NULL</span>)</code></pre></div>
+                                        <span class="dt">size =</span> <span class="dv">500</span>, <span class="dt">seed =</span> <span class="ot">NULL</span>)
+model_lok2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer2, new_observation,
+                                         <span class="dt">size =</span> <span class="dv">500</span>, <span class="dt">seed =</span> <span class="ot">NULL</span>)</code></pre></div>
 <p>First, local interpretable features are created. Numerical features are discretized by using decision tree to model relationship between the feature and the corresponding Ceteris Paribus profile. Categorical features are also discretized by merging levels using the marginal relationship between the feature and the model response. Then, new dataset is simulated by switching a random number of interpretable inputs in the explained instance. This procedure mimics “graying out” areas (superpixels) in the original LIME method. LASSO regression model is fitted to the model response for these new observations, which makes the final explanations sparse and thus readable.</p>
 <p>The explanation can be plotted using generic <code>plot</code> function. The plot shows interpretable features and weights associated with them, starting at the model intercept. Negative weights are associated with features that decrease the apartment price, while positive weights increase it.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(model_lok)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(model_lok, model_lok2)</code></pre></div>
 <p><img src="regression_example_files/figure-html/plot-1.png" width="700"></p>
 <p>We can see that for this observation, the predicted price is negatively influeced mostly by the district and construction year.</p>
   </div>

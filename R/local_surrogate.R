@@ -89,11 +89,17 @@ single_column_surrogate <- function(x, new_observation,
                                              nchar(colnames(simulated_data)[row_number - 1]) + 1,
                                              nchar(result[row_number, "variable"]))
   }
-  rbind(
+  result <- rbind(
     data.frame(estimated = model_mean,
                variable = "(Model mean)"),
     result
   )
+  result$original_variable <- ""
+  for(i in 3:nrow(result)) {
+    result[i, "original_variable"] <- colnames(new_observation)[
+      sapply(colnames(new_observation), function(c) grepl(c, result[i, "variable"]))]
+  }
+  result
 }
 
 
@@ -262,15 +268,16 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
     }
   ))
 
-  do.call("rbind", by(
+  models <- do.call("rbind", by(
     models,
-    list(models$model, models$variable),
+    list(models$original_variable),
     function(y) {
-      y$any_nonzero <- any(y$estimated != 0)
+      y$all_zero <- all(y$sign == 0)
       y
     }
   ))
 
+  models <- models[!models$all_zero, ]
   models <- models[models$variable != "(Model mean)", ]
 
   if(geom == "point") {
