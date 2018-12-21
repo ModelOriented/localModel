@@ -199,7 +199,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 #' @param ... other objects of class local_surrogate_explainer.
 #' If provided, models will be plotted in rows, response levels in columns.
 #' @param geom If "point", lines with points at the end will be plotted,
-#' if "bar", bars will be plotted.
+#' if "bar", bars will be plotted and if "arrow", arrows.
 #'
 #' @import ggplot2
 #'
@@ -283,9 +283,14 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
   if(geom == "point") {
     final_geom <- geom_pointrange(aes(ymin = intercept, ymax = estimated),
                                   size = 2)
-  } else {
+  } else if(geom == "bar") {
     final_geom <- geom_segment(aes(xend = variable, yend = intercept, y = estimated),
                                size = 10, lineend = "butt")
+  } else {
+    final_geom <- geom_segment(aes(xend = variable, yend = intercept, y = estimated),
+                               size = 2,
+                               arrow = arrow(length=unit(0.20,"cm"),
+                                             ends="first", type = "closed"))
   }
 
   ggplot(models, aes(x = reorder(variable, -abs(estimated)),

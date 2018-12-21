@@ -13,7 +13,7 @@
 If provided, models will be plotted in rows, response levels in columns.}
 
 \item{geom}{If "point", lines with points at the end will be plotted,
-if "bar", bars will be plotted.}
+if "bar", bars will be plotted and if "arrow", arrows.}
 }
 \description{
 Generic plot function for local surrogate explainers
