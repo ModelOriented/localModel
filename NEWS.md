@@ -1,3 +1,8 @@
+# localModel 0.3.5
+
+* Fixed issues with examples.
+* Improved documentation.
+
 # localModel 0.3.4
 
 * Fixed a bug related to interpretable numerical inputs (missing as.numeric)

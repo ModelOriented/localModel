@@ -107,7 +107,10 @@
 
     
     <p>Since only binary features are used, the weight associated with an observation
-is simply exp(-{number of features that were changed compared to the original observation}).</p>
+is simply exp(-{number of features that were changed compared to the original observation}).
+Kernels are meant to be used as an argument to individual_surrogate_model function.
+Other custom functions can be used. Such functions take two vectors and
+return a single number.</p>
     
 
     <pre class="usage"><span class='fu'>gaussian_kernel</span>(<span class='no'>explained_instance</span>, <span class='no'>simulated_instance</span>)</pre>
@@ -130,6 +133,23 @@ is simply exp(-{number of features that were changed compared to the original ob
     <p>numeric</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='fu'>library</span>(<span class='no'>DALEX2</span>)
+<span class='fu'>library</span>(<span class='no'>randomForest</span>)
+<span class='fu'>library</span>(<span class='no'>localModel</span>)
+<span class='fu'>data</span>(<span class='st'>'apartments'</span>)
+<span class='no'>mrf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/randomForest/topics/randomForest'>randomForest</a></span>(<span class='no'>m2.price</span> ~<span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>, <span class='kw'>ntree</span> <span class='kw'>=</span> <span class='fl'>50</span>)
+<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/DALEX2/topics/explain'>explain</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>mrf</span>,
+                     <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>[, -<span class='fl'>1</span>])
+<span class='no'>model_lok</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='individual_surrogate_model.html'>individual_surrogate_model</a></span>(<span class='no'>explainer</span>, <span class='no'>apartments</span>[<span class='fl'>5</span>, -<span class='fl'>1</span>],
+                                        <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>17</span>,
+                                        <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='no'>gaussian_kernel</span>)
+<span class='co'># In this case each simulated observation has weight</span>
+<span class='co'># that is small when the distance from original observation is large,</span>
+<span class='co'># so closer observation have more weight.</span>
+<span class='co'># }</span><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -137,7 +157,9 @@ is simply exp(-{number of features that were changed compared to the original ob
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

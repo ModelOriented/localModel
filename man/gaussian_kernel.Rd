@@ -17,4 +17,25 @@ numeric
 \description{
 Since only binary features are used, the weight associated with an observation
 is simply exp(-\{number of features that were changed compared to the original observation\}).
+Kernels are meant to be used as an argument to individual_surrogate_model function.
+Other custom functions can be used. Such functions take two vectors and
+return a single number.
+}
+\examples{
+\dontrun{
+library(DALEX2)
+library(randomForest)
+library(localModel)
+data('apartments')
+mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
+explainer <- explain(model = mrf,
+                     data = apartments[, -1])
+model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
+                                        size = 500, seed = 17,
+                                        kernel = gaussian_kernel)
+# In this case each simulated observation has weight
+# that is small when the distance from original observation is large,
+# so closer observation have more weight.
+}
+
 }

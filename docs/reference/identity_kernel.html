@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>LIME kernel that treats all observations as equally similar to observation of interest. — identity_kernel • localModel</title>
+<title>LIME kernel that treats all observations as equally similar to the observation of interest. — identity_kernel • localModel</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -48,7 +48,7 @@
 	  <a class = "navbar-mi2logo" href="http://mi2.mini.pw.edu.pl/">
         <img src = "https://github.com/mi2-warsaw/MI2template/blob/master/inst/pkgdown/assets/MI2logo.jpg?raw=true" alt = "MI2" height = 46 title = "MI2">
 	  </a>
-      <a class="navbar-brand navbar-mi2" href="../index.html">LIME kernel that treats all observations as equally similar to observation of interest.</a>
+      <a class="navbar-brand navbar-mi2" href="../index.html">LIME kernel that treats all observations as equally similar to the observation of interest.</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="navbar-mi2 nav navbar-nav">
@@ -102,11 +102,13 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>LIME kernel that treats all observations as equally similar to observation of interest.</h1>
+    <h1>LIME kernel that treats all observations as equally similar to the observation of interest.</h1>
     </div>
 
     
-    <p>LIME kernel that treats all observations as equally similar to observation of interest.</p>
+    <p>Kernels are meant to be used as an argument to individual_surrogate_model function.
+Other custom functions can be used. Such functions take two vectors and
+return a single number.</p>
     
 
     <pre class="usage"><span class='fu'>identity_kernel</span>(<span class='no'>explained_instance</span>, <span class='no'>simulated_instance</span>)</pre>
@@ -129,6 +131,22 @@
     <p>numeric</p>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='fu'>library</span>(<span class='no'>DALEX2</span>)
+<span class='fu'>library</span>(<span class='no'>randomForest</span>)
+<span class='fu'>library</span>(<span class='no'>localModel</span>)
+<span class='fu'>data</span>(<span class='st'>'apartments'</span>)
+<span class='no'>mrf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/randomForest/topics/randomForest'>randomForest</a></span>(<span class='no'>m2.price</span> ~<span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>, <span class='kw'>ntree</span> <span class='kw'>=</span> <span class='fl'>50</span>)
+<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/DALEX2/topics/explain'>explain</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>mrf</span>,
+                     <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>[, -<span class='fl'>1</span>])
+<span class='no'>model_lok</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='individual_surrogate_model.html'>individual_surrogate_model</a></span>(<span class='no'>explainer</span>, <span class='no'>apartments</span>[<span class='fl'>5</span>, -<span class='fl'>1</span>],
+                                        <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>17</span>,
+                                        <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='no'>kernel_identity</span>)
+<span class='co'># In this case each simulated observation has equal weight</span>
+<span class='co'># when explanation model (LASSO) is fitted.</span>
+<span class='co'># }</span><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -136,7 +154,9 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-          </ul>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

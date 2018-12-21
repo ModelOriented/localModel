@@ -73,15 +73,7 @@ extract_categorical_feature <- function(rules, true_value, unique_values,
   )
 }
 
-#' Import hidden object without CRAN notes.
-#'
-#' @param pkg Package name
-#' @param name Function name
-#'
-#' @export
-#'
 #' @author Krystian Igras
-#'
 
 `%:::%` <- function (pkg, name) {
   pkg <- as.character(substitute(pkg))

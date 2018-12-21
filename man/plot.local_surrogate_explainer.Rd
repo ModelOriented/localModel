@@ -20,11 +20,15 @@ Generic plot function for local surrogate explainers
 }
 \examples{
 \dontrun{
-# Example based on apartments data from DALEX package.
+# Example based on apartments data from DALEX2 package.
+library(DALEX2)
+library(randomForest)
+library(localModel)
+data('apartments')
 mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
-explainer <- DALEX::explain(model = mrf,
-                            data = apartmentsTest[, -1])
-model_lok <- individual_surrogate_model(explainer, new_observation,
+explainer <- explain(model = mrf,
+                     data = apartments[, -1])
+model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
                                         size = 500, seed = 17)
 plot(model_lok)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/kernels.R
 \name{identity_kernel}
 \alias{identity_kernel}
-\title{LIME kernel that treats all observations as equally similar to observation of interest.}
+\title{LIME kernel that treats all observations as equally similar to the observation of interest.}
 \usage{
 identity_kernel(explained_instance, simulated_instance)
 }
@@ -15,5 +15,24 @@ identity_kernel(explained_instance, simulated_instance)
 numeric
 }
 \description{
-LIME kernel that treats all observations as equally similar to observation of interest.
+Kernels are meant to be used as an argument to individual_surrogate_model function.
+Other custom functions can be used. Such functions take two vectors and
+return a single number.
+}
+\examples{
+\dontrun{
+library(DALEX2)
+library(randomForest)
+library(localModel)
+data('apartments')
+mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
+explainer <- explain(model = mrf,
+                     data = apartments[, -1])
+model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
+                                        size = 500, seed = 17,
+                                        kernel = kernel_identity)
+# In this case each simulated observation has equal weight
+# when explanation model (LASSO) is fitted.
+}
+
 }

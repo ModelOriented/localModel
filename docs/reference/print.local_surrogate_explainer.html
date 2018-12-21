@@ -127,10 +127,19 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># Example based on apartments data from DALEX package.</span>
-<span class='no'>mrf</span> <span class='kw'>&lt;-</span> <span class='fu'>randomForest</span>(<span class='no'>m2.price</span> ~<span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>, <span class='kw'>ntree</span> <span class='kw'>=</span> <span class='fl'>50</span>)</div><div class='output co'>#&gt; <span class='error'>Error in randomForest(m2.price ~ ., data = apartments, ntree = 50): nie udało się znaleźć funkcji 'randomForest'</span></div><div class='input'><span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>DALEX</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/DALEX/topics/explain'>explain</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>mrf</span>,
-                            <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartmentsTest</span>[, -<span class='fl'>1</span>])</div><div class='output co'>#&gt; <span class='error'>Error in DALEX::explain(model = mrf, data = apartmentsTest[, -1]): nie znaleziono obiektu 'apartmentsTest'</span></div><div class='input'><span class='no'>model_lok</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='individual_surrogate_model.html'>individual_surrogate_model</a></span>(<span class='no'>explainer</span>, <span class='no'>new_observation</span>,
-                                        <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>17</span>)</div><div class='output co'>#&gt; <span class='error'>Error in individual_surrogate_model(explainer, new_observation, size = 500,     seed = 17): nie znaleziono obiektu 'explainer'</span></div><div class='input'><span class='no'>model_lok</span></div><div class='output co'>#&gt; <span class='error'>Error in eval(expr, envir, enclos): nie znaleziono obiektu 'model_lok'</span></div><div class='input'>
+    <pre class="examples"><span class='co'># NOT RUN {</span>
+<span class='co'># Example based on apartments data from DALEX2 package.</span>
+<span class='fu'>library</span>(<span class='no'>DALEX2</span>)
+<span class='fu'>library</span>(<span class='no'>randomForest</span>)
+<span class='fu'>library</span>(<span class='no'>localModel</span>)
+<span class='fu'>data</span>(<span class='st'>'apartments'</span>)
+<span class='no'>mrf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/randomForest/topics/randomForest'>randomForest</a></span>(<span class='no'>m2.price</span> ~<span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>, <span class='kw'>ntree</span> <span class='kw'>=</span> <span class='fl'>50</span>)
+<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://www.rdocumentation.org/packages/DALEX2/topics/explain'>explain</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>mrf</span>,
+                     <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>[, -<span class='fl'>1</span>])
+<span class='no'>model_lok</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='individual_surrogate_model.html'>individual_surrogate_model</a></span>(<span class='no'>explainer</span>, <span class='no'>apartments</span>[<span class='fl'>5</span>, -<span class='fl'>1</span>],
+                                        <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>17</span>)
+<span class='no'>model_lok</span>
+<span class='co'># }</span><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
