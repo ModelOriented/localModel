@@ -51,9 +51,9 @@ Local explanation is created via `individual_surrogate_model` function, which ta
 
 ```{r explanation}
 model_lok <- individual_surrogate_model(explainer, new_observation,
-                                        size = 500, seed = NULL)
+                                        size = 500, seed = 17)
 model_lok2 <- individual_surrogate_model(explainer2, new_observation,
-                                         size = 500, seed = NULL)
+                                         size = 500, seed = 17)
 ```
 
 First, local interpretable features are created. Numerical features are discretized by using decision tree to model relationship between the feature and the corresponding Ceteris Paribus profile.
