@@ -5,7 +5,7 @@
 \title{LIME-like explanations based on Ceteris Paribus curves}
 \usage{
 individual_surrogate_model(x, new_observation, size, seed = NULL,
-  sampling = "uniform", grid_points = 101)
+  kernel = identity_kernel, sampling = "uniform", grid_points = 101)
 }
 \arguments{
 \item{x}{an explainer created with the function DALEX2::explain().}
@@ -15,6 +15,8 @@ individual_surrogate_model(x, new_observation, size, seed = NULL,
 \item{size}{number of similar observation to be sampled.}
 
 \item{seed}{If not NULL, seed will be set to this value for reproducibility.}
+
+\item{kernel}{Kernel function which will be used to weight simulated observations.}
 
 \item{sampling}{Parameter that controls sampling while creating new observations.}
 

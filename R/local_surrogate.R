@@ -1,9 +1,93 @@
 #' @importFrom stats as.formula coef model.matrix
 
 single_column_surrogate <- function(x, new_observation,
-                                    encoded_data,
+                                    simulated_data, to_predict,
                                     size, seed = NULL,
-                                    sampling = "uniform") {
+                                    weights, sampling = "uniform") {
+  predicted_scores <- x$predict_function(x$model, to_predict)
+  simulated_data <- simulated_data[, sapply(simulated_data,
+                                            function(col) length(unique(col)) > 1)]
+  simulated_data[["y"]] <- 1
+  model_mean <- mean(x$predict_function(x$model, x$data))
+  fitted_model <- glmnet::cv.glmnet(model.matrix(y ~ .,
+                                                 data =  simulated_data)[, -1],
+                                    predicted_scores - model_mean,
+                                    alpha = 1, weights = weights)
+  result <- as.data.frame(as.matrix(coef(fitted_model, lambda = "lambda.min")))
+  result$variable <- rownames(result)
+  rownames(result) <- NULL
+  colnames(result)[1] <- "estimated"
+  for(row_number in 2:nrow(result)) {
+    result[row_number, "variable"] <- substr(result[row_number, "variable"],
+                                             nchar(colnames(simulated_data)[row_number - 1]) + 1,
+                                             nchar(result[row_number, "variable"]))
+  }
+  result <- rbind(
+    data.frame(estimated = model_mean,
+               variable = "(Model mean)"),
+    result
+  )
+  result$original_variable <- ""
+  for(i in 3:nrow(result)) {
+    result[i, "original_variable"] <- colnames(new_observation)[
+      sapply(colnames(new_observation), function(c) grepl(c, result[i, "variable"]))]
+  }
+  result
+}
+
+
+#' LIME-like explanations based on Ceteris Paribus curves
+#'
+#' @param x an explainer created with the function DALEX2::explain().
+#' @param new_observation an observation to be explained. Columns in should correspond to columns in the data argument to x.
+#' @param size number of similar observation to be sampled.
+#' @param seed If not NULL, seed will be set to this value for reproducibility.
+#' @param kernel Kernel function which will be used to weight simulated observations.
+#' @param sampling Parameter that controls sampling while creating new observations.
+#' @param grid_points Number of points to use while calculating Ceteris Paribus profiles.
+#'
+#' @return data.frame of class local_surrogate_explainer
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' #' @examples
+#' \dontrun{
+#' # Example based on apartments data from DALEX package.
+#' mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
+#' explainer <- DALEX::explain(model = mrf,
+#'                             data = apartmentsTest[, -1])
+#' model_lok <- individual_surrogate_model(explainer, new_observation,
+#'                                         size = 500, seed = 17)
+#' }
+
+#' }
+#'
+
+individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
+                                       kernel = identity_kernel,
+                                       sampling = "uniform", grid_points = 101) {
+  x$data <- x$data[, intersect(colnames(x$data), colnames(new_observation))]
+  try_predict <- x$predict_function(x$model, x$data[1:5, ])
+  predicted_names <- colnames(try_predict)
+  if(is.null(predicted_names))
+    predicted_names <- "yhat"
+
+  feature_representations <- lapply(
+    colnames(x$data),
+    function(column) {
+      feature_representation(x,
+                             new_observation,
+                             column,
+                             predicted_names,
+                             grid_points)
+    }
+  )
+  encoded_data <- as.data.frame(feature_representations)
+  colnames(encoded_data) <- intersect(colnames(new_observation),
+                                      colnames(x$data))
+
   p <- ncol(encoded_data)
   simulated_data <- as.data.frame(
     lapply(encoded_data,
@@ -68,90 +152,11 @@ single_column_surrogate <- function(x, new_observation,
       to_predict[, colname] <- as.numeric(to_predict[, colname])
     } else {
       to_predict[, colname] <- factor(to_predict[, colname],
-                                levels = levels(x$data[, colname]))
+                                      levels = levels(x$data[, colname]))
     }
   }
-  predicted_scores <- x$predict_function(x$model, to_predict)
-  simulated_data <- simulated_data[, sapply(simulated_data,
-                                            function(col) length(unique(col)) > 1)]
-  simulated_data[["y"]] <- 1
-  model_mean <- mean(x$predict_function(x$model, x$data))
-  fitted_model <- glmnet::cv.glmnet(model.matrix(y ~ .,
-                                                 data =  simulated_data)[, -1],
-                                    predicted_scores - model_mean,
-                                    alpha = 1)
-  result <- as.data.frame(as.matrix(coef(fitted_model, lambda = "lambda.min")))
-  result$variable <- rownames(result)
-  rownames(result) <- NULL
-  colnames(result)[1] <- "estimated"
-  for(row_number in 2:nrow(result)) {
-    result[row_number, "variable"] <- substr(result[row_number, "variable"],
-                                             nchar(colnames(simulated_data)[row_number - 1]) + 1,
-                                             nchar(result[row_number, "variable"]))
-  }
-  result <- rbind(
-    data.frame(estimated = model_mean,
-               variable = "(Model mean)"),
-    result
-  )
-  result$original_variable <- ""
-  for(i in 3:nrow(result)) {
-    result[i, "original_variable"] <- colnames(new_observation)[
-      sapply(colnames(new_observation), function(c) grepl(c, result[i, "variable"]))]
-  }
-  result
-}
 
-
-#' LIME-like explanations based on Ceteris Paribus curves
-#'
-#' @param x an explainer created with the function DALEX2::explain().
-#' @param new_observation an observation to be explained. Columns in should correspond to columns in the data argument to x.
-#' @param size number of similar observation to be sampled.
-#' @param seed If not NULL, seed will be set to this value for reproducibility.
-#' @param sampling Parameter that controls sampling while creating new observations.
-#' @param grid_points Number of points to use while calculating Ceteris Paribus profiles.
-#'
-#' @return data.frame of class local_surrogate_explainer
-#'
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' #' @examples
-#' \dontrun{
-#' # Example based on apartments data from DALEX package.
-#' mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
-#' explainer <- DALEX::explain(model = mrf,
-#'                             data = apartmentsTest[, -1])
-#' model_lok <- individual_surrogate_model(explainer, new_observation,
-#'                                         size = 500, seed = 17)
-#' }
-
-#' }
-#'
-
-individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
-                                       sampling = "uniform", grid_points = 101) {
-  x$data <- x$data[, intersect(colnames(x$data), colnames(new_observation))]
-  try_predict <- x$predict_function(x$model, x$data[1:5, ])
-  predicted_names <- colnames(try_predict)
-  if(is.null(predicted_names))
-    predicted_names <- "yhat"
-
-  feature_representations <- lapply(
-    colnames(x$data),
-    function(column) {
-      feature_representation(x,
-                             new_observation,
-                             column,
-                             predicted_names,
-                             grid_points)
-    }
-  )
-  encoded_data <- as.data.frame(feature_representations)
-  colnames(encoded_data) <- intersect(colnames(new_observation),
-                                      colnames(x$data))
+  weights <- rep(1, nrow(simulated_data))
 
   if(!is.null(ncol(try_predict))) {
     explainer <- lapply(unique(colnames(try_predict)), function(unique_level) {
@@ -162,8 +167,9 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
       }
       result <- single_column_surrogate(internal_explainer,
                                         new_observation,
-                                        encoded_data,
-                                        size, seed, sampling)
+                                        simulated_data, to_predict,
+                                        size, seed,
+                                        weights, sampling)
       result[, "response"] <- unique_level
       result[, "predicted_value"] <- internal_explainer$predict_function(
         internal_explainer$model,
@@ -174,8 +180,8 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
   } else {
       explainer <- single_column_surrogate(
         x, new_observation,
-        encoded_data,
-        size, seed, sampling
+        simulated_data, to_predict,
+        size, seed, weights, sampling
       )
       explainer[["response"]] <- ""
       explainer[["predicted_value"]] <- x$predict_function(
