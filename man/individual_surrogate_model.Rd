@@ -26,7 +26,14 @@ individual_surrogate_model(x, new_observation, size, seed = NULL,
 data.frame of class local_surrogate_explainer
 }
 \description{
-LIME-like explanations based on Ceteris Paribus curves
+This function fits a LIME-type explanation of a single prediction.
+Interpretable binary features that describe the local impact of features on
+the prediction are created based on Ceteris Paribus Profiles.
+Thend, a new dataset of similar observations is created and black box model
+predictions (scores in case of classification) are calculated for this dataset
+and LASSO regression model is fitted to them.
+This way, explanations are simplified and include only the most important features.
+More details about the methodology can be found in the vignettes.
 }
 \examples{
 \dontrun{

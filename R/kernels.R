@@ -15,6 +15,9 @@ identity_kernel <- function(explained_instance, simulated_instance) {
 
 #' LIME kernel from the original article with sigma = 1.
 #'
+#' Since only binary features are used, the weight associated with an observation
+#' is simply exp(-\{number of features that were changed compared to the original observation\}).
+#'
 #' @param explained_instance explained instance
 #' @param simulated_instance new observation
 #'

@@ -103,7 +103,8 @@
     </div>
 
     
-    <p>LIME kernel from the original article with sigma = 1.</p>
+    <p>Since only binary features are used, the weight associated with an observation
+is simply exp(-{number of features that were changed compared to the original observation}).</p>
     
 
     <pre class="usage"><span class='fu'>gaussian_kernel</span>(<span class='no'>explained_instance</span>, <span class='no'>simulated_instance</span>)</pre>

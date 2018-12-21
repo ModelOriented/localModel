@@ -103,11 +103,18 @@
     </div>
 
     
-    <p>LIME-like explanations based on Ceteris Paribus curves</p>
+    <p>This function fits a LIME-type explanation of a single prediction.
+Interpretable binary features that describe the local impact of features on
+the prediction are created based on Ceteris Paribus Profiles.
+Thend, a new dataset of similar observations is created and black box model
+predictions (scores in case of classification) are calculated for this dataset
+and LASSO regression model is fitted to them.
+This way, explanations are simplified and include only the most important features.
+More details about the methodology can be found in the vignettes.</p>
     
 
     <pre class="usage"><span class='fu'>individual_surrogate_model</span>(<span class='no'>x</span>, <span class='no'>new_observation</span>, <span class='no'>size</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>sampling</span> <span class='kw'>=</span> <span class='st'>"uniform"</span>, <span class='kw'>grid_points</span> <span class='kw'>=</span> <span class='fl'>101</span>)</pre>
+  <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='no'>identity_kernel</span>, <span class='kw'>sampling</span> <span class='kw'>=</span> <span class='st'>"uniform"</span>, <span class='kw'>grid_points</span> <span class='kw'>=</span> <span class='fl'>101</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -127,6 +134,10 @@
     <tr>
       <th>seed</th>
       <td><p>If not NULL, seed will be set to this value for reproducibility.</p></td>
+    </tr>
+    <tr>
+      <th>kernel</th>
+      <td><p>Kernel function which will be used to weight simulated observations.</p></td>
     </tr>
     <tr>
       <th>sampling</th>

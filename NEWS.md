@@ -1,3 +1,8 @@
+# localModel 0.3.2
+
+* Weighting option added.
+* Improved documentation.
+
 # localModel 0.3.1
 
 * Improvements to plots 
