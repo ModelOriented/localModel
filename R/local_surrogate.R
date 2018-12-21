@@ -192,6 +192,8 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 #' @param x object of class local_surrogate_explainer
 #' @param ... other objects of class local_surrogate_explainer.
 #' If provided, models will be plotted in rows, response levels in columns.
+#' @param geom If "point", lines with points at the end will be plotted,
+#' if "bar", bars will be plotted.
 #'
 #' @import ggplot2
 #'
@@ -211,7 +213,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 #' }
 #'
 
-plot.local_surrogate_explainer <- function(x, ...) {
+plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
   variable <- estimated <- intercept <- NULL
 
   models <- do.call("rbind", c(list(x), list(...)))
@@ -236,7 +238,6 @@ plot.local_surrogate_explainer <- function(x, ...) {
   ))
 
   models$sign <- as.factor(as.character(sign(models$estimated)))
-  models <- models[models$estimated != 0, ]
   models <- models[models$variable != "(Intercept)", ]
 
   models <- do.call("rbind", by(
@@ -261,7 +262,24 @@ plot.local_surrogate_explainer <- function(x, ...) {
     }
   ))
 
+  do.call("rbind", by(
+    models,
+    list(models$model, models$variable),
+    function(y) {
+      y$any_nonzero <- any(y$estimated != 0)
+      y
+    }
+  ))
+
   models <- models[models$variable != "(Model mean)", ]
+
+  if(geom == "point") {
+    final_geom <- geom_pointrange(aes(ymin = intercept, ymax = estimated),
+                                  size = 2)
+  } else {
+    final_geom <- geom_segment(aes(xend = variable, yend = intercept, y = estimated),
+                               size = 10, lineend = "butt")
+  }
 
   ggplot(models, aes(x = reorder(variable, -abs(estimated)),
                      y = estimated,
@@ -269,9 +287,8 @@ plot.local_surrogate_explainer <- function(x, ...) {
     theme_bw() +
     geom_hline(aes(yintercept = intercept),
                size = 1)  +
-    geom_pointrange(aes(ymin = intercept, ymax = estimated),
-                    size = 2) +
     facet_grid(model~labeller, scales = "free_y") +
+    final_geom +
     coord_flip() +
     ylab("Feature influence") +
     xlab("") +

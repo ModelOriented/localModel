@@ -4,13 +4,16 @@
 \alias{plot.local_surrogate_explainer}
 \title{Generic plot function for local surrogate explainers}
 \usage{
-\method{plot}{local_surrogate_explainer}(x, ...)
+\method{plot}{local_surrogate_explainer}(x, ..., geom = "point")
 }
 \arguments{
 \item{x}{object of class local_surrogate_explainer}
 
 \item{...}{other objects of class local_surrogate_explainer.
 If provided, models will be plotted in rows, response levels in columns.}
+
+\item{geom}{If "point", lines with points at the end will be plotted,
+if "bar", bars will be plotted.}
 }
 \description{
 Generic plot function for local surrogate explainers
