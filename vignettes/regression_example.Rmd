@@ -19,13 +19,13 @@ knitr::opts_chunk$set(
 ```
 
 This vignette shows how `localModel` package can be used to explain regression models.
-We will use the `apartments` dataset from `DALEX` package.
+We will use the `apartments` dataset from `DALEX2` package.
 For more information about the dataset, please refer to the [Gentle introduction to DALEX](https://pbiecek.github.io/DALEX_docs/).
 
-We will use `localModel` and `DALEX` packages, random forest from `randomForest` package will serve as an example model.
+We will use `localModel` and `DALEX2` packages, random forest from `randomForest` package will serve as an example model.
 
 ```{r pkgs}
-library(DALEX)
+library(DALEX2)
 library(localModel)
 library(randomForest)
 data('apartments')
@@ -38,9 +38,9 @@ First, we need to create an explainer object, using the `explain` function.
 We will explain the prediction for fifth observation in the test dataset.
 
 ```{r model}
-explainer <- DALEX::explain(model = mrf,
-                            data = apartmentsTest[, -1])
-new_observation <- apartmentsTest[5, -1]
+explainer <- explain(model = mrf,
+                     data = apartments_test[, -1])
+new_observation <- apartments_test[5, -1]
 new_observation
 ```
 
@@ -48,7 +48,7 @@ Local explanation is created via `individual_surrogate_model` function, which ta
 
 ```{r explanation}
 model_lok <- individual_surrogate_model(explainer, new_observation,
-                                        size = 500, seed = 17)
+                                        size = 500, seed = NULL)
 ```
 
 First, local interpretable features are created. Numerical features are discretized by using decision tree to model relationship between the feature and the corresponding Ceteris Paribus profile.

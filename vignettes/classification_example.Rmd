@@ -22,28 +22,24 @@ Explaining classification models with the `localModel` package is just as simple
 It is enough to work with predicted scores (class probabilities) rather than classes. 
 In multiclass setting, a separate explanation is provided for each class probability.
 
-We will work with the `HR` dataset from `DALEX` package.
-As in the regression example from _Introduction to the localModel package_, we will first create a random forest model and a `DALEX` explainer.
+We will work with the `HR` dataset from `DALEX2` package.
+As in the regression example from _Introduction to the localModel package_, we will first create a random forest model and a `DALEX2` explainer.
 
 ```{r model}
-library(DALEX)
+library(DALEX2)
 library(randomForest)
 library(localModel)
 
 data('HR')
-# HR$evaluation <- as.factor(as.character(HR$evaluation))
 
 mrf <- randomForest(status ~., data = HR, ntree = 100)
 explainer <- explain(mrf, 
-                     HR[, -6],
-                     HR$status,
-                     predict_function = function(x, y)
-                       as.data.frame(predict(x, y, type = "prob")))
+                     HR[, -6])
 new_observation <- HR[10, -6]
 new_observation
 ```
 
-Notice, that a custom `predict_function` was provided for the explainer. It returns class probabilities.
+In DALEX2, we have built-in predict functions for some type of models. Random Forest is among these models.
 
 ```{r explanation}
 model_lok <- individual_surrogate_model(explainer, new_observation, 

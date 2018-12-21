@@ -5,10 +5,10 @@
 \title{LIME-like explanations based on Ceteris Paribus curves}
 \usage{
 individual_surrogate_model(x, new_observation, size, seed = NULL,
-  sampling = "uniform")
+  sampling = "uniform", grid_points = 101)
 }
 \arguments{
-\item{x}{an explainer created with function DALEX2::explain().}
+\item{x}{an explainer created with the function DALEX2::explain().}
 
 \item{new_observation}{an observation to be explained. Columns in should correspond to columns in the data argument to x.}
 
@@ -17,6 +17,8 @@ individual_surrogate_model(x, new_observation, size, seed = NULL,
 \item{seed}{If not NULL, seed will be set to this value for reproducibility.}
 
 \item{sampling}{Parameter that controls sampling while creating new observations.}
+
+\item{grid_points}{Number of points to use while calculating Ceteris Paribus profiles.}
 }
 \value{
 data.frame of class local_surrogate_explainer
