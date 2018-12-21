@@ -144,6 +144,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
   }
 
   n_rows <- nrow(encoded_data)
+  if(!is.null(seed)) set.seed(seed)
   to_predict <- data.frame(
     lapply(colnames(simulated_data),
            function(column) {
