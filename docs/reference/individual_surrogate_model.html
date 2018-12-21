@@ -144,8 +144,7 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"># NOT RUN {
-#' @examples
+    <pre class="examples"><div class='input'>#' @examples
 \dontrun{
 # Example based on apartments data from DALEX package.
 mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
@@ -154,8 +153,10 @@ explainer <- DALEX::explain(model = mrf,
 model_lok <- individual_surrogate_model(explainer, new_observation,
                                         size = 500, seed = 17)
 }
-# }
-<div class='input'>
+</div><div class='output co'>#&gt; <span class='error'>Error: &lt;text&gt;:2:1: nieoczekiwane wejście</span>
+#&gt; <span class='error'>1: #' @examples</span>
+#&gt; <span class='error'>2: \</span>
+#&gt; <span class='error'>   ^</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -173,7 +174,7 @@ model_lok <- individual_surrogate_model(explainer, new_observation,
 
       <footer>
       <div class="copyright">
-  <p>Developed by Mateusz Staniak.</p>
+  <p>Developed by Mateusz Staniak, Przemysław Biecek.</p>
 </div>
 
 <div class="pkgdown">

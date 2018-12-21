@@ -88,8 +88,8 @@
 
     
     
-<p>Explaining classification models with the <code>localModel</code> package is just as simple as explaining regression. It is enough to work with predicted scores (class probabilities) rather than classes. In multiclass setting, a separate explanation is provided for each class probability.</p>
-<p>We will work with the <code>HR</code> dataset from <code>DALEX2</code> package. As in the regression example from <em>Introduction to the localModel package</em>, we will first create a random forest model and a <code>DALEX2</code> explainer.</p>
+<p>Explaining classification models with the <a href="https://github.com/ModelOriented/localModel"><code>localModel</code></a> package is just as simple as explaining regression. It is enough to work with predicted scores (class probabilities) rather than classes. In multiclass setting, a separate explanation is provided for each class probability.</p>
+<p>We will work with the <code>HR</code> dataset from <a href="https://github.com/ModelOriented/DALEX2"><code>DALEX2</code></a> package. As in the regression example from <em>Introduction to the localModel package</em>, we will first create a random forest model and a <a href="https://github.com/ModelOriented/DALEX2"><code>DALEX2</code></a> explainer.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(DALEX2)
 <span class="kw">library</span>(randomForest)
 <span class="kw">library</span>(localModel)
@@ -103,7 +103,7 @@ new_observation &lt;-<span class="st"> </span>HR[<span class="dv">10</span>, <sp
 new_observation
 <span class="co">#&gt;    gender      age    hours evaluation salary</span>
 <span class="co">#&gt; 12 female 33.16119 55.08747          4      4</span></code></pre></div>
-<p>In DALEX2, we have built-in predict functions for some type of models. Random Forest is among these models.</p>
+<p>In <a href="https://github.com/ModelOriented/DALEX2"><code>DALEX2</code></a>, we have built-in predict functions for some types of models. Random Forest is among these models.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation, 
                                         <span class="dt">size =</span> <span class="dv">500</span>, <span class="dt">seed =</span> <span class="dv">17</span>)
 <span class="kw">plot</span>(model_lok)</code></pre></div>
@@ -120,7 +120,7 @@ new_observation
 
 
       <footer><div class="copyright">
-  <p>Developed by Mateusz Staniak.</p>
+  <p>Developed by Mateusz Staniak, Przemysław Biecek.</p>
 </div>
 
 <div class="pkgdown">

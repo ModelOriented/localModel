@@ -88,8 +88,8 @@
 
     
     
-<p>This vignette shows how <code>localModel</code> package can be used to explain regression models. We will use the <code>apartments</code> dataset from <code>DALEX2</code> package. For more information about the dataset, please refer to the <a href="https://pbiecek.github.io/DALEX_docs/">Gentle introduction to DALEX</a>.</p>
-<p>We will use <code>localModel</code> and <code>DALEX2</code> packages, random forest from <code>randomForest</code> package will serve as an example model.</p>
+<p>This vignette shows how <a href="https://github.com/ModelOriented/localModel"><code>localModel</code></a> package can be used to explain regression models. We will use the <code>apartments</code> dataset from <a href="https://github.com/ModelOriented/DALEX2"><code>DALEX2</code></a> package. For more information about the dataset, please refer to the <a href="https://pbiecek.github.io/DALEX_docs/">Gentle introduction to DALEX</a>.</p>
+<p>We will use <a href="https://github.com/ModelOriented/localModel"><code>localModel</code></a> and <a href="https://github.com/ModelOriented/DALEX2"><code>DALEX2</code></a> packages, random forest from <code>randomForest</code> package will serve as an example model, and linear regression as a simple model for comparison.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(DALEX2)
 <span class="kw">library</span>(localModel)
 <span class="kw">library</span>(randomForest)
@@ -112,10 +112,10 @@ new_observation
 model_lok2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer2, new_observation,
                                          <span class="dt">size =</span> <span class="dv">500</span>, <span class="dt">seed =</span> <span class="dv">17</span>)</code></pre></div>
 <p>First, local interpretable features are created. Numerical features are discretized by using decision tree to model relationship between the feature and the corresponding Ceteris Paribus profile. Categorical features are also discretized by merging levels using the marginal relationship between the feature and the model response. Then, new dataset is simulated by switching a random number of interpretable inputs in the explained instance. This procedure mimics “graying out” areas (superpixels) in the original LIME method. LASSO regression model is fitted to the model response for these new observations, which makes the final explanations sparse and thus readable.</p>
-<p>The explanation can be plotted using generic <code>plot</code> function. The plot shows interpretable features and weights associated with them, starting at the model intercept. Negative weights are associated with features that decrease the apartment price, while positive weights increase it.</p>
+<p>The explanation can be plotted using generic <code>plot</code> function. The plot shows interpretable features and weights associated with them, starting at the model intercept. Negative weights are associated with features that decrease the apartment price, while positive weights increase it. We can plot explanation for two or more models together by passing several local explainer to <code>plot</code> function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(model_lok, model_lok2)</code></pre></div>
 <p><img src="regression_example_files/figure-html/plot-1.png" width="700"></p>
-<p>We can see that for this observation, the predicted price is negatively influeced mostly by the district and construction year.</p>
+<p>We can see that for this observation, the price predicted by Random Forest is negatively influeced mostly by the district and construction year, while linear regression ignores the effect of construction year.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -125,7 +125,7 @@ model_lok2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/
 
 
       <footer><div class="copyright">
-  <p>Developed by Mateusz Staniak.</p>
+  <p>Developed by Mateusz Staniak, Przemysław Biecek.</p>
 </div>
 
 <div class="pkgdown">

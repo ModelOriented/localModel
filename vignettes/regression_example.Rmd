@@ -18,11 +18,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette shows how `localModel` package can be used to explain regression models.
-We will use the `apartments` dataset from `DALEX2` package.
+This vignette shows how [`localModel`](https://github.com/ModelOriented/localModel) package can be used to explain regression models.
+We will use the `apartments` dataset from [`DALEX2`](https://github.com/ModelOriented/DALEX2) package.
 For more information about the dataset, please refer to the [Gentle introduction to DALEX](https://pbiecek.github.io/DALEX_docs/).
 
-We will use `localModel` and `DALEX2` packages, random forest from `randomForest` package will serve as an example model.
+We will use [`localModel`](https://github.com/ModelOriented/localModel) and [`DALEX2`](https://github.com/ModelOriented/DALEX2) packages, random forest from `randomForest` package will serve as an example model, and linear regression as a simple model for comparison.
 
 ```{r pkgs}
 library(DALEX2)
@@ -65,9 +65,10 @@ LASSO regression model is fitted to the model response for these new observation
 The explanation can be plotted using generic `plot` function.
 The plot shows interpretable features and weights associated with them, starting at the model intercept.
 Negative weights are associated with features that decrease the apartment price, while positive weights increase it. 
+We can plot explanation for two or more models together by passing several local explainer to `plot` function.
 
 ```{r plot}
 plot(model_lok, model_lok2)
 ```
 
-We can see that for this observation, the predicted price is negatively influeced mostly by the district and construction year.
+We can see that for this observation, the price predicted by Random Forest is negatively influeced mostly by the district and construction year, while linear regression ignores the effect of construction year.
