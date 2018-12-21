@@ -227,7 +227,7 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
   models$labeller <- paste(
     models$model,
     "prediction: ",
-    models$predicted_value
+    round(models$predicted_value, 2)
   )
 
   models <- do.call("rbind", by(
