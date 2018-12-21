@@ -1,3 +1,8 @@
+# localModel 0.3.4
+
+* Fixed a bug related to interpretable numerical inputs (missing as.numeric)
+* Added tests for 100% coverage.
+
 # localModel 0.3.3
 
 * Set.seed before fitting cv.glmnet.
