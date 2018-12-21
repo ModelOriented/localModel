@@ -9,7 +9,8 @@
 \arguments{
 \item{x}{object of class local_surrogate_explainer}
 
-\item{...}{currently ignored}
+\item{...}{other objects of class local_surrogate_explainer.
+If provided, models will be plotted in rows, response levels in columns.}
 }
 \description{
 Generic plot function for local surrogate explainers

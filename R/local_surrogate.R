@@ -189,7 +189,8 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 #' Generic plot function for local surrogate explainers
 #'
 #' @param x object of class local_surrogate_explainer
-#' @param ... currently ignored
+#' @param ... other objects of class local_surrogate_explainer.
+#' If provided, models will be plotted in rows, response levels in columns.
 #'
 #' @import ggplot2
 #'
@@ -212,40 +213,72 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 plot.local_surrogate_explainer <- function(x, ...) {
   variable <- estimated <- intercept <- NULL
 
-  x$response <- paste(
-    x$response,
-    "predicted value: ",
-    x$predicted_value
+  models <- do.call("rbind", c(list(x), list(...)))
+
+  models <- rbind(model_lok, model_lok2)
+  models$labeller <- paste(
+    models$model,
+    "prediction: ",
+    models$predicted_value
   )
 
-  x <- x[x$estimated != 0, ]
-  x <- x[x$variable != "(Intercept)", ]
-  x$estimated <- unlist(tapply(x$estimated,
-                               x$response,
-                               function(y) {
-                                 c(y[1], y[-1] + y[1])
-                               }), use.names = FALSE)
-  x$intercept = unlist(
-    tapply(
-      x$estimated,
-      x$response,
-      function(y) rep(y[1], length(y))
-    )
-  )
+  models <- do.call("rbind", by(
+    models,
+    models$response,
+    function(y) {
+      y$labeller <- paste(
+        unique(y$response),
+        paste(unique(y$labeller),
+              sep = "\n ", collapse = "\n "),
+        sep = "\n ")
+      y
+    }
+  ))
 
-  x <- x[x$variable != "(Model mean)", ]
+  models$sign <- as.factor(as.character(sign(models$estimated)))
+  models <- models[models$estimated != 0, ]
+  models <- models[models$variable != "(Intercept)", ]
 
-  ggplot(x, aes(x = reorder(variable, abs(estimated)),
-                y = estimated)) +
+  models <- do.call("rbind", by(
+    models,
+    list(models$model, models$response),
+    function(y) {
+      y$intercept <- y$estimated[y$variable == "(Model mean)"]
+      y
+    }
+  ))
+
+  models <- do.call("rbind", by(
+    models,
+    list(models$model, models$response),
+    function(y) {
+      y$estimated = ifelse(
+        y$variable == "(Model mean)",
+        y$estimated,
+        y$estimated + y$intercept
+      )
+      y
+    }
+  ))
+
+  models <- models[models$variable != "(Model mean)", ]
+
+  ggplot(models, aes(x = reorder(variable, abs(estimated)),
+                     y = estimated,
+                     color = sign)) +
     theme_bw() +
     geom_hline(aes(yintercept = intercept),
                size = 1)  +
     geom_pointrange(aes(ymin = intercept, ymax = estimated),
                     size = 2) +
-    facet_wrap(~response, ncol = 1, scales = "free_y") +
+    facet_grid(model~labeller, scales = "free_y") +
     coord_flip() +
-    ylab("Estimated effect") +
-    xlab("")
+    ylab("Feature influence") +
+    xlab("") +
+    scale_color_manual(values =  c(`-1` = "#d8b365",
+                                   `0` = "#f5f5f5",
+                                   `1` = "#5ab4ac")) +
+    guides(color = "none")
 }
 
 
