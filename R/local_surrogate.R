@@ -85,8 +85,9 @@ single_column_surrogate <- function(x, new_observation,
   rownames(result) <- NULL
   colnames(result)[1] <- "estimated"
   for(row_number in 2:nrow(result)) {
-    result[row_number, "variable"] <- stringr::str_sub(result[row_number, "variable"],
-                                                       stringr::str_length(colnames(simulated_data)[row_number - 1]) + 1)
+    result[row_number, "variable"] <- substr(result[row_number, "variable"],
+                                             nchar(colnames(simulated_data)[row_number - 1]) + 1,
+                                             nchar(result[row_number, "variable"]))
   }
   rbind(
     data.frame(estimated = model_mean,

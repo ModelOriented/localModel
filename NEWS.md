@@ -1,8 +1,12 @@
+# localModel 0.3.0
+
+* Multi-model plot option added.
+* `stringr` dependency removed.
+
 # localModel 0.2.9
 
 * Same interpretable features are used for every response level.
 * `rpart` dependency replaced with `partykit`.
-
 
 # localModel 0.2.8
 
