@@ -1,126 +1,180 @@
-extract_numerical_feature <- function(rule, observation) {
-  feature_name <- unique(rule[, 3])
-  actual_value <- observation[, feature_name]
-  if(ncol(rule) == 7) {
-    rule <- rule[, c(5, 7)]
-  } else {
-    rule <- data.frame(a = c(rule[1, 5], ""),
-                       b = c("", rule[2, 5]), stringsAsFactors = FALSE)
-  }
-  rule$is_correct_interval <- FALSE
-  for(row_number in 1:nrow(rule)) {
-    if(rule[row_number, 1] != "" & rule[row_number, 2] != "") {
-      rule[row_number, 3] <- rule[row_number, 1] <= actual_value & actual_value < rule[row_number, 2]
-    } else {
-      if(rule[row_number, 1] == "") {
-        rule[row_number, 3] <- actual_value >= rule[row_number, 2]
+extract_numerical_feature <- function(rules, true_value) {
+  rules_df <- as.data.frame(do.call("rbind", strsplit(rules, " ")),
+                            stringsAsFactors = FALSE)
+  if(ncol(rules_df) == 7) {
+    rules_df[, 3] <- as.numeric(rules_df[, 3])
+    rules_df[, 7] <- as.numeric(rules_df[, 7])
+    for(row_number in 1:nrow(rules_df)) {
+      if(rules_df[row_number, 2] != rules_df[row_number, 6]) {
+        lower_limit <- min(rules_df[row_number, 3], rules_df[row_number, 7])
+        upper_limit <- max(rules_df[row_number, 3], rules_df[row_number, 7])
+        if(lower_limit < true_value & true_value <= upper_limit) {
+          label <- paste(c(round(lower_limit, 2),
+                           "<", rules_df[1, 1],
+                           "<=", round(upper_limit, 2)),
+                         sep = " ", collapse = " ")
+          lower <- lower_limit
+          upper <- upper_limit
+          break
+        }
       } else {
-        rule[row_number, 3] <- actual_value < rule[row_number, 1]
+        if(rules_df[row_number, 2] == "<=") {
+          upper_limit <- min(rules_df[row_number, 3], rules_df[row_number, 7])
+          if(true_value <= upper_limit) {
+            label <- paste(c(rules_df[1, 1], "<=", round(upper_limit, 2)),
+                           sep = " ", collapse = " ")
+            lower <- -Inf
+            upper <- upper_limit
+            break
+          }
+        } else {
+          lower_limit <- max(rules_df[row_number, 3], rules_df[row_number, 7])
+          if(true_value > lower_limit) {
+            label <- paste(c(rules_df[1, 1], ">", round(lower_limit, 2)),
+                           sep = " ", collapse = " ")
+            lower <- lower_limit
+            upper <- Inf
+          }
+        }
       }
     }
-  }
-  interval_as_data_frame <- rule[rule$is_correct_interval, ]
-  if(interval_as_data_frame[1, 1] != "" & interval_as_data_frame[1, 2] != "") {
-    label <- paste(interval_as_data_frame[1, 1], "<=", feature_name, "< ", interval_as_data_frame[1, 2])
-    interval_ends <- c(interval_as_data_frame[1, 1], interval_as_data_frame[1, 2])
   } else {
-    if(interval_as_data_frame[1, 1] == "") {
-      label <- paste(feature_name, ">=", interval_as_data_frame[1, 2])
-      interval_ends <- c(interval_as_data_frame[1, 2], Inf)
+    if(true_value <= as.numeric(rules_df[1, 3])) {
+      label <- paste(rules_df[1, 1], "<=", round(rules_df[1, 3], 2),
+                     sep = " ", collapse = " ")
+      lower <- -Inf
+      upper <- rules_df[1, 3]
     } else {
-      label <- paste(feature_name, "<", interval_as_data_frame[1, 1])
-      interval_ends <- c(-Inf, interval_as_data_frame[1, 1])
+      label <- paste(rules_df[1, 1], ">", round(rules_df[1, 3]),
+                     sep = " ", collapse = " ")
+      lower <- rules_df[1, 3]
+      upper <- Inf
     }
   }
+
   list(
-    label = label,
-    interval_ends = interval_ends
+    "label" = label,
+    "interval" = as.numeric(c(lower, upper))
   )
 }
 
 
-extract_categorical_feature <- function(rule, observation) {
- feature_name <- unique(rule[, 3])
- actual_value <- as.character(observation[, feature_name])
- rule <- rule[, 5]
- rule <- strsplit(rule, " or ")
- if(actual_value %in% rule[[1]]) {
-   label <- paste(feature_name, "=",
-                  paste(rule[[1]], sep = ", ", collapse = ", "))
-   values <- rule[[1]]
- } else {
-   label <- paste(feature_name, "=",
-                  paste(rule[[2]], sep = ", ", collapse = ", "))
-   values <- rule[[2]]
- }
- list(
-   "label" = label,
-   "values" = values
- )
+extract_categorical_feature <- function(rules, true_value, unique_values,
+                                        colname) {
+  values <- unique_values[sapply(unique_values, function(value) {
+    grepl(value, rules[which(grepl(true_value, rules))]) })]
+
+  list(
+    "label" = paste(
+      colname, "=",
+      paste(values, sep = ", ", collapse = ", ")
+    ),
+    "values" = as.character(values)
+  )
 }
 
-feature_representation <- function(explainer, new_observation, feature_name) {
-  if(is.numeric(explainer$data[, feature_name])) {
-    ceteris_curve <- ceterisParibus::ceteris_paribus(
-      explainer,
-      new_observation,
-      variables = feature_name)[, c("_yhat_", feature_name)]
-    fitted_tree <- rpart::rpart(as.formula(paste("`_yhat_` ~", feature_name)),
-                                data = ceteris_curve,
-                                maxdepth = 2)
-    fitted_rule <- as.data.frame(rpart.plot::rpart.rules(fitted_tree))
+#' Import hidden object without CRAN notes.
+#'
+#' @param pkg Package name
+#' @param name Function name
+#'
+#' @export
+#'
+#' @author Krystian Igras
+#'
 
-    if(nrow(fitted_rule) > 1) {
-      interpretable_input <- extract_numerical_feature(fitted_rule,
-                                                       new_observation)
-      encoded_feature <- ifelse(interpretable_input$interval_ends[1] <= explainer$data[, feature_name]
-                                & explainer$data[, feature_name] < interpretable_input$interval_ends[2],
+`%:::%` <- function (pkg, name) {
+  pkg <- as.character(substitute(pkg))
+  name <- as.character(substitute(name))
+  get(name, envir = asNamespace(pkg), inherits = FALSE)
+}
+
+feature_representation <- function(explainer, new_observation, column,
+                                   predicted_names, grid_points = 101) {
+  is_numerical <- is.numeric(explainer$data[, column])
+
+  if(is_numerical) {
+    ceteris <- ceterisParibus2::individual_variable_profile(
+      explainer, new_observation, grid_points = grid_points,
+      variables = column)[, c(column, "_yhat_", "_label_")]
+    if(all(predicted_names == "yhat")) {
+      ceteris_curves <- ceteris
+      colnames(ceteris_curves)[2] <- "yhat"
+    } else {
+      ceteris_curves <- data.frame(lapply(predicted_names, function(name) {
+        result <- ceteris[ceteris$`_label_` == paste(explainer$label,
+                                                     name,
+                                                     sep = "."), 2,
+                          drop = FALSE]
+        colnames(result) <- name
+        result
+      }))
+    }
+    ceteris_curves[, column] <- ceteris[1:grid_points, column]
+  } else {
+    ceteris_curves <- as.data.frame(
+      explainer$predict_function(explainer$model,
+                                 explainer$data)
+    )
+    if(ncol(ceteris_curves) == 1)
+      colnames(ceteris_curves) <- "yhat"
+    ceteris_curves[, column] <- explainer$data[, column]
+  }
+
+  tree_formula <- paste(
+    paste(predicted_names, sep = " + ", collapse = " + "),
+    column,
+    sep = " ~ "
+  )
+
+  if(is_numerical) {
+    fitted_tree <- partykit::ctree(as.formula(tree_formula),
+                                   data = ceteris_curves,
+                                   maxdepth = 2)
+  } else {
+    fitted_tree <- partykit::ctree(as.formula(tree_formula),
+                                   data = ceteris_curves,
+                                   maxdepth = 1)
+  }
+
+  extract_rules <- "partykit" %:::% ".list.rules.party"
+  rules <- extract_rules(fitted_tree)
+  if(is_numerical) {
+    rules <- sapply(rules, function(rule) {
+      if(!grepl("&", rule)) {
+        paste(rule, rule, sep = " & ", collapse = " & ")
+      } else {
+        rule
+      }
+    })
+  }
+
+  if(all(rules == " & ") | all(rules == "")) {
+    encoded_feature <- as.factor(rep("baseline",
+                                     nrow(explainer$data)))
+  } else {
+    if(is_numerical) {
+      interpretable_input <- extract_numerical_feature(rules,
+                                                       new_observation[, column])
+      encoded_feature <- ifelse(interpretable_input$interval[1] <= explainer$data[, column]
+                                & explainer$data[, column] < interpretable_input$interval[2],
                                 interpretable_input$label,
                                 "baseline")
-      encoded_feature <- factor(encoded_feature,
-                                levels = c("baseline", interpretable_input$label))
     } else {
-      encoded_feature <- as.factor(rep("baseline",
-                                       length(explainer$data[, feature_name])))
-    }
-  } else {
-    if(length(unique(explainer$data[, feature_name])) == 2) {
+      interpretable_input <- extract_categorical_feature(
+        rules,
+        new_observation[, column],
+        levels(explainer$data[, column]),
+        column
+      )
       encoded_feature <- ifelse(
-        explainer$data[, feature_name] == new_observation[, feature_name],
-        paste(feature_name, "=", new_observation[, feature_name]),
+        explainer$data[, column] %in% interpretable_input$values,
+        interpretable_input$label,
         "baseline"
       )
-      encoded_feature <- factor(encoded_feature,
-                                levels = c("baseline",
-                                           paste(feature_name, "=", new_observation[, feature_name]))
-                                )
-    } else {
-      predicted_response <- explainer$predict_function(explainer$model,
-                                                       explainer$data)
-      prediction_df <- data.frame(explainer$data[, feature_name],
-                                  predicted_response)
-      colnames(prediction_df) <- c(feature_name, "y")
-      fitted_tree <- rpart::rpart(as.formula(paste("y ~", feature_name)),
-                                  data = prediction_df,
-                                  maxdepth = 1)
-      fitted_rule <- rpart.plot::rpart.rules(fitted_tree)
-
-      if(nrow(fitted_rule) > 1) {
-        interpretable_input <- extract_categorical_feature(fitted_rule,
-                                                           new_observation)
-        encoded_feature <- ifelse(
-          explainer$data[, feature_name] %in% interpretable_input$values,
-          interpretable_input$label,
-          "baseline"
-        )
-        encoded_feature <- factor(encoded_feature,
-                                  levels = c("baseline", interpretable_input$label))
-      } else {
-        encoded_feature <- as.factor(rep("baseline",
-                                         length(explainer$data[, feature_name])))
-      }
     }
-    }
+  }
 
-  encoded_feature
+  factor(encoded_feature,
+         levels = c("baseline", setdiff(unique(encoded_feature), "baseline")))
 }
