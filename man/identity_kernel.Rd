@@ -2,8 +2,7 @@
 % Please edit documentation in R/kernels.R
 \name{identity_kernel}
 \alias{identity_kernel}
-\title{LIME kernel that treats all observations as equally similar to 
-observation of interest.}
+\title{LIME kernel that treats all observations as equally similar to observation of interest.}
 \usage{
 identity_kernel(explained_instance, simulated_instance)
 }
@@ -16,6 +15,5 @@ identity_kernel(explained_instance, simulated_instance)
 numeric
 }
 \description{
-LIME kernel that treats all observations as equally similar to 
-observation of interest.
+LIME kernel that treats all observations as equally similar to observation of interest.
 }
