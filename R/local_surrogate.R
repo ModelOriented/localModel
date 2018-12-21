@@ -9,7 +9,6 @@ calculate_weights <- function(simulated_dataset, new_observation, kernel) {
 }
 
 
-
 #' @importFrom stats as.formula coef model.matrix
 
 single_column_surrogate <- function(x, new_observation,
@@ -20,6 +19,7 @@ single_column_surrogate <- function(x, new_observation,
 
   simulated_data[["y"]] <- 1
   model_mean <- mean(x$predict_function(x$model, x$data))
+  if(!is.null(seed)) set.seed(seed)
   fitted_model <- glmnet::cv.glmnet(model.matrix(y ~ .,
                                                  data =  simulated_data)[, -1],
                                     predicted_scores - model_mean,
@@ -94,6 +94,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
   if(is.null(predicted_names))
     predicted_names <- "yhat"
 
+  if(!is.null(seed)) set.seed(seed)
   feature_representations <- lapply(
     colnames(x$data),
     function(column) {

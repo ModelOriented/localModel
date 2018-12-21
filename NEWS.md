@@ -1,3 +1,8 @@
+# localModel 0.3.3
+
+* Set.seed before fitting cv.glmnet.
+* New vignette describing methodology.
+
 # localModel 0.3.2
 
 * Weighting option added.

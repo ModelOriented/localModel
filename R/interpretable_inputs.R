@@ -40,14 +40,14 @@ extract_numerical_feature <- function(rules, true_value) {
     }
   } else {
     if(true_value <= as.numeric(rules_df[1, 3])) {
-      label <- paste(rules_df[1, 1], "<=", round(rules_df[1, 3], 2),
+      label <- paste(rules_df[1, 1], "<=", round(as.numeric(rules_df[1, 3]), 2),
                      sep = " ", collapse = " ")
       lower <- -Inf
-      upper <- rules_df[1, 3]
+      upper <- as.numeric(rules_df[1, 3])
     } else {
-      label <- paste(rules_df[1, 1], ">", round(rules_df[1, 3]),
+      label <- paste(rules_df[1, 1], ">", round(as.numeric(rules_df[1, 3]), 2),
                      sep = " ", collapse = " ")
-      lower <- rules_df[1, 3]
+      lower <- as.numeric(rules_df[1, 3])
       upper <- Inf
     }
   }

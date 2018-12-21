@@ -1,0 +1,67 @@
+---
+title: "Methodology behind localModel package"
+author: "Mateusz Staniak"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Methodology behind localModel package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+`localModel` package is a variant of [LIME](https://arxiv.org/abs/1602.04938).
+As in LIME, the analysis consists of
+  
+  1. Creating a new dataset $X'$ of $m$ observations that are similarly in some sense to the observation, for which we explain the prediction. This dataset is usually built in terms of new, interpretable features rather than original features. Size $m$ is a parameter to `individual_surrogate_model` function.
+  
+  2. Fitting black box model to the new dataset. This step requires a transformation back to the original input space and is non-trivial for numerical data.
+  
+  3. Fitting an explanation model (a glass box) to the outputs of black box model.
+  Usually, LASSO regression is used to make sure that explanations are simple enough.
+  
+In the next few paragraph, we will shortly describe how each of the steps is performed in `localModel`.
+All of them are implemented by the `individual_surrogate_model` function.
+
+## Sampling for local exploration
+
+Interpretable features are created in a way that depends on the type of the predictor.
+
+  - For categorical predictors, original dataset is used to obtain black box predictions. Then, the marginal relationship between the feature and response is modeled via decision tree with a single split to dichotomize the feature.
+  
+  - For numerical predictors, Ceteris Paribus profile is calculated and this marginal relationship is again dichotomized by a decision tree with maximum depth equal to 2.
+  
+For both types of predictors, the intepretable input is an indicator variable equal to 1 for value of feature that falls into the group of levels or interval chosen by the decision tree. Other values of the predictor are treated as a single level, a baseline.
+
+Sampling new observations is done by 
+
+  1. Creating $m$ copies of the explained observation.
+  
+  2. Iterating through these copies and in each step
+  
+     - Choosing random number $k$ of feature to be switched to _baseline_ value.
+     - Choosing, which $k$ features will be changed.
+     - When the `individual_surrogate_model` function is called with argument `sampling = "uniform"`, each of these values is changed to _baseline_, but when `sampling = "non-uniform"`, it is changed with probability equal to the proportion of _baseline_ values in the original dataset.
+     
+## Fitting black box model
+
+Fitting the black box model to new observation requires transforming them into the original feature space.
+In `localModel`, this is done the following way.
+The original dataset is transformed into the interpretable feature space.
+Based on this transformation, we know which values of each feature are categorized as _baseline_ and which as the explained value.
+Then, for each simulated observation, and for each feature, we pick a random value of this feature from the original dataset that corresponds either to the _baseline_ group or the explained value.
+Black box model is fitted to these observations.
+
+
+## Fitting the explanation model
+
+LASSO model with penalty chosen via cross-validation is used in `localModel` package.
+Optionally, observation can be weighted according to their distance from the explained observation in the space of interpretable features.
+Weighting is controlled via `kernel` parameter to `individual_surrogate_model`.
+
+The resulting model can be plotted using generic `plot` function. Models can be compared by passing several explainer object to `plot`. 
