@@ -1,3 +1,15 @@
+calculate_weights <- function(simulated_dataset, new_observation, kernel) {
+  for_weights_x <- rbind(simulated_dataset, new_observation)
+  for_weights <- cbind(y = 1, for_weights_x)
+
+  model_matrix <- stats::model.matrix(stats::lm(y ~., data = for_weights))
+  new_observation_coords <- model_matrix[nrow(model_matrix), ]
+  sapply(as.data.frame(t(model_matrix[1:(nrow(model_matrix) - 1), ])),
+         function(x) kernel(new_observation_coords, x))
+}
+
+
+
 #' @importFrom stats as.formula coef model.matrix
 
 single_column_surrogate <- function(x, new_observation,
@@ -5,8 +17,7 @@ single_column_surrogate <- function(x, new_observation,
                                     size, seed = NULL,
                                     weights, sampling = "uniform") {
   predicted_scores <- x$predict_function(x$model, to_predict)
-  simulated_data <- simulated_data[, sapply(simulated_data,
-                                            function(col) length(unique(col)) > 1)]
+
   simulated_data[["y"]] <- 1
   model_mean <- mean(x$predict_function(x$model, x$data))
   fitted_model <- glmnet::cv.glmnet(model.matrix(y ~ .,
@@ -156,7 +167,10 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
     }
   }
 
-  weights <- rep(1, nrow(simulated_data))
+  simulated_data <- simulated_data[, sapply(simulated_data,
+                                            function(col) length(unique(col)) > 1)]
+  instance <- data.frame(lapply(simulated_data, function(c) levels(c)[2]))
+  weights <- calculate_weights(simulated_data, instance, kernel)
 
   if(!is.null(ncol(try_predict))) {
     explainer <- lapply(unique(colnames(try_predict)), function(unique_level) {
