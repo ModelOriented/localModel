@@ -2,6 +2,7 @@
 
 S3method(plot,local_surrogate_explainer)
 S3method(print,local_surrogate_explainer)
+export("%:::%")
 export(euclidean_kernel)
 export(gaussian_kernel)
 export(identity_kernel)

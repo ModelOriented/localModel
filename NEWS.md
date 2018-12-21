@@ -1,3 +1,9 @@
+# localModel 0.2.9
+
+* Same interpretable features are used for every response level.
+* `rpart` dependency replaced with `partykit`.
+
+
 # localModel 0.2.8
 
 * Print method added.
