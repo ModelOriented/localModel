@@ -107,14 +107,14 @@
     
 
     <pre class="usage"><span class='fu'>individual_surrogate_model</span>(<span class='no'>x</span>, <span class='no'>new_observation</span>, <span class='no'>size</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>sampling</span> <span class='kw'>=</span> <span class='st'>"uniform"</span>)</pre>
+  <span class='kw'>sampling</span> <span class='kw'>=</span> <span class='st'>"uniform"</span>, <span class='kw'>grid_points</span> <span class='kw'>=</span> <span class='fl'>101</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>an explainer created with function DALEX2::explain().</p></td>
+      <td><p>an explainer created with the function DALEX2::explain().</p></td>
     </tr>
     <tr>
       <th>new_observation</th>
@@ -131,6 +131,10 @@
     <tr>
       <th>sampling</th>
       <td><p>Parameter that controls sampling while creating new observations.</p></td>
+    </tr>
+    <tr>
+      <th>grid_points</th>
+      <td><p>Number of points to use while calculating Ceteris Paribus profiles.</p></td>
     </tr>
     </table>
     

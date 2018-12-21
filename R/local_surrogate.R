@@ -216,7 +216,6 @@ plot.local_surrogate_explainer <- function(x, ...) {
 
   models <- do.call("rbind", c(list(x), list(...)))
 
-  models <- rbind(model_lok, model_lok2)
   models$labeller <- paste(
     models$model,
     "prediction: ",
@@ -264,7 +263,7 @@ plot.local_surrogate_explainer <- function(x, ...) {
 
   models <- models[models$variable != "(Model mean)", ]
 
-  ggplot(models, aes(x = reorder(variable, abs(estimated)),
+  ggplot(models, aes(x = reorder(variable, -abs(estimated)),
                      y = estimated,
                      color = sign)) +
     theme_bw() +

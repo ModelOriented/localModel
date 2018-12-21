@@ -89,25 +89,21 @@
     
     
 <p>Explaining classification models with the <code>localModel</code> package is just as simple as explaining regression. It is enough to work with predicted scores (class probabilities) rather than classes. In multiclass setting, a separate explanation is provided for each class probability.</p>
-<p>We will work with the <code>HR</code> dataset from <code>DALEX</code> package. As in the regression example from <em>Introduction to the localModel package</em>, we will first create a random forest model and a <code>DALEX</code> explainer.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(DALEX)
+<p>We will work with the <code>HR</code> dataset from <code>DALEX2</code> package. As in the regression example from <em>Introduction to the localModel package</em>, we will first create a random forest model and a <code>DALEX2</code> explainer.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(DALEX2)
 <span class="kw">library</span>(randomForest)
 <span class="kw">library</span>(localModel)
 
 <span class="kw">data</span>(<span class="st">'HR'</span>)
-<span class="co"># HR$evaluation &lt;- as.factor(as.character(HR$evaluation))</span>
 
 mrf &lt;-<span class="st"> </span><span class="kw">randomForest</span>(status <span class="op">~</span>., <span class="dt">data =</span> HR, <span class="dt">ntree =</span> <span class="dv">100</span>)
 explainer &lt;-<span class="st"> </span><span class="kw">explain</span>(mrf, 
-                     HR[, <span class="op">-</span><span class="dv">6</span>],
-                     HR<span class="op">$</span>status,
-                     <span class="dt">predict_function =</span> <span class="cf">function</span>(x, y)
-                       <span class="kw">as.data.frame</span>(<span class="kw">predict</span>(x, y, <span class="dt">type =</span> <span class="st">"prob"</span>)))
+                     HR[, <span class="op">-</span><span class="dv">6</span>])
 new_observation &lt;-<span class="st"> </span>HR[<span class="dv">10</span>, <span class="op">-</span><span class="dv">6</span>]
 new_observation
 <span class="co">#&gt;    gender      age    hours evaluation salary</span>
 <span class="co">#&gt; 12 female 33.16119 55.08747          4      4</span></code></pre></div>
-<p>Notice, that a custom <code>predict_function</code> was provided for the explainer. It returns class probabilities.</p>
+<p>In DALEX2, we have built-in predict functions for some type of models. Random Forest is among these models.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model_lok &lt;-<span class="st"> </span><span class="kw"><a href="../reference/individual_surrogate_model.html">individual_surrogate_model</a></span>(explainer, new_observation, 
                                         <span class="dt">size =</span> <span class="dv">500</span>, <span class="dt">seed =</span> <span class="dv">17</span>)
 <span class="kw">plot</span>(model_lok)</code></pre></div>
