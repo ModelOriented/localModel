@@ -19,14 +19,21 @@ single_column_surrogate <- function(x, new_observation,
 
   simulated_data[["y"]] <- 1
   model_mean <- mean(x$predict_function(x$model, x$data))
+
+  model_matrix <- model.matrix(y ~ .,
+                               data =  simulated_data)[, -1, drop = FALSE]
+  if(ncol(model_matrix) == 1) {
+    model_matrix <- cbind(zero = 0, model_matrix)
+  }
+
   if(!is.null(seed)) set.seed(seed)
-  fitted_model <- glmnet::cv.glmnet(model.matrix(y ~ .,
-                                                 data =  simulated_data)[, -1],
+  fitted_model <- glmnet::cv.glmnet(model_matrix,
                                     predicted_scores - model_mean,
                                     alpha = 1, weights = weights)
   result <- as.data.frame(as.matrix(coef(fitted_model, lambda = "lambda.min")))
   result$variable <- rownames(result)
   rownames(result) <- NULL
+  result <- result[result$variable != "zero", ]
   colnames(result)[1] <- "estimated"
   for(row_number in 2:nrow(result)) {
     result[row_number, "variable"] <- substr(result[row_number, "variable"],
@@ -179,7 +186,8 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
   }
 
   simulated_data <- simulated_data[, sapply(simulated_data,
-                                            function(col) length(unique(col)) > 1)]
+                                            function(col) length(unique(col)) > 1),
+                                   drop = FALSE]
   instance <- data.frame(lapply(simulated_data, function(c) levels(c)[2]))
   weights <- calculate_weights(simulated_data, instance, kernel)
 

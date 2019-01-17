@@ -1,6 +1,6 @@
 Package: localModel
 Title: LIME-based Explanations With Interpretable Inputs Based on Ceteris Paribus Profiles
-Version: 0.3.7
+Version: 0.3.8
 Authors@R: c(
   person("Mateusz", "Staniak", 
           email = "m.staniak@mini.pw.edu.pl", role = c("aut", "cre")),

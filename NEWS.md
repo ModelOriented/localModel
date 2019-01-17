@@ -1,3 +1,7 @@
+# localModel 0.3.8
+
+* Fixed bug related to one-colum model matrix in glmnet.
+
 # localModel 0.3.7
 
 * Bug fixed in example.
