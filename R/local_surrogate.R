@@ -28,7 +28,7 @@ single_column_surrogate <- function(x, new_observation,
 
   if(!is.null(seed)) set.seed(seed)
   fitted_model <- glmnet::cv.glmnet(model_matrix,
-                                    predicted_scores - model_mean,
+                                    predicted_scores,
                                     alpha = 1, weights = weights)
   result <- as.data.frame(as.matrix(coef(fitted_model, lambda = "lambda.min")))
   result$variable <- rownames(result)

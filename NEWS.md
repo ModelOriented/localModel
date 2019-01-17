@@ -1,3 +1,7 @@
+# localModel 0.3.9
+
+* Explanation models is now fitted to raw predictions, not difference between predictions and model mean.
+
 # localModel 0.3.8
 
 * Fixed bug related to one-colum model matrix in glmnet.
