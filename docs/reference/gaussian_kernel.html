@@ -145,20 +145,20 @@ return a single number.</p>
 <span class='co'># In this case each simulated observation has weight</span>
 <span class='co'># that is small when the distance from original observation is large,</span>
 <span class='co'># so closer observation have more weight.</span>
-<span class='no'>model_lok</span></div><div class='output co'>#&gt;    estimated                         variable original_variable response
-#&gt; 1 3489.34645                     (Model mean)                           
-#&gt; 2  -29.31724                      (Intercept)                           
-#&gt; 3 -247.72289 1937 &lt; construction.year &lt;= 1994 construction.year         
-#&gt; 4 -305.95905                    surface &gt; 125           surface         
-#&gt; 5  -13.13300                   4 &lt; floor &lt;= 7             floor         
-#&gt; 6 -397.39954                     no.rooms &gt; 4          no.rooms         
-#&gt;   predicted_value        model
-#&gt; 1        3078.649 randomForest
-#&gt; 2        3078.649 randomForest
-#&gt; 3        3078.649 randomForest
-#&gt; 4        3078.649 randomForest
-#&gt; 5        3078.649 randomForest
-#&gt; 6        3078.649 randomForest</div><div class='input'><span class='fu'>plot</span>(<span class='no'>model_lok</span>)</div><div class='img'><img src='gaussian_kernel-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='no'>model_lok</span></div><div class='output co'>#&gt;   estimated                         variable original_variable dev_ratio
+#&gt; 1 3489.3465                     (Model mean)                   0.8654636
+#&gt; 2 3460.0292                      (Intercept)                   0.8654636
+#&gt; 3 -247.7229 1937 &lt; construction.year &lt;= 1994 construction.year 0.8654636
+#&gt; 4 -305.9591                    surface &gt; 125           surface 0.8654636
+#&gt; 5  -13.1330                   4 &lt; floor &lt;= 7             floor 0.8654636
+#&gt; 6 -397.3995                     no.rooms &gt; 4          no.rooms 0.8654636
+#&gt;   response predicted_value        model
+#&gt; 1                 3078.649 randomForest
+#&gt; 2                 3078.649 randomForest
+#&gt; 3                 3078.649 randomForest
+#&gt; 4                 3078.649 randomForest
+#&gt; 5                 3078.649 randomForest
+#&gt; 6                 3078.649 randomForest</div><div class='input'><span class='fu'>plot</span>(<span class='no'>model_lok</span>)</div><div class='img'><img src='gaussian_kernel-1.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

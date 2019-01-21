@@ -50,6 +50,8 @@ single_column_surrogate <- function(x, new_observation,
     result[i, "original_variable"] <- colnames(new_observation)[
       sapply(colnames(new_observation), function(c) grepl(c, result[i, "variable"]))]
   }
+  correct_lambda <- which(fitted_model$glmnet.fit$lambda == fitted_model$lambda.min)
+  result$dev_ratio <- fitted_model$glmnet.fit$dev.ratio[correct_lambda]
   result
 }
 
@@ -265,6 +267,11 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
   variable <- estimated <- intercept <- NULL
 
   models <- do.call("rbind", c(list(x), list(...)))
+
+  if(all(models$estimated[models$original_variable != ""] == 0)) {
+    message("All estimated feature effects are equal to 0.")
+    return(ggplot())
+  }
 
   models$labeller <- paste(
     models$model,

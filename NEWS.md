@@ -1,3 +1,10 @@
+# localModel 0.3.10
+
+* Vignettes updated. In particular, seed is now set before using randomForest.
+* Plot function now shows a message and returns and empty plot if all effects
+  are equal to 0.
+* dev.ratio from glmnet is now returned as one of the columns of surrogate_model_explainer.
+
 # localModel 0.3.9
 
 * Explanation models is now fitted to raw predictions, not difference between predictions and model mean.

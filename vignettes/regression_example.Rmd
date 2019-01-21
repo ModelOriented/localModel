@@ -22,14 +22,16 @@ This vignette shows how [`localModel`](https://github.com/ModelOriented/localMod
 We will use the `apartments` dataset from [`DALEX2`](https://github.com/ModelOriented/DALEX2) package.
 For more information about the dataset, please refer to the [Gentle introduction to DALEX](https://pbiecek.github.io/DALEX_docs/).
 
-We will use [`localModel`](https://github.com/ModelOriented/localModel) and [`DALEX2`](https://github.com/ModelOriented/DALEX2) packages, random forest from `randomForest` package will serve as an example model, and linear regression as a simple model for comparison.
+We will need [`localModel`](https://github.com/ModelOriented/localModel) and [`DALEX2`](https://github.com/ModelOriented/DALEX2) packages.
+Random forest from `randomForest` package will serve as an example model, and linear regression as a simple model for comparison.
 
 ```{r pkgs}
 library(DALEX2)
 library(localModel)
 library(randomForest)
 data('apartments')
-data('apartmentsTest')
+data('apartments_test')
+set.seed(69)
 mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
 mlm <- lm(m2.price ~., data = apartments)
 ```
@@ -39,9 +41,9 @@ First, we need to create an explainer object, using the `explain` function.
 We will explain the prediction for fifth observation in the test dataset.
 
 ```{r model}
-explainer <- explain(model = mrf,
+explainer <- DALEX2::explain(model = mrf,
                      data = apartments_test[, -1])
-explainer2 <- explain(model = mlm, 
+explainer2 <- DALEX2::explain(model = mlm, 
                       data = apartments_test[, -1])
 new_observation <- apartments_test[5, -1]
 new_observation
@@ -61,6 +63,7 @@ Categorical features are also discretized by merging levels using the marginal r
 Then, new dataset is simulated by switching a random number of interpretable inputs in the explained instance.
 This procedure mimics "graying out" areas (superpixels) in the original LIME method.
 LASSO regression model is fitted to the model response for these new observations, which makes the final explanations sparse and thus readable.
+More details can be found in the _Methodology behind localModel package_ vignette.
 
 The explanation can be plotted using generic `plot` function.
 The plot shows interpretable features and weights associated with them, starting at the model intercept.

@@ -1,11 +1,15 @@
 context("Test generics")
 
+empty_explainer <- local_model_explainer_ap
+empty_explainer$estimated <- 0
+
 testthat::test_that("Plots work with different geoms", {
   testthat::expect_silent({
     plot(local_model_explainer_ap)
     plot(local_model_explainer_ap, geom = "bar")
     plot(local_model_explainer_ap, geom = "arrow")
   })
+  testthat::expect_message(plot(empty_explainer))
 })
 
 testthat::test_that("Print is okay", {

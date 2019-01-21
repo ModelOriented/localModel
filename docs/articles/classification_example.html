@@ -92,13 +92,14 @@
     
     
 <p>Explaining classification models with the <a href="https://github.com/ModelOriented/localModel"><code>localModel</code></a> package is just as simple as explaining regression. It is enough to work with predicted scores (class probabilities) rather than classes. In multiclass setting, a separate explanation is provided for each class probability.</p>
-<p>We will work with the <code>HR</code> dataset from <a href="https://github.com/ModelOriented/DALEX2"><code>DALEX2</code></a> package. As in the regression example from <em>Introduction to the localModel package</em>, we will first create a random forest model and a <a href="https://github.com/ModelOriented/DALEX2"><code>DALEX2</code></a> explainer.</p>
+<p>We will work with the <code>HR</code> dataset from <a href="https://github.com/ModelOriented/DALEX2"><code>DALEX2</code></a> package. As in the regression example from <em>Introduction to the localModel package</em>, we will first create a random forest model and a <a href="https://github.com/ModelOriented/DALEX2"><code>DALEX2</code></a> explainer. Details about the method can be found in the <em>Methodology behind localModel package</em> vignette.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(DALEX2)
 <span class="kw">library</span>(randomForest)
 <span class="kw">library</span>(localModel)
 
 <span class="kw">data</span>(<span class="st">'HR'</span>)
 
+<span class="kw">set.seed</span>(<span class="dv">17</span>)
 mrf &lt;-<span class="st"> </span><span class="kw">randomForest</span>(status <span class="op">~</span>., <span class="dt">data =</span> HR, <span class="dt">ntree =</span> <span class="dv">100</span>)
 explainer &lt;-<span class="st"> </span><span class="kw">explain</span>(mrf, 
                      HR[, <span class="op">-</span><span class="dv">6</span>])

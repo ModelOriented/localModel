@@ -137,20 +137,20 @@
                      <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>[, -<span class='fl'>1</span>])
 <span class='no'>model_lok</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='individual_surrogate_model.html'>individual_surrogate_model</a></span>(<span class='no'>explainer</span>, <span class='no'>apartments</span>[<span class='fl'>5</span>, -<span class='fl'>1</span>],
                                         <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>17</span>)
-<span class='fu'>plot</span>(<span class='no'>model_lok</span>)</div><div class='img'><img src='print.local_surrogate_explainer-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='no'>model_lok</span></div><div class='output co'>#&gt;     estimated                         variable original_variable response
-#&gt; 1 3485.861364                     (Model mean)                           
-#&gt; 2  127.040580                      (Intercept)                           
-#&gt; 3 -263.884418 1940 &lt; construction.year &lt;= 1994 construction.year         
-#&gt; 4 -314.118284                    surface &gt; 118           surface         
-#&gt; 5   -2.968605                   4 &lt; floor &lt;= 7             floor         
-#&gt; 6 -436.079972                     no.rooms &gt; 3          no.rooms         
-#&gt;   predicted_value        model
-#&gt; 1        3257.169 randomForest
-#&gt; 2        3257.169 randomForest
-#&gt; 3        3257.169 randomForest
-#&gt; 4        3257.169 randomForest
-#&gt; 5        3257.169 randomForest
-#&gt; 6        3257.169 randomForest</div><div class='input'>
+<span class='fu'>plot</span>(<span class='no'>model_lok</span>)</div><div class='img'><img src='print.local_surrogate_explainer-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='no'>model_lok</span></div><div class='output co'>#&gt;     estimated                         variable original_variable dev_ratio
+#&gt; 1 3485.861364                     (Model mean)                    0.797071
+#&gt; 2 3612.901944                      (Intercept)                    0.797071
+#&gt; 3 -263.884418 1940 &lt; construction.year &lt;= 1994 construction.year  0.797071
+#&gt; 4 -314.118284                    surface &gt; 118           surface  0.797071
+#&gt; 5   -2.968605                   4 &lt; floor &lt;= 7             floor  0.797071
+#&gt; 6 -436.079972                     no.rooms &gt; 3          no.rooms  0.797071
+#&gt;   response predicted_value        model
+#&gt; 1                 3257.169 randomForest
+#&gt; 2                 3257.169 randomForest
+#&gt; 3                 3257.169 randomForest
+#&gt; 4                 3257.169 randomForest
+#&gt; 5                 3257.169 randomForest
+#&gt; 6                 3257.169 randomForest</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

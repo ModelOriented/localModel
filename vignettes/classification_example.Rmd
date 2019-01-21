@@ -24,6 +24,7 @@ In multiclass setting, a separate explanation is provided for each class probabi
 
 We will work with the `HR` dataset from [`DALEX2`](https://github.com/ModelOriented/DALEX2) package.
 As in the regression example from _Introduction to the localModel package_, we will first create a random forest model and a [`DALEX2`](https://github.com/ModelOriented/DALEX2) explainer.
+Details about the method can be found in the _Methodology behind localModel package_ vignette.
 
 ```{r model}
 library(DALEX2)
@@ -32,6 +33,7 @@ library(localModel)
 
 data('HR')
 
+set.seed(17)
 mrf <- randomForest(status ~., data = HR, ntree = 100)
 explainer <- explain(mrf, 
                      HR[, -6])
