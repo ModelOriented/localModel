@@ -16,3 +16,6 @@ devtools::install_github("ModelOriented/localModel")
 
 To get help, see examples and details of the methodology, please refer to package website and vignettes.
 
+## Acknowledgments 
+
+Work on this package is financially supported by the NCN Opus grant 2017/27/B/ST6/01307.
