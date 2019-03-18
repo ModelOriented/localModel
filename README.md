@@ -5,8 +5,9 @@
 [![Coverage Status](https://img.shields.io/codecov/c/github/ModelOriented/localModel/master.svg)](https://codecov.io/github/ModelOriented/localModel?branch=master)
 
 
-`localModel` is a successor to [`live`](https://github.com/MI2DataLab/live) package. It implements a variant of LIME method for explaining single predictions of black box machine learning models for tabular data.
+`localModel` is a successor to the [`live`](https://github.com/MI2DataLab/live) package. It implements a variant of LIME method for explaining single predictions of black box machine learning models for tabular data.
 Interpretable features are created based on [Ceteris Paribus](https://github.com/ModelOriented/ceterisParibus2) plots.
+Details of the methodology are described in the vignette.
 
 To get started, install the newest version from GitHub.
 
