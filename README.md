@@ -11,8 +11,10 @@ Details of the methodology are described in the vignette.
 
 To get started, install the newest version from GitHub by using the code below. 
 Please do not use the `devtools` package, since it is affected [a bug](https://github.com/r-lib/devtools/issues/1900) which makes `localModel` installation impossible.
+This issue was solved in the Github version of `remotes`.
 
 ```
+devtools::install_github("r-lib/remotes")
 remotes::install_github("ModelOriented/localModel")
 ```
 
