@@ -9,10 +9,11 @@
 Interpretable features are created based on [Ceteris Paribus](https://github.com/ModelOriented/ceterisParibus2) plots.
 Details of the methodology are described in the vignette.
 
-To get started, install the newest version from GitHub.
+To get started, install the newest version from GitHub by using the code below. 
+Please do not use the `devtools` package, since it is affected [a bug](https://github.com/r-lib/devtools/issues/1900) which makes `localModel` installation impossible.
 
 ```
-devtools::install_github("ModelOriented/localModel")
+remotes::install_github("ModelOriented/localModel")
 ```
 
 To get help, see examples and details of the methodology, please refer to package website and vignettes.
