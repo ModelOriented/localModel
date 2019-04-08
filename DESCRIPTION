@@ -1,15 +1,14 @@
 Package: localModel
 Title: LIME-based Explanations With Interpretable Inputs Based on Ceteris Paribus Profiles
 Version: 0.3.10
-Authors@R: c(
-    person("Mateusz", "Staniak", 
-           email = "m.staniak@mini.pw.edu.pl", role = c("aut", "cre")),
+Authors@R: c(person("Mateusz", "Staniak", 
+    email = "m.staniak@mini.pw.edu.pl", role = c("aut", "cre")),
     person("Przemysław", "Biecek",
-           email = "przemyslaw.biecek@gmail.com", role = "aut"),
+    email = "przemyslaw.biecek@gmail.com", role = "aut"),
     person("Krystian", "Igras", 
-           email = "krystian8207@gmail.com", role = "ctb"),
+    email = "krystian8207@gmail.com", role = "ctb"),
     person("Alicja", "Gosiewska",
-           email = "alicjagosiewska@gmail.com", role = "ctb"))
+    email = "alicjagosiewska@gmail.com", role = "ctb"))
 Description: Local explanations of machine learning models describe, how features contributed to a single prediction. 
     This package implements LIME-like explanation method 
     (see Tulio Ribeiro, Singh, Guestrin (2016) <doi:10.1145/2939672.2939778>) in which interpretable
