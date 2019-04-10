@@ -15,4 +15,9 @@ testthat::test_that("Extracting numerical features is okay", {
                                 "x > 5 & x <= 8"), 3)$label,
     "x <= 4"
   )
+  testthat::expect_equal(
+    extract_numerical_feature(c("x <= 4 & x <= 5",
+                                "x > 5 & x <= 8"), 7)$label,
+    "5 < x <= 8"
+  )
 })
