@@ -26,7 +26,7 @@ We will need [`localModel`](https://github.com/ModelOriented/localModel) and [`D
 Random forest from `randomForest` package will serve as an example model, and linear regression as a simple model for comparison.
 
 ```{r pkgs}
-library(DALEX2)
+library(DALEX)
 library(localModel)
 library(randomForest)
 data('apartments')
@@ -41,9 +41,9 @@ First, we need to create an explainer object, using the `explain` function.
 We will explain the prediction for fifth observation in the test dataset.
 
 ```{r model}
-explainer <- DALEX2::explain(model = mrf,
+explainer <- DALEX::explain(model = mrf,
                      data = apartments_test[, -1])
-explainer2 <- DALEX2::explain(model = mlm, 
+explainer2 <- DALEX::explain(model = mlm, 
                       data = apartments_test[, -1])
 new_observation <- apartments_test[5, -1]
 new_observation

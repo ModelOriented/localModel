@@ -20,7 +20,7 @@ Other custom functions can be used. Such functions take two vectors and
 return a single number.
 }
 \examples{
-library(DALEX2)
+library(DALEX)
 library(randomForest)
 library(localModel)
 data('apartments')

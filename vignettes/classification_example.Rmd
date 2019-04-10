@@ -27,7 +27,7 @@ As in the regression example from _Introduction to the localModel package_, we w
 Details about the method can be found in the _Methodology behind localModel package_ vignette.
 
 ```{r model}
-library(DALEX2)
+library(DALEX)
 library(randomForest)
 library(localModel)
 
@@ -36,7 +36,8 @@ data('HR')
 set.seed(17)
 mrf <- randomForest(status ~., data = HR, ntree = 100)
 explainer <- explain(mrf, 
-                     HR[, -6])
+                     HR[, -6],
+                     predict_function = function(x, y) predict(x, y, type = "prob"))
 new_observation <- HR[10, -6]
 new_observation
 ```

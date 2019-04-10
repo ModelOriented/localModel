@@ -67,7 +67,7 @@ single_column_surrogate <- function(x, new_observation,
 #' This way, explanations are simplified and include only the most important features.
 #' More details about the methodology can be found in the vignettes.
 #'
-#' @param x an explainer created with the function DALEX2::explain().
+#' @param x an explainer created with the function DALEX::explain().
 #' @param new_observation an observation to be explained. Columns in should correspond to columns in the data argument to x.
 #' @param size number of similar observation to be sampled.
 #' @param seed If not NULL, seed will be set to this value for reproducibility.
@@ -80,8 +80,8 @@ single_column_surrogate <- function(x, new_observation,
 #' @export
 #'
 #' @examples
-#' # Example based on apartments data from DALEX2 package.
-#' library(DALEX2)
+#' # Example based on apartments data from DALEX package.
+#' library(DALEX)
 #' library(randomForest)
 #' library(localModel)
 #' data('apartments')
@@ -249,8 +249,8 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 #' @export
 #'
 #' @examples
-#' # Example based on apartments data from DALEX2 package.
-#' library(DALEX2)
+#' # Example based on apartments data from DALEX package.
+#' library(DALEX)
 #' library(randomForest)
 #' library(localModel)
 #' data('apartments')
@@ -370,8 +370,8 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
 #' @importFrom utils head
 #'
 #' @examples
-#' # Example based on apartments data from DALEX2 package.
-#' library(DALEX2)
+#' # Example based on apartments data from DALEX package.
+#' library(DALEX)
 #' library(randomForest)
 #' library(localModel)
 #' data('apartments')

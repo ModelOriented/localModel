@@ -12,7 +12,7 @@
 #' @export
 #'
 #' @examples
-#' library(DALEX2)
+#' library(DALEX)
 #' library(randomForest)
 #' library(localModel)
 #' data('apartments')
@@ -49,7 +49,7 @@ identity_kernel <- function(explained_instance, simulated_instance) {
 #' @export
 #'
 #' @examples
-#' library(DALEX2)
+#' library(DALEX)
 #' library(randomForest)
 #' library(localModel)
 #' data('apartments')

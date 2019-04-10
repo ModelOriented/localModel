@@ -84,10 +84,11 @@ extract_categorical_feature <- function(rules, true_value, unique_values,
 feature_representation <- function(explainer, new_observation, column,
                                    predicted_names, grid_points = 101) {
   is_numerical <- is.numeric(explainer$data[, column])
+  n_points <- min(grid_points, length(unique(explainer$data[, column])))
 
   if(is_numerical) {
-    ceteris <- ceterisParibus2::individual_variable_profile(
-      explainer, new_observation, grid_points = grid_points,
+    ceteris <- ingredients::ceteris_paribus(
+      explainer, new_observation, grid_points = n_points,
       variables = column)[, c(column, "_yhat_", "_label_")]
     if(all(predicted_names == "yhat")) {
       ceteris_curves <- ceteris
@@ -102,14 +103,15 @@ feature_representation <- function(explainer, new_observation, column,
         result
       }))
     }
-    ceteris_curves[, column] <- ceteris[1:grid_points, column]
+    ceteris_curves[, column] <- unique(ceteris[, column])
   } else {
     ceteris_curves <- as.data.frame(
       explainer$predict_function(explainer$model,
                                  explainer$data)
     )
-    if(ncol(ceteris_curves) == 1)
+    if(ncol(ceteris_curves) == 1) {
       colnames(ceteris_curves) <- "yhat"
+    }
     ceteris_curves[, column] <- explainer$data[, column]
   }
 

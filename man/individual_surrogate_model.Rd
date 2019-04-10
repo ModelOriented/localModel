@@ -8,7 +8,7 @@ individual_surrogate_model(x, new_observation, size, seed = NULL,
   kernel = identity_kernel, sampling = "uniform", grid_points = 101)
 }
 \arguments{
-\item{x}{an explainer created with the function DALEX2::explain().}
+\item{x}{an explainer created with the function DALEX::explain().}
 
 \item{new_observation}{an observation to be explained. Columns in should correspond to columns in the data argument to x.}
 
@@ -36,8 +36,8 @@ This way, explanations are simplified and include only the most important featur
 More details about the methodology can be found in the vignettes.
 }
 \examples{
-# Example based on apartments data from DALEX2 package.
-library(DALEX2)
+# Example based on apartments data from DALEX package.
+library(DALEX)
 library(randomForest)
 library(localModel)
 data('apartments')

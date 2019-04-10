@@ -15,8 +15,8 @@
 Generic print function for local surrogate explainers
 }
 \examples{
-# Example based on apartments data from DALEX2 package.
-library(DALEX2)
+# Example based on apartments data from DALEX package.
+library(DALEX)
 library(randomForest)
 library(localModel)
 data('apartments')

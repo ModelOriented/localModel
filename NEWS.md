@@ -1,3 +1,7 @@
+# localModel 0.3.11
+
+* Changes dependencies: `DALEX2` to `DALEX`, `ceterisParibus2` to `ingredients`.
+
 # localModel 0.3.10
 
 * Vignettes updated. In particular, seed is now set before using randomForest.

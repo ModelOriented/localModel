@@ -1,6 +1,6 @@
 library(testthat)
 library(localModel)
-library(DALEX2)
+library(DALEX)
 library(randomForest)
 
 data('HR')
