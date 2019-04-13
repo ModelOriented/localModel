@@ -7,8 +7,9 @@ Author: Mateusz Staniak [aut, cre],
   Alicja Gosiewska [ctb]
 Maintainer: Mateusz Staniak <m.staniak@mini.pw.edu.pl>
 Description: Local explanations of machine learning models describe, how features contributed to a single prediction. 
-    This package implements LIME-like explanation method 
-    (see Tulio Ribeiro, Singh, Guestrin (2016) <doi:10.1145/2939672.2939778>) in which interpretable
+    This package implements an explanation method based on LIME 
+    (Local Interpretable Model-agnostic Explanations, 
+    see Tulio Ribeiro, Singh, Guestrin (2016) <doi:10.1145/2939672.2939778>) in which interpretable
     inputs are created based on local rather than global behaviour of each original feature.
 URL: https://github.com/ModelOriented/localModel
 BugReports: https://github.com/ModelOriented/localModel/issues
