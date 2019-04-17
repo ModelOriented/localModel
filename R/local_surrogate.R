@@ -98,7 +98,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
                                        kernel = identity_kernel,
                                        sampling = "uniform", grid_points = 101) {
   x$data <- x$data[, intersect(colnames(x$data), colnames(new_observation))]
-  try_predict <- x$predict_function(x$model, x$data)
+  try_predict <- x$predict_function(x$model, head(x$data))
   predicted_names <- colnames(try_predict)
   if(is.null(predicted_names))
     predicted_names <- "yhat"
