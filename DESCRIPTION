@@ -5,6 +5,7 @@ Author: Mateusz Staniak [aut, cre],
   Przemyslaw Biecek [aut],
   Krystian Igras [ctb],
   Alicja Gosiewska [ctb]
+  Harel Lustiger [ctb]
 Maintainer: Mateusz Staniak <m.staniak@mini.pw.edu.pl>
 Description: Local explanations of machine learning models describe, how features contributed to a single prediction. 
     This package implements an explanation method based on LIME 
