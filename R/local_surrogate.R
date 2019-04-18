@@ -96,11 +96,11 @@ create_neighbourhood <- function(encoded_data, size, sampling, seed) {
   # TODO: wydzielić z tego funkcję, żeby przetestować te poziomy
   for(col_number in 1:p) {
     new_levels <- levels(encoded_data[, col_number])
-    new_levels <- new_levels[which(new_levels == "baseline"),
-                             which(new_levels != "baseline")]
+    new_levels <- new_levels[c(which(new_levels == "baseline"),
+                             which(new_levels != "baseline"))]
     simulated_data[, col_number] <- factor(
       simulated_data[, col_number],
-      levels = levels(encoded_data[, col_number])[which(), which()]
+      levels = new_levels
     )
   }
 
@@ -108,7 +108,7 @@ create_neighbourhood <- function(encoded_data, size, sampling, seed) {
 }
 
 combine_explanations <- function(x, new_observation, simulated_data,
-                                 to_predict, size, seed, weight, sampling) {
+                                 to_predict, size, seed, weights, sampling) {
   try_predict <- x$predict_function(x$model, head(x$data))
 
   if(!is.null(ncol(try_predict))) {
@@ -203,6 +203,8 @@ transform_from_interpretable <- function(x, new_observation,
   to_predict
 }
 
+#' @importFrom utils head
+
 remove_redundant_columns <- function(simulated_data) {
   simulated_data[, vapply(simulated_data,
                           function(col) length(unique(col)) > 1,
@@ -282,7 +284,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 
   # Fit linear model to each target dimension, combine the results
   explainer <- combine_explanations(x, new_observation, simulated_data,
-                                    to_predict, size, seed, weight, sampling)
+                                    to_predict, size, seed, weights, sampling)
 
   set_explainer_attributes(explainer, x, new_observation)
 }
