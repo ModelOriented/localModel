@@ -147,8 +147,7 @@ combine_explanations <- function(x, new_observation, simulated_data,
 }
 
 transform_to_interpretable <- function(x, new_observation,
-                                       predicted_names, seed,
-                                       grid_points) {
+                                       predicted_names, seed, ...) {
   if(!is.null(seed)) set.seed(seed)
   feature_representations <- lapply(colnames(x$data),
                                     function(column) {
@@ -156,7 +155,7 @@ transform_to_interpretable <- function(x, new_observation,
                                                              new_observation,
                                                              column,
                                                              predicted_names,
-                                                             grid_points)
+                                                             ...)
                                     }
   )
   encoded_data <- as.data.frame(feature_representations)
@@ -235,7 +234,7 @@ set_explainer_attributes <- function(explainer, x, new_observation) {
 #' @param seed If not NULL, seed will be set to this value for reproducibility.
 #' @param kernel Kernel function which will be used to weight simulated observations.
 #' @param sampling Parameter that controls sampling while creating new observations.
-#' @param grid_points Number of points to use while calculating Ceteris Paribus profiles.
+#' @param ... Additional arguments that will be passed to ingredients::ceteris_paribus.
 #'
 #' @return data.frame of class local_surrogate_explainer
 #'
@@ -258,7 +257,7 @@ set_explainer_attributes <- function(explainer, x, new_observation) {
 
 individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
                                        kernel = identity_kernel,
-                                       sampling = "uniform", grid_points = 101) {
+                                       sampling = "uniform", ...) {
 
   # Prepare the data
   x$data <- x$data[, intersect(colnames(x$data), colnames(new_observation))]
@@ -266,8 +265,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 
   # Create interpretable features
   encoded_data <- transform_to_interpretable(x, new_observation,
-                                             predicted_names, seed,
-                                             grid_points)
+                                             predicted_names, seed, ...)
 
   # Generate similar observations
   simulated_data <- create_neighbourhood(encoded_data, size, sampling, seed)
