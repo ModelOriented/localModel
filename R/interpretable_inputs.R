@@ -82,13 +82,12 @@ extract_categorical_feature <- function(rules, true_value, unique_values,
 }
 
 feature_representation <- function(explainer, new_observation, column,
-                                   predicted_names, grid_points = 101) {
+                                   predicted_names, ...) {
   is_numerical <- is.numeric(explainer$data[, column])
-  n_points <- min(grid_points, length(unique(explainer$data[, column])))
 
   if(is_numerical) {
     ceteris <- ingredients::ceteris_paribus(
-      explainer, new_observation, grid_points = n_points,
+      explainer, new_observation, ...,
       variables = column)[, c(column, "_yhat_", "_label_")]
     if(all(predicted_names == "yhat")) {
       ceteris_curves <- ceteris
