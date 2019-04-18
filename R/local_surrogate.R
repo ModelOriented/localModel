@@ -56,6 +56,168 @@ single_column_surrogate <- function(x, new_observation,
 }
 
 
+assign_target_names <- function(x) {
+  try_predict <- x$predict_function(x$model, head(x$data))
+  predicted_names <- colnames(try_predict)
+  if(is.null(predicted_names))
+    predicted_names <- "yhat"
+  predicted_names
+}
+
+create_neighbourhood <- function(encoded_data, size, sampling, seed) {
+  p <- ncol(encoded_data)
+  simulated_data <- as.data.frame(
+    lapply(encoded_data,
+           function(column) {
+             as.character(rep(levels(column)[max(1, length(levels(column)))], size))
+           }), stringsAsFactors = FALSE)
+
+  probs <- lapply(encoded_data,
+                  function(column) {
+                    as.data.frame(prop.table(table(column)))$Freq
+                  })
+
+  if(!is.null(seed)) set.seed(seed)
+  for(row_number in 1:size) {
+    n_changes <- sample(1:p, 1)
+    change_indices <- sample(1:p, n_changes)
+    if(sampling == "uniform") {
+      simulated_data[row_number, change_indices] <- "baseline"
+    } else {
+      for(index in change_indices) {
+        simulated_data[row_number, index] <- sample(
+          levels(encoded_data[, index]),
+          1,
+          prob = probs[[index]])
+      }
+    }
+  }
+
+  # TODO: wydzielić z tego funkcję, żeby przetestować te poziomy
+  for(col_number in 1:p) {
+    new_levels <- levels(encoded_data[, col_number])
+    new_levels <- new_levels[which(new_levels == "baseline"),
+                             which(new_levels != "baseline")]
+    simulated_data[, col_number] <- factor(
+      simulated_data[, col_number],
+      levels = levels(encoded_data[, col_number])[which(), which()]
+    )
+  }
+
+  simulated_data
+}
+
+combine_explanations <- function(x, new_observation, simulated_data,
+                                 to_predict, size, seed, weight, sampling) {
+  try_predict <- x$predict_function(x$model, head(x$data))
+
+  if(!is.null(ncol(try_predict))) {
+    explainer <- lapply(unique(colnames(try_predict)), function(unique_level) {
+      internal_explainer <- x
+      internal_explainer$predict_function <- function(model, newdata) {
+        x$predict_function(model, newdata)[, unique_level]
+
+      }
+      result <- single_column_surrogate(internal_explainer,
+                                        new_observation,
+                                        simulated_data, to_predict,
+                                        size, seed,
+                                        weights, sampling)
+      result[, "response"] <- unique_level
+      result[, "predicted_value"] <- internal_explainer$predict_function(
+        internal_explainer$model,
+        new_observation
+      )
+      result
+    })
+    explainer <- do.call("rbind", explainer)
+  } else {
+    explainer <- single_column_surrogate(
+      x, new_observation,
+      simulated_data, to_predict,
+      size, seed, weights, sampling
+    )
+    explainer[["response"]] <- ""
+    explainer[["predicted_value"]] <- x$predict_function(
+      x$model,
+      new_observation
+    )
+  }
+  explainer
+}
+
+transform_to_interpretable <- function(x, new_observation,
+                                       predicted_names, seed,
+                                       grid_points) {
+  if(!is.null(seed)) set.seed(seed)
+  feature_representations <- lapply(colnames(x$data),
+                                    function(column) {
+                                      feature_representation(x,
+                                                             new_observation,
+                                                             column,
+                                                             predicted_names,
+                                                             grid_points)
+                                    }
+  )
+  encoded_data <- as.data.frame(feature_representations)
+  colnames(encoded_data) <- intersect(colnames(new_observation),
+                                      colnames(x$data))
+  encoded_data
+}
+
+transform_from_interpretable <- function(x, new_observation,
+                                         simulated_data,
+                                         encoded_data, size, seed) {
+  n_rows <- nrow(encoded_data)
+  if(!is.null(seed)) set.seed(seed)
+  to_predict <- data.frame(
+    lapply(colnames(simulated_data),
+           function(column) {
+             how_many_baselines <- sum(simulated_data[, column] == "baseline")
+             baseline_indices <- which(encoded_data[, column] == "baseline")
+             if(is.numeric(x$data[, column])) {
+               ifelse(simulated_data[, column] == "baseline",
+                      sample(x$data[baseline_indices, column],
+                             how_many_baselines,
+                             replace = TRUE),
+                      rep(new_observation[, column], size - how_many_baselines)
+               )
+             } else {
+               ifelse(simulated_data[, column] == "baseline",
+                      as.character(sample(x$data[baseline_indices, column],
+                                          how_many_baselines,
+                                          replace = TRUE)),
+                      as.character(rep(new_observation[, column],
+                                       size - how_many_baselines))
+               )
+             }
+           }))
+  colnames(to_predict) <- colnames(simulated_data)
+  for(colname in colnames(simulated_data)) {
+    if(is.numeric(x$data[, colname])) {
+      to_predict[, colname] <- as.numeric(to_predict[, colname])
+    } else {
+      to_predict[, colname] <- factor(to_predict[, colname],
+                                      levels = levels(x$data[, colname]))
+    }
+  }
+  to_predict
+}
+
+remove_redundant_columns <- function(simulated_data) {
+  simulated_data[, vapply(simulated_data,
+                          function(col) length(unique(col)) > 1,
+                          logical(1)),
+                 drop = FALSE]
+}
+
+set_explainer_attributes <- function(explainer, x, new_observation) {
+  attr(explainer, "new_observation") <- new_observation
+  explainer$model <- x$label
+  class(explainer) <- c("local_surrogate_explainer", class(explainer))
+  explainer
+}
+
 #' LIME-like explanations based on Ceteris Paribus curves
 #'
 #' This function fits a LIME-type explanation of a single prediction.
@@ -97,293 +259,34 @@ single_column_surrogate <- function(x, new_observation,
 individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
                                        kernel = identity_kernel,
                                        sampling = "uniform", grid_points = 101) {
+
+  # Prepare the data
   x$data <- x$data[, intersect(colnames(x$data), colnames(new_observation))]
-  try_predict <- x$predict_function(x$model, head(x$data))
-  predicted_names <- colnames(try_predict)
-  if(is.null(predicted_names))
-    predicted_names <- "yhat"
+  predicted_names <- assign_target_names(x)
 
-  if(!is.null(seed)) set.seed(seed)
-  feature_representations <- lapply(
-    colnames(x$data),
-    function(column) {
-      feature_representation(x,
-                             new_observation,
-                             column,
-                             predicted_names,
-                             grid_points)
-    }
-  )
-  encoded_data <- as.data.frame(feature_representations)
-  colnames(encoded_data) <- intersect(colnames(new_observation),
-                                      colnames(x$data))
+  # Create interpretable features
+  encoded_data <- transform_to_interpretable(x, new_observation,
+                                             predicted_names, seed,
+                                             grid_points)
 
-  p <- ncol(encoded_data)
-  simulated_data <- as.data.frame(
-    lapply(encoded_data,
-           function(column) {
-             as.character(rep(levels(column)[max(1, length(levels(column)))], size))
-           }), stringsAsFactors = FALSE)
+  # Generate similar observations
+  simulated_data <- create_neighbourhood(encoded_data, size, sampling, seed)
 
-  probs <- lapply(encoded_data,
-                  function(column) {
-                    as.data.frame(prop.table(table(column)))$Freq
-                  })
+  # Transform back to feature space so the predictions can be obtained
+  to_predict <- transform_from_interpretable(x, new_observation,
+                                             simulated_data, encoded_data,
+                                             size, seed)
 
-  if(!is.null(seed)) set.seed(seed)
-  for(row_number in 1:size) {
-    n_changes <- sample(1:p, 1)
-    change_indices <- sample(1:p, n_changes)
-    if(sampling == "uniform") {
-      simulated_data[row_number, change_indices] <- "baseline"
-    } else {
-      for(index in change_indices) {
-        simulated_data[row_number, index] <- sample(
-          levels(encoded_data[, index]),
-          1,
-          prob = probs[[index]])
-      }
-    }
-  }
-
-  for(col_number in 1:p) {
-    simulated_data[, col_number] <- factor(
-      simulated_data[, col_number],
-      levels = levels(encoded_data[, col_number])
-    )
-  }
-
-  n_rows <- nrow(encoded_data)
-  if(!is.null(seed)) set.seed(seed)
-  to_predict <- data.frame(
-    lapply(colnames(simulated_data),
-           function(column) {
-             how_many_baselines <- sum(simulated_data[, column] == "baseline")
-             baseline_indices <- which(encoded_data[, column] == "baseline")
-             if(is.numeric(x$data[, column])) {
-               ifelse(simulated_data[, column] == "baseline",
-                      sample(x$data[baseline_indices, column],
-                             how_many_baselines,
-                             replace = TRUE),
-                      rep(new_observation[, column], size - how_many_baselines)
-               )
-             } else {
-               ifelse(simulated_data[, column] == "baseline",
-                      as.character(sample(x$data[baseline_indices, column],
-                                          how_many_baselines,
-                                          replace = TRUE)),
-                      as.character(rep(new_observation[, column],
-                                       size - how_many_baselines))
-               )
-             }
-           }))
-  colnames(to_predict) <- colnames(simulated_data)
-  for(colname in colnames(simulated_data)) {
-    if(is.numeric(x$data[, colname])) {
-      to_predict[, colname] <- as.numeric(to_predict[, colname])
-    } else {
-      to_predict[, colname] <- factor(to_predict[, colname],
-                                      levels = levels(x$data[, colname]))
-    }
-  }
-
-  simulated_data <- simulated_data[, sapply(simulated_data,
-                                            function(col) length(unique(col)) > 1),
-                                   drop = FALSE]
+  # Prepare to fit linear model
+  simulated_data <- remove_redundant_columns(simulated_data)
   instance <- data.frame(lapply(simulated_data, function(c) levels(c)[2]))
   weights <- calculate_weights(simulated_data, instance, kernel)
 
-  if(!is.null(ncol(try_predict))) {
-    explainer <- lapply(unique(colnames(try_predict)), function(unique_level) {
-      internal_explainer <- x
-      internal_explainer$predict_function <- function(model, newdata) {
-        x$predict_function(model, newdata)[, unique_level]
+  # Fit linear model to each target dimension, combine the results
+  explainer <- combine_explanations(x, new_observation, simulated_data,
+                                    to_predict, size, seed, weight, sampling)
 
-      }
-      result <- single_column_surrogate(internal_explainer,
-                                        new_observation,
-                                        simulated_data, to_predict,
-                                        size, seed,
-                                        weights, sampling)
-      result[, "response"] <- unique_level
-      result[, "predicted_value"] <- internal_explainer$predict_function(
-        internal_explainer$model,
-        new_observation
-      )
-      result
-    })
-  } else {
-      explainer <- single_column_surrogate(
-        x, new_observation,
-        simulated_data, to_predict,
-        size, seed, weights, sampling
-      )
-      explainer[["response"]] <- ""
-      explainer[["predicted_value"]] <- x$predict_function(
-        x$model,
-        new_observation
-      )
-  }
-  if(!is.null(ncol(try_predict))) {
-    explainer <- do.call("rbind", explainer)
-  }
-  attr(explainer, "new_observation") <- new_observation
-  explainer$model <- x$label
-  class(explainer) <- c("local_surrogate_explainer", class(explainer))
-  explainer
+  set_explainer_attributes(explainer, x, new_observation)
 }
 
 
-#' Generic plot function for local surrogate explainers
-#'
-#' @param x object of class local_surrogate_explainer
-#' @param ... other objects of class local_surrogate_explainer.
-#' If provided, models will be plotted in rows, response levels in columns.
-#' @param geom If "point", lines with points at the end will be plotted,
-#' if "bar", bars will be plotted and if "arrow", arrows.
-#'
-#' @import ggplot2
-#'
-#' @importFrom stats reorder
-#'
-#' @export
-#'
-#' @examples
-#' # Example based on apartments data from DALEX package.
-#' library(DALEX)
-#' library(randomForest)
-#' library(localModel)
-#' data('apartments')
-#' mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
-#' explainer <- explain(model = mrf,
-#'                      data = apartments[, -1])
-#' model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
-#'                                         size = 500, seed = 17)
-#' model_lok
-#' plot(model_lok)
-#'
-
-plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
-  variable <- estimated <- intercept <- NULL
-
-  models <- do.call("rbind", c(list(x), list(...)))
-
-  if(all(models$estimated[models$original_variable != ""] == 0)) {
-    message("All estimated feature effects are equal to 0.")
-    return(ggplot())
-  }
-
-  models$labeller <- paste(
-    models$model,
-    "prediction: ",
-    round(models$predicted_value, 2)
-  )
-
-  models <- do.call("rbind", by(
-    models,
-    models$response,
-    function(y) {
-      y$labeller <- paste(
-        unique(y$response),
-        paste(unique(y$labeller),
-              sep = "\n ", collapse = "\n "),
-        sep = "\n ")
-      y
-    }
-  ))
-
-  models$sign <- as.factor(as.character(sign(models$estimated)))
-  models <- models[models$variable != "(Intercept)", ]
-
-  models <- do.call("rbind", by(
-    models,
-    list(models$model, models$response),
-    function(y) {
-      y$intercept <- y$estimated[y$variable == "(Model mean)"]
-      y
-    }
-  ))
-
-  models <- do.call("rbind", by(
-    models,
-    list(models$model, models$response),
-    function(y) {
-      y$estimated = ifelse(
-        y$variable == "(Model mean)",
-        y$estimated,
-        y$estimated + y$intercept
-      )
-      y
-    }
-  ))
-
-  models <- do.call("rbind", by(
-    models,
-    list(models$original_variable),
-    function(y) {
-      y$all_zero <- all(y$sign == 0)
-      y
-    }
-  ))
-
-  models <- models[!models$all_zero, ]
-  models <- models[models$variable != "(Model mean)", ]
-
-  if(geom == "point") {
-    final_geom <- geom_pointrange(aes(ymin = intercept, ymax = estimated),
-                                  size = 2)
-  } else if(geom == "bar") {
-    final_geom <- geom_segment(aes(xend = variable, yend = intercept, y = estimated),
-                               size = 10, lineend = "butt")
-  } else {
-    final_geom <- geom_segment(aes(xend = variable, yend = intercept, y = estimated),
-                               size = 2,
-                               arrow = arrow(length=unit(0.20,"cm"),
-                                             ends="first", type = "closed"))
-  }
-
-  ggplot(models, aes(x = reorder(variable, -abs(estimated)),
-                     y = estimated,
-                     color = sign)) +
-    theme_bw() +
-    geom_hline(aes(yintercept = intercept),
-               size = 1)  +
-    facet_grid(model~labeller, scales = "free_y") +
-    final_geom +
-    coord_flip() +
-    ylab("Feature influence") +
-    xlab("") +
-    scale_color_manual(values =  c(`-1` = "#d8b365",
-                                   `0` = "#f5f5f5",
-                                   `1` = "#5ab4ac")) +
-    guides(color = "none")
-}
-
-
-#' Generic print function for local surrogate explainers
-#'
-#' @param x object of class local_surrogate_explainer
-#' @param ... currently ignored
-#'
-#' @export
-#'
-#' @importFrom utils head
-#'
-#' @examples
-#' # Example based on apartments data from DALEX package.
-#' library(DALEX)
-#' library(randomForest)
-#' library(localModel)
-#' data('apartments')
-#' mrf <- randomForest(m2.price ~., data = apartments, ntree = 50)
-#' explainer <- explain(model = mrf,
-#'                      data = apartments[, -1])
-#' model_lok <- individual_surrogate_model(explainer, apartments[5, -1],
-#'                                         size = 500, seed = 17)
-#' plot(model_lok)
-#' model_lok
-#'
-
-print.local_surrogate_explainer <- function(x, ...) {
-  print(head(as.data.frame(x)))
-}
