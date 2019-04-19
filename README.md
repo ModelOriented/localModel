@@ -8,6 +8,7 @@
 `localModel` is a successor to the [`live`](https://github.com/MI2DataLab/live) package. It implements a variant of LIME method for explaining single predictions of black box machine learning models for tabular data.
 Interpretable features are created based on [Ceteris Paribus](https://github.com/ModelOriented/ceterisParibus2) plots.
 Details of the methodology are described in the vignette.
+`localModel` is currently undergoing rapid changes, including bug fixes, for a stable solution please see the `live` package. 
 
 To get started, install the package from CRAN:
 
