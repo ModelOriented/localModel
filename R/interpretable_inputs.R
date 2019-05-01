@@ -61,6 +61,9 @@ extract_numerical_feature <- function(rules, true_value) {
 
 extract_categorical_feature <- function(rules, true_value, unique_values,
                                         colname) {
+  # To avoid cases such as matching both "female" and "male" when "male" is expected.
+  true_value <- paste0("\"", true_value, "\"")
+
   values <- unique_values[sapply(unique_values, function(value) {
     grepl(value, rules[which(grepl(true_value, rules))]) })]
 
