@@ -65,7 +65,7 @@ extract_categorical_feature <- function(rules, true_value, unique_values,
   true_value <- paste0("\"", true_value, "\"")
 
   values <- unique_values[sapply(unique_values, function(value) {
-    grepl(value, rules[which(grepl(true_value, rules))]) })]
+    grepl(paste0("\"", value, "\""), rules[which(grepl(true_value, rules))]) })]
 
   list(
     "label" = paste(
