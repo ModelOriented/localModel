@@ -151,3 +151,14 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
 print.local_surrogate_explainer <- function(x, ...) {
   print(head(as.data.frame(x)))
 }
+
+#' @export
+#' @importFrom DALEX theme_drwhy
+plot_interpretable_feature <- function(x, variable) {
+  ggplot(attr(x, "interpretable_feature")[[variable]],
+         aes(x = variable, y = value, color = output,
+             group = output)) +
+    geom_line(size = 1.5) +
+    DALEX::theme_drwhy()
+}
+
