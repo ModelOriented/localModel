@@ -83,12 +83,16 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
                                        sampling = "uniform", ...) {
 
   # Prepare the data
-  x$data <- x$data[, intersect(colnames(x$data), colnames(new_observation))]
+  x$data <- x$data[, intersect(colnames(x$data), colnames(new_observation)), drop = F]
   predicted_names <- assign_target_names(x)
 
   # Create interpretable features
+  feature_representations_full <- get_feature_representations(x, new_observation,
+                                                              predicted_names, seed, ...)
+  discretizations <- lapply(feature_representations_full, function(x) x[[2]])
+  names(discretizations) <- colnames(x$data)
   encoded_data <- transform_to_interpretable(x, new_observation,
-                                             predicted_names, seed, ...)
+                                             feature_representations_full)
 
   # Generate similar observations
   simulated_data <- create_neighbourhood(encoded_data, size, sampling, seed)
@@ -107,7 +111,7 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
   explainer <- combine_explanations(x, new_observation, simulated_data,
                                     to_predict, size, seed, weights, sampling)
 
-  set_explainer_attributes(explainer, x, new_observation)
+  set_explainer_attributes(explainer, x, new_observation, discretizations)
 }
 
 
