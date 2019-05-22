@@ -25,8 +25,9 @@ remove_redundant_columns <- function(simulated_data) {
                  drop = FALSE]
 }
 
-set_explainer_attributes <- function(explainer, x, new_observation) {
+set_explainer_attributes <- function(explainer, x, new_observation, interpretable_features) {
   attr(explainer, "new_observation") <- new_observation
+  attr(explainer, "interpretable_features") <- interpretable_features
   explainer$model <- x$label
   class(explainer) <- c("local_surrogate_explainer", class(explainer))
   explainer
