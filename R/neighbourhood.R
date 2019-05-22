@@ -82,19 +82,24 @@ combine_explanations <- function(x, new_observation, simulated_data,
   explainer
 }
 
-transform_to_interpretable <- function(x, new_observation,
-                                       predicted_names, seed, ...) {
+get_feature_representations <- function(x, new_observation,
+                                        predicted_names, seed, ...) {
   if(!is.null(seed)) set.seed(seed)
-  feature_representations <- lapply(colnames(x$data),
-                                    function(column) {
-                                      feature_representation(x,
-                                                             new_observation,
-                                                             column,
-                                                             predicted_names,
-                                                             ...)
-                                    }
+  lapply(colnames(x$data),
+         function(column) {
+           feature_representation(x,
+                                  new_observation,
+                                  column,
+                                  predicted_names,
+                                  ...)
+         }
   )
-  encoded_data <- as.data.frame(feature_representations)
+}
+
+transform_to_interpretable <- function(x, new_observation,
+                                       feature_representations) {
+  encoded_data <- as.data.frame(lapply(feature_representations,
+                                       function(x) x[[1]]))
   colnames(encoded_data) <- intersect(colnames(new_observation),
                                       colnames(x$data))
   encoded_data

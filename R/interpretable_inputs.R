@@ -84,10 +84,7 @@ extract_categorical_feature <- function(rules, true_value, unique_values,
   get(name, envir = asNamespace(pkg), inherits = FALSE)
 }
 
-feature_representation <- function(explainer, new_observation, column,
-                                   predicted_names, ...) {
-  is_numerical <- is.numeric(explainer$data[, column])
-
+marginal_relationships <- function(explainer, new_observation, column, predicted_names, is_numerical, ...) {
   if(is_numerical) {
     ceteris <- ingredients::ceteris_paribus(
       explainer, new_observation, ...,
@@ -116,7 +113,10 @@ feature_representation <- function(explainer, new_observation, column,
     }
     ceteris_curves[, column] <- explainer$data[, column]
   }
+  ceteris_curves
+}
 
+fit_tree <- function(ceteris_curves, predicted_names, column, is_numerical) {
   tree_formula <- paste(
     paste(predicted_names, sep = " + ", collapse = " + "),
     column,
@@ -124,15 +124,17 @@ feature_representation <- function(explainer, new_observation, column,
   )
 
   if(is_numerical) {
-    fitted_tree <- partykit::ctree(as.formula(tree_formula),
-                                   data = ceteris_curves,
-                                   maxdepth = 2)
+    max_depth <- 2
   } else {
-    fitted_tree <- partykit::ctree(as.formula(tree_formula),
-                                   data = ceteris_curves,
-                                   maxdepth = 1)
+    max_depth <- 1
   }
 
+  partykit::ctree(as.formula(tree_formula),
+                  data = ceteris_curves,
+                  maxdepth = 2)
+}
+
+prepare_rules <- function(fitted_tree, is_numerical) {
   extract_rules <- "partykit" %:::% ".list.rules.party"
   rules <- extract_rules(fitted_tree)
   if(is_numerical) {
@@ -144,14 +146,44 @@ feature_representation <- function(explainer, new_observation, column,
       }
     })
   }
+  rules
+}
+
+make_discretization_df <- function(ceteris_curves, fitted_tree, column) {
+  ceteris_curves <- as.data.frame(ceteris_curves)
+  ceteris_curves <- ceteris_curves[, -which(colnames(ceteris_curves) == "_label_")]
+
+  ceteris_curves$discretization <- predict(fitted_tree,
+                                           as.data.frame(list(ceteris_curves[, column]),
+                                                         col.names = column))
+  output_names <- colnames(ceteris_curves)[-1]
+  prepared_yhat <- as.vector(as.matrix(ceteris_curves[, -c(1, ncol(ceteris_curves))]))
+  data.frame(
+    variable_name = column,
+    variable = rep(ceteris_curves[, column], times = ncol(ceteris_curves) - 1),
+    output = rep(output_names, each = nrow(ceteris_curves)),
+    value = c(prepared_yhat,
+              ceteris_curves$discretization)
+  )
+}
+
+
+feature_representation <- function(explainer, new_observation, column,
+                                   predicted_names, ...) {
+  is_numerical <- is.numeric(explainer$data[, column])
+
+  ceteris_curves <- marginal_relationships(explainer, new_observation, column,
+                                           predicted_names, is_numerical, ...)
+
+  fitted_tree <- fit_tree(ceteris_curves, predicted_names, column, is_numerical)
+  rules <- prepare_rules(fitted_tree, is_numerical)
 
   if(all(rules == " & ") | all(rules == "")) {
     encoded_feature <- as.factor(rep("baseline",
                                      nrow(explainer$data)))
   } else {
     if(is_numerical) {
-      interpretable_input <- extract_numerical_feature(rules,
-                                                       new_observation[, column])
+      interpretable_input <- extract_numerical_feature(rules, new_observation[, column])
       encoded_feature <- ifelse(interpretable_input$interval[1] <= explainer$data[, column]
                                 & explainer$data[, column] < interpretable_input$interval[2],
                                 interpretable_input$label,
@@ -171,6 +203,10 @@ feature_representation <- function(explainer, new_observation, column,
     }
   }
 
-  factor(encoded_feature,
-         levels = c("baseline", setdiff(unique(encoded_feature), "baseline")))
+  list(
+    factor(encoded_feature,
+           levels = c("baseline", setdiff(unique(encoded_feature), "baseline"))),
+    make_discretization_df(ceteris_curves, fitted_tree, column)
+  )
+
 }
