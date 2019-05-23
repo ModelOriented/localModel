@@ -152,13 +152,34 @@ print.local_surrogate_explainer <- function(x, ...) {
   print(head(as.data.frame(x)))
 }
 
-#' @export
+#' Plot Ceteris Paribus Profile and discretization
+#'
+#' @param x local_surrogate_explainer object
+#' @param variable chr, name of the variable to be plotted
+#'
+#' @return ggplot2 object
+#'
 #' @importFrom DALEX theme_drwhy
+#' @importFrom ggplot2 ggplot geom_line aes
+#' @importFrom DALEX theme_drwhy
+#'
+#' @export
+#'
+
 plot_interpretable_feature <- function(x, variable) {
-  ggplot(attr(x, "interpretable_feature")[[variable]],
+  df <- attr(x, "interpretable_feature")[[variable]]
+  df_no_disc <- df[df$output != "discretization", ]
+  df_disc <- df[df$output == "discretization", ]
+  df_disc$output_disc <- paste0(df_disc$output, df_disc$value)
+  ggplot(df_no_disc,
          aes(x = variable, y = value, color = output,
              group = output)) +
     geom_line(size = 1.5) +
-    DALEX::theme_drwhy()
+    theme_drwhy() +
+    geom_line(data = df_disc,
+              aes(x = variable, y = value,
+                  color = output, group = output_disc),
+              inherit.aes = FALSE,
+              size = 1.5)
 }
 
