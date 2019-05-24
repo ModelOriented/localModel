@@ -160,13 +160,17 @@ print.local_surrogate_explainer <- function(x, ...) {
 #' @return ggplot2 object
 #'
 #' @importFrom DALEX theme_drwhy
-#' @importFrom ggplot2 ggplot geom_line aes
+#' @importFrom ggplot2 ggplot geom_line aes geom_point
 #' @importFrom DALEX theme_drwhy
 #'
 #' @export
 #'
 
 plot_interpretable_feature <- function(x, variable) {
+  observation <- attr(x, "new_observation")
+  prediction <- attr(x, "prediction")
+  true_point <- data.frame(observation[[variable]], prediction)
+  colnames(true_point) <- c("variable", "value")
   df <- attr(x, "interpretable_feature")[[variable]]
   df_no_disc <- df[df$output != "discretization", ]
   df_disc <- df[df$output == "discretization", ]
@@ -180,6 +184,8 @@ plot_interpretable_feature <- function(x, variable) {
               aes(x = variable, y = value,
                   color = output, group = output_disc),
               inherit.aes = FALSE,
-              size = 1.5)
+              size = 1.5) +
+    geom_point(data = true_point, aes(x = variable, y = value),
+               inherit.aes = FALSE, size = 2)
 }
 
