@@ -124,14 +124,14 @@ fit_tree <- function(ceteris_curves, predicted_names, column, is_numerical) {
   )
 
   if(is_numerical) {
-    max_depth <- 2
+    max_depth <- 3
   } else {
     max_depth <- 1
   }
 
   partykit::ctree(as.formula(tree_formula),
                   data = ceteris_curves,
-                  maxdepth = 2)
+                  maxdepth = max_depth)
 }
 
 prepare_rules <- function(fitted_tree, is_numerical) {
