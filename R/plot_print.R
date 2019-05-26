@@ -9,6 +9,7 @@
 #' @import ggplot2
 #'
 #' @importFrom stats reorder
+#' @import DALEX
 #'
 #' @export
 #'
@@ -120,7 +121,8 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
     scale_color_manual(values =  c(`-1` = "#d8b365",
                                    `0` = "#f5f5f5",
                                    `1` = "#5ab4ac")) +
-    guides(color = "none")
+    guides(color = "none") +
+    theme_drwhy()
 }
 
 
@@ -161,7 +163,6 @@ print.local_surrogate_explainer <- function(x, ...) {
 #'
 #' @importFrom DALEX theme_drwhy
 #' @importFrom ggplot2 ggplot geom_line aes geom_point
-#' @importFrom DALEX theme_drwhy
 #'
 #' @export
 #'
