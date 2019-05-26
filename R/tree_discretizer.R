@@ -124,7 +124,7 @@ fit_tree <- function(ceteris_curves, predicted_names, column, is_numerical) {
   )
 
   if(is_numerical) {
-    max_depth <- 3
+    max_depth <- 2
   } else {
     max_depth <- 1
   }
@@ -149,23 +149,36 @@ prepare_rules <- function(fitted_tree, is_numerical) {
   rules
 }
 
-make_discretization_df <- function(ceteris_curves, fitted_tree, column) {
+make_discretization_df <- function(ceteris_curves, predicted_names,
+                                   fitted_tree, column) {
   ceteris_curves <- as.data.frame(ceteris_curves)
-  ceteris_curves <- ceteris_curves[, -which(colnames(ceteris_curves) == "_label_")]
+  if(any(colnames(ceteris_curves) == "_label_")) {
+    ceteris_curves <- ceteris_curves[, -which(colnames(ceteris_curves) == "_label_")]
+  }
 
-  ceteris_curves$discretization <- predict(fitted_tree,
-                                           as.data.frame(list(ceteris_curves[, column]),
-                                                         col.names = column))
-  output_names <- colnames(ceteris_curves)[-1]
-  prepared_yhat <- as.vector(as.matrix(ceteris_curves[, -c(1, ncol(ceteris_curves))]))
+  # Dirty hack
+  if(length(predicted_names) > 1) {
+    ceteris_curves$discretization <- rowSums(predict(fitted_tree,
+                                                     as.data.frame(list(ceteris_curves[, column]),
+                                                                   col.names = column)))/length(predicted_names)
+  } else {
+    ceteris_curves$discretization <- predict(fitted_tree,
+                                             as.data.frame(list(ceteris_curves[, column]),
+                                                           col.names = column))
+  }
+
+  which_column <- which(colnames(ceteris_curves) == column)
+  output_names <- colnames(ceteris_curves)[-which_column]
+  prepared_yhat <- as.vector(as.matrix(ceteris_curves[, -c(which_column, ncol(ceteris_curves))]))
   data.frame(
     variable_name = column,
-    variable = rep(ceteris_curves[, column], times = ncol(ceteris_curves) - 1),
+    variable = rep(ceteris_curves[, column], times = length(predicted_names) + 1),
     output = rep(output_names, each = nrow(ceteris_curves)),
     value = c(prepared_yhat,
               ceteris_curves$discretization)
   )
 }
+
 
 
 feature_representation <- function(explainer, new_observation, column,
@@ -206,7 +219,8 @@ feature_representation <- function(explainer, new_observation, column,
   list(
     factor(encoded_feature,
            levels = c("baseline", setdiff(unique(encoded_feature), "baseline"))),
-    make_discretization_df(ceteris_curves, fitted_tree, column)
+    make_discretization_df(ceteris_curves, predicted_names,
+                           fitted_tree, column)
   )
 
 }
