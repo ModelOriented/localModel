@@ -20,7 +20,8 @@ create_neighbourhood <- function(encoded_data, size, sampling, seed) {
       }
       simulated_data[row_number, change] <- "baseline"
     } else {
-      for(index in change_indices) {
+      change <- which(sample(c(TRUE, FALSE), size = p, replace = TRUE, prob = rep(0.5, 2)))
+      for(index in change) {
         simulated_data[row_number, index] <- sample(
           levels(encoded_data[, index]),
           size = 1,
