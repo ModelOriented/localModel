@@ -174,21 +174,37 @@ plot_interpretable_feature <- function(x, variable) {
   prediction <- attr(x, "prediction")
   true_point <- data.frame(observation[[variable]], prediction)
   colnames(true_point) <- c("variable", "value")
-  df <- attr(x, "interpretable_feature")[[variable]]
-  df_no_disc <- df[df$output != "discretization", ]
-  df_disc <- df[df$output == "discretization", ]
+  df <- attr(x, "interpretable_features")[[variable]]
+  df_no_disc <- df[!grepl("discretization", df$output), ]
+  df_disc <- df[grepl("discretization", df$output), ]
   df_disc$output_disc <- paste0(df_disc$output, df_disc$value)
-  ggplot(df_no_disc,
-         aes(x = variable, y = value, color = output,
-             group = output)) +
-    geom_line(size = 1.5) +
-    theme_drwhy() +
-    geom_line(data = df_disc,
-              aes(x = variable, y = value,
-                  color = output, group = output_disc),
-              inherit.aes = FALSE,
-              size = 1.5) +
-    geom_point(data = true_point, aes(x = variable, y = value),
-               inherit.aes = FALSE, size = 2)
+
+  if(is.numeric(df$variable)) {
+    ggplot(df_no_disc,
+           aes(x = variable, y = value, color = output,
+               group = output)) +
+      geom_line(size = 1.5) +
+      theme_drwhy() +
+      geom_line(data = df_disc,
+                aes(x = variable, y = value,
+                    color = output, group = output_disc),
+                inherit.aes = FALSE,
+                size = 1.5) +
+      geom_point(data = true_point, aes(x = variable, y = value),
+                 inherit.aes = FALSE, size = 2)
+  } else {
+    ggplot(df_no_disc,
+           aes(x = variable, y = mean(value), color = output,
+               group = output)) +
+      geom_point(size = 1.5) +
+      theme_drwhy() +
+      geom_line(data = df_disc,
+                aes(x = variable, y = value,
+                    color = output, group = output_disc),
+                inherit.aes = FALSE,
+                size = 1.5) +
+      geom_point(data = true_point, aes(x = variable, y = value),
+                 inherit.aes = FALSE, size = 2)
+  }
 }
 

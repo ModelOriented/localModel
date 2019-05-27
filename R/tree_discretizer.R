@@ -158,26 +158,30 @@ make_discretization_df <- function(ceteris_curves, predicted_names,
     ceteris_curves <- ceteris_curves[, -which(colnames(ceteris_curves) == "_label_")]
   }
 
-  # Dirty hack
   if(length(predicted_names) > 1) {
-    ceteris_curves$discretization <- rowSums(predict(fitted_tree,
-                                                     as.data.frame(list(ceteris_curves[, column]),
-                                                                   col.names = column)))/length(predicted_names)
+    predictions <-  predict(fitted_tree,
+                            as.data.frame(list(ceteris_curves[, column]),
+                                          col.names = column))
+    predictions_names <- paste(colnames(predictions), "discretization",
+                               sep = "_")
+    discretization <- as.vector(as.matrix(predictions))
   } else {
-    ceteris_curves$discretization <- predict(fitted_tree,
-                                             as.data.frame(list(ceteris_curves[, column]),
-                                                           col.names = column))
+    discretization <- predict(fitted_tree,
+                              as.data.frame(list(ceteris_curves[, column]),
+                                            col.names = column))
+    predictions_names <- "discretization"
   }
 
   which_column <- which(colnames(ceteris_curves) == column)
-  output_names <- colnames(ceteris_curves)[-which_column]
-  prepared_yhat <- as.vector(as.matrix(ceteris_curves[, -c(which_column, ncol(ceteris_curves))]))
+  output_names <- c(predicted_names, predictions_names)
+  prepared_yhat <- as.vector(as.matrix(ceteris_curves[, -which_column]))
   data.frame(
     variable_name = column,
-    variable = rep(ceteris_curves[, column], times = length(predicted_names) + 1),
+    variable = rep(ceteris_curves[, column],
+                   times = length(predicted_names) + length(predictions_names)),
     output = rep(output_names, each = nrow(ceteris_curves)),
     value = c(prepared_yhat,
-              ceteris_curves$discretization)
+              discretization)
   )
 }
 
