@@ -168,6 +168,8 @@ print.local_surrogate_explainer <- function(x, ...) {
 #'
 
 plot_interpretable_feature <- function(x, variable) {
+  value <- output <- output_disc <- NULL
+
   observation <- attr(x, "new_observation")
   prediction <- attr(x, "prediction")
   true_point <- data.frame(observation[[variable]], prediction)

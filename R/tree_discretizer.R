@@ -149,6 +149,8 @@ prepare_rules <- function(fitted_tree, is_numerical) {
   rules
 }
 
+#' @importFrom stats predict
+
 make_discretization_df <- function(ceteris_curves, predicted_names,
                                    fitted_tree, column) {
   ceteris_curves <- as.data.frame(ceteris_curves)
