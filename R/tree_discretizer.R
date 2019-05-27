@@ -61,8 +61,11 @@ extract_numerical_feature <- function(rules, true_value) {
 
 extract_categorical_feature <- function(rules, true_value, unique_values,
                                         colname) {
+  # To avoid cases such as matching both "female" and "male" when "male" is expected.
+  true_value <- paste0("\"", true_value, "\"")
+
   values <- unique_values[sapply(unique_values, function(value) {
-    grepl(value, rules[which(grepl(true_value, rules))]) })]
+    grepl(paste0("\"", value, "\""), rules[which(grepl(true_value, rules))]) })]
 
   list(
     "label" = paste(
@@ -81,14 +84,10 @@ extract_categorical_feature <- function(rules, true_value, unique_values,
   get(name, envir = asNamespace(pkg), inherits = FALSE)
 }
 
-feature_representation <- function(explainer, new_observation, column,
-                                   predicted_names, grid_points = 101) {
-  is_numerical <- is.numeric(explainer$data[, column])
-  n_points <- min(grid_points, length(unique(explainer$data[, column])))
-
+marginal_relationships <- function(explainer, new_observation, column, predicted_names, is_numerical, ...) {
   if(is_numerical) {
     ceteris <- ingredients::ceteris_paribus(
-      explainer, new_observation, grid_points = n_points,
+      explainer, new_observation, ...,
       variables = column)[, c(column, "_yhat_", "_label_")]
     if(all(predicted_names == "yhat")) {
       ceteris_curves <- ceteris
@@ -114,7 +113,10 @@ feature_representation <- function(explainer, new_observation, column,
     }
     ceteris_curves[, column] <- explainer$data[, column]
   }
+  ceteris_curves
+}
 
+fit_tree <- function(ceteris_curves, predicted_names, column, is_numerical) {
   tree_formula <- paste(
     paste(predicted_names, sep = " + ", collapse = " + "),
     column,
@@ -122,15 +124,17 @@ feature_representation <- function(explainer, new_observation, column,
   )
 
   if(is_numerical) {
-    fitted_tree <- partykit::ctree(as.formula(tree_formula),
-                                   data = ceteris_curves,
-                                   maxdepth = 2)
+    max_depth <- 2
   } else {
-    fitted_tree <- partykit::ctree(as.formula(tree_formula),
-                                   data = ceteris_curves,
-                                   maxdepth = 1)
+    max_depth <- 1
   }
 
+  partykit::ctree(as.formula(tree_formula),
+                  data = ceteris_curves,
+                  maxdepth = max_depth)
+}
+
+prepare_rules <- function(fitted_tree, is_numerical) {
   extract_rules <- "partykit" %:::% ".list.rules.party"
   rules <- extract_rules(fitted_tree)
   if(is_numerical) {
@@ -142,14 +146,63 @@ feature_representation <- function(explainer, new_observation, column,
       }
     })
   }
+  rules
+}
+
+#' @importFrom stats predict
+
+make_discretization_df <- function(ceteris_curves, predicted_names,
+                                   fitted_tree, column) {
+  ceteris_curves <- as.data.frame(ceteris_curves)
+  if(any(colnames(ceteris_curves) == "_label_")) {
+    ceteris_curves <- ceteris_curves[, -which(colnames(ceteris_curves) == "_label_")]
+  }
+
+  if(length(predicted_names) > 1) {
+    predictions <-  predict(fitted_tree,
+                            as.data.frame(list(ceteris_curves[, column]),
+                                          col.names = column))
+    predictions_names <- paste(colnames(predictions), "discretization",
+                               sep = "_")
+    discretization <- as.vector(as.matrix(predictions))
+  } else {
+    discretization <- predict(fitted_tree,
+                              as.data.frame(list(ceteris_curves[, column]),
+                                            col.names = column))
+    predictions_names <- "discretization"
+  }
+
+  which_column <- which(colnames(ceteris_curves) == column)
+  output_names <- c(predicted_names, predictions_names)
+  prepared_yhat <- as.vector(as.matrix(ceteris_curves[, -which_column]))
+  data.frame(
+    variable_name = column,
+    variable = rep(ceteris_curves[, column],
+                   times = length(predicted_names) + length(predictions_names)),
+    output = rep(output_names, each = nrow(ceteris_curves)),
+    value = c(prepared_yhat,
+              discretization)
+  )
+}
+
+
+
+feature_representation <- function(explainer, new_observation, column,
+                                   predicted_names, ...) {
+  is_numerical <- is.numeric(explainer$data[, column])
+
+  ceteris_curves <- marginal_relationships(explainer, new_observation, column,
+                                           predicted_names, is_numerical, ...)
+
+  fitted_tree <- fit_tree(ceteris_curves, predicted_names, column, is_numerical)
+  rules <- prepare_rules(fitted_tree, is_numerical)
 
   if(all(rules == " & ") | all(rules == "")) {
     encoded_feature <- as.factor(rep("baseline",
                                      nrow(explainer$data)))
   } else {
     if(is_numerical) {
-      interpretable_input <- extract_numerical_feature(rules,
-                                                       new_observation[, column])
+      interpretable_input <- extract_numerical_feature(rules, new_observation[, column])
       encoded_feature <- ifelse(interpretable_input$interval[1] <= explainer$data[, column]
                                 & explainer$data[, column] < interpretable_input$interval[2],
                                 interpretable_input$label,
@@ -169,6 +222,11 @@ feature_representation <- function(explainer, new_observation, column,
     }
   }
 
-  factor(encoded_feature,
-         levels = c("baseline", setdiff(unique(encoded_feature), "baseline")))
+  list(
+    factor(encoded_feature,
+           levels = c("baseline", setdiff(unique(encoded_feature), "baseline"))),
+    make_discretization_df(ceteris_curves, predicted_names,
+                           fitted_tree, column)
+  )
+
 }

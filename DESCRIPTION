@@ -18,8 +18,7 @@ Depends: R (>= 3.5)
 License: GPL
 Encoding: UTF-8
 LazyData: true
-Imports: 
-    glmnet,
+Imports: glmnet, DALEX,
     ggplot2,
     partykit,
     ingredients
@@ -28,6 +27,5 @@ Suggests: covr,
     knitr,
     rmarkdown,
     randomForest,
-    DALEX,
     testthat
 VignetteBuilder: knitr
