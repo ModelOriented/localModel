@@ -104,12 +104,23 @@ individual_surrogate_model <- function(x, new_observation, size, seed = NULL,
 
   # Prepare to fit linear model
   simulated_data <- remove_redundant_columns(simulated_data)
-  instance <- data.frame(lapply(simulated_data, function(c) levels(c)[2]))
-  weights <- calculate_weights(simulated_data, instance, kernel)
-
-  # Fit linear model to each target dimension, combine the results
-  explainer <- combine_explanations(x, new_observation, simulated_data,
-                                    to_predict, size, seed, weights, sampling)
+  if(ncol(simulated_data) == 0) {
+    explainer <- data.frame(
+      estimated = NA,
+      variable = NA,
+      original_variable = NA,
+      dev_ratio = NA,
+      response = NA,
+      predicted_value = NA,
+      model = NA
+    )
+  } else {
+    # Fit linear model to each target dimension, combine the results
+    instance <- data.frame(lapply(simulated_data, function(c) levels(c)[2]))
+    weights <- calculate_weights(simulated_data, instance, kernel)
+    explainer <- combine_explanations(x, new_observation, simulated_data,
+                                      to_predict, size, seed, weights, sampling)
+  }
 
   set_explainer_attributes(explainer, x, new_observation, discretizations)
 }

@@ -1,3 +1,7 @@
+# localModel 0.4.1
+
+* Fixes the bug in handling the case where all extracted variables are constant
+
 # localModel 0.4.0
 
 * Add `plot_interpretable_feature` function to plot discretizations.

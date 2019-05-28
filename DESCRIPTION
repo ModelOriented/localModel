@@ -1,6 +1,6 @@
 Package: localModel
 Title: LIME-Based Explanations with Interpretable Inputs Based on Ceteris Paribus Profiles
-Version: 0.4.0
+Version: 0.4.1
 Author: Mateusz Staniak [aut, cre],
   Przemyslaw Biecek [aut],
   Krystian Igras [ctb],
