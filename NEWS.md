@@ -1,3 +1,9 @@
+# localModel 0.4.0
+
+* Add `plot_interpretable_feature` function to plot discretizations.
+* Fixes bugs related to feature extraction.
+* Changes the method of sampling new observations (features to permute are chosen from Beroulli distribution).
+
 # localModel 0.3.11
 
 * Changes dependencies: `DALEX2` to `DALEX`, `ceterisParibus2` to `ingredients`.
