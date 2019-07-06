@@ -1,11 +1,12 @@
 Package: localModel
 Title: LIME-Based Explanations with Interpretable Inputs Based on Ceteris Paribus Profiles
 Version: 0.4.1
-Author: Mateusz Staniak [aut, cre],
-  Przemyslaw Biecek [aut],
-  Krystian Igras [ctb],
-  Alicja Gosiewska [ctb]
-  Harel Lustiger [ctb]
+Authors@R: c(person("Mateusz", "Staniak", email = "m.staniak@mini.pw.edu.pl", role = c("aut", "cre")),
+    person("Przemyslaw", "Biecek", role = "aut"),
+    person("Krystian", "Igras", role = "ctb"),
+    person("Alicja", "Gosiewska", role = "ctb"),
+    person("Harel", "Lustiger", role = "ctb")
+    )
 Maintainer: Mateusz Staniak <m.staniak@mini.pw.edu.pl>
 Description: Local explanations of machine learning models describe, how features contributed to a single prediction. 
     This package implements an explanation method based on LIME 
@@ -22,7 +23,7 @@ Imports: glmnet, DALEX,
     ggplot2,
     partykit,
     ingredients
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Suggests: covr,
     knitr,
     rmarkdown,

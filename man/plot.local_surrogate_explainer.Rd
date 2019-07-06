@@ -4,7 +4,7 @@
 \alias{plot.local_surrogate_explainer}
 \title{Generic plot function for local surrogate explainers}
 \usage{
-\method{plot}{local_surrogate_explainer}(x, ..., geom = "point")
+\method{plot}{local_surrogate_explainer}(x, ..., geom = "bar")
 }
 \arguments{
 \item{x}{object of class local_surrogate_explainer}

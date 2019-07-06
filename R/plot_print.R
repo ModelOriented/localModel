@@ -28,12 +28,12 @@
 #' plot(model_lok)
 #'
 
-plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
+plot.local_surrogate_explainer <- function(x, ..., geom = "bar") {
   variable <- estimated <- intercept <- NULL
 
   models <- do.call("rbind", c(list(x), list(...)))
 
-  if(all(models$estimated[models$original_variable != ""] == 0)) {
+  if (all(models$estimated[models$original_variable != ""] == 0)) {
     message("All estimated feature effects are equal to 0.")
     return(ggplot())
   }
@@ -118,11 +118,9 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "point") {
     coord_flip() +
     ylab("Feature influence") +
     xlab("") +
-    scale_color_manual(values =  c(`-1` = "#d8b365",
-                                   `0` = "#f5f5f5",
-                                   `1` = "#5ab4ac")) +
+    scale_color_manual(values =  DALEX::colors_breakdown_drwhy()) +
     guides(color = "none") +
-    theme_drwhy()
+    DALEX::theme_drwhy()
 }
 
 
@@ -179,12 +177,11 @@ plot_interpretable_feature <- function(x, variable) {
   df_disc <- df[grepl("discretization", df$output), ]
   df_disc$output_disc <- paste0(df_disc$output, df_disc$value)
 
-  if(is.numeric(df$variable)) {
-    ggplot(df_no_disc,
+  if (is.numeric(df$variable)) {
+    pl <- ggplot(df_no_disc,
            aes(x = variable, y = value, color = output,
                group = output)) +
       geom_line(size = 1.5) +
-      theme_drwhy() +
       geom_line(data = df_disc,
                 aes(x = variable, y = value,
                     color = output, group = output_disc),
@@ -193,11 +190,10 @@ plot_interpretable_feature <- function(x, variable) {
       geom_point(data = true_point, aes(x = variable, y = value),
                  inherit.aes = FALSE, size = 2)
   } else {
-    ggplot(df_no_disc,
+    pl <- ggplot(df_no_disc,
            aes(x = variable, y = mean(value), color = output,
                group = output)) +
       geom_point(size = 1.5) +
-      theme_drwhy() +
       geom_line(data = df_disc,
                 aes(x = variable, y = value,
                     color = output, group = output_disc),
@@ -206,5 +202,7 @@ plot_interpretable_feature <- function(x, variable) {
       geom_point(data = true_point, aes(x = variable, y = value),
                  inherit.aes = FALSE, size = 2)
   }
+
+  pl + DALEX::theme_drwhy()
 }
 

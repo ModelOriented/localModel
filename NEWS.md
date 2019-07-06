@@ -1,6 +1,7 @@
 # localModel 0.4.1
 
 * Fixes the bug in handling the case where all extracted variables are constant
+* Changed default theme for plots, more consistent with other DrWhy packages
 
 # localModel 0.4.0
 
