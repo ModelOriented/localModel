@@ -9,7 +9,7 @@
 #' @import ggplot2
 #'
 #' @importFrom stats reorder
-#' @import DALEX
+#' @importFrom DALEX theme_drwhy_colors_break_down theme_drwhy
 #'
 #' @export
 #'
@@ -118,7 +118,7 @@ plot.local_surrogate_explainer <- function(x, ..., geom = "bar") {
     coord_flip() +
     ylab("Feature influence") +
     xlab("") +
-    scale_color_manual(values =  DALEX::colors_breakdown_drwhy()) +
+    scale_color_manual(values =  DALEX::theme_drwhy_colors_break_down()) +
     guides(color = "none") +
     DALEX::theme_drwhy()
 }
