@@ -97,7 +97,7 @@ More details about the methodology can be found in the vignettes." />
         <div class="info">
           <span class="partof">part of the <a href="https://github.com/ModelOriented/DrWhy">DrWhy.AI</a>
            developed by the <a href="https://mi2.mini.pw.edu.pl/">MI^2 DataLab</a> </span>
-          <span class="version version-default">0.4.1</span>
+          <span class="version version-default">0.5</span>
         </div>
       </div>
     </div>
@@ -168,8 +168,15 @@ This way, explanations are simplified and include only the most important featur
 More details about the methodology can be found in the vignettes.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>individual_surrogate_model</span>(<span class='no'>x</span>, <span class='no'>new_observation</span>, <span class='no'>size</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='no'>identity_kernel</span>, <span class='kw'>sampling</span> <span class='kw'>=</span> <span class='st'>"uniform"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>individual_surrogate_model</span>(
+  <span class='no'>x</span>,
+  <span class='no'>new_observation</span>,
+  <span class='no'>size</span>,
+  <span class='kw'>seed</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='no'>identity_kernel</span>,
+  <span class='kw'>sampling</span> <span class='kw'>=</span> <span class='st'>"uniform"</span>,
+  <span class='no'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

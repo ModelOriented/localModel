@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>LIME kernel that treats all observations as equally similar to the observation of interest. — identity_kernel • localModel</title>
+<title>Predict model for lime — predict_model • localModel</title>
 
 
 <!-- jquery -->
@@ -45,10 +45,8 @@
 
 
 
-<meta property="og:title" content="LIME kernel that treats all observations as equally similar to the observation of interest. — identity_kernel" />
-<meta property="og:description" content="Kernels are meant to be used as an argument to individual_surrogate_model function.
-Other custom functions can be used. Such functions take two vectors and
-return a single number." />
+<meta property="og:title" content="Predict model for lime — predict_model" />
+<meta property="og:description" content="Predict model for lime" />
 
 <meta name="robots" content="noindex" />
 
@@ -147,67 +145,20 @@ return a single number." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>LIME kernel that treats all observations as equally similar to the observation of interest.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/localModel/blob/master/R/kernels.R'><code>R/kernels.R</code></a></small>
-    <div class="hidden name"><code>identity_kernel.Rd</code></div>
+    <h1>Predict model for lime</h1>
+    <small class="dont-index">Source: <a href='https://github.com/ModelOriented/localModel/blob/master/R/predict_surrogate.R'><code>R/predict_surrogate.R</code></a></small>
+    <div class="hidden name"><code>predict_model.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Kernels are meant to be used as an argument to individual_surrogate_model function.
-Other custom functions can be used. Such functions take two vectors and
-return a single number.</p>
+    <p>Predict model for lime</p>
     </div>
 
-    <pre class="usage"><span class='fu'>identity_kernel</span>(<span class='no'>explained_instance</span>, <span class='no'>simulated_instance</span>)</pre>
+    <pre class="usage"><span class='co'># S3 method for dalex_explainer</span>
+<span class='fu'>predict_model</span>(<span class='no'>x</span>, <span class='no'>newdata</span>, <span class='no'>...</span>)</pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>explained_instance</th>
-      <td><p>explained instance</p></td>
-    </tr>
-    <tr>
-      <th>simulated_instance</th>
-      <td><p>new observation</p></td>
-    </tr>
-    </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>numeric</p>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>DALEX</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>randomForest</span>)
-<span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>localModel</span>)
-<span class='fu'><a href='https://rdrr.io/r/utils/data.html'>data</a></span>(<span class='st'>'apartments'</span>)
-<span class='no'>mrf</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/randomForest/man/randomForest.html'>randomForest</a></span>(<span class='no'>m2.price</span> ~<span class='no'>.</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>, <span class='kw'>ntree</span> <span class='kw'>=</span> <span class='fl'>50</span>)
-<span class='no'>explainer</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/DALEX/man/explain.html'>explain</a></span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='no'>mrf</span>,
-                     <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>apartments</span>[, -<span class='fl'>1</span>])</div><div class='output co'>#&gt; Preparation of a new explainer is initiated
-#&gt;   -&gt; model label       :  randomForest  ( <span style='color: #BBBB00;'> default </span><span> )
-#&gt;   -&gt; data              :  1000  rows  5  cols 
-#&gt;   -&gt; target variable   :  not specified! ( </span><span style='color: #BB0000;'> WARNING </span><span> )
-#&gt;   -&gt; predict function  :  yhat.randomForest  will be used ( </span><span style='color: #BBBB00;'> default </span><span> )
-#&gt;   -&gt; predicted values  :  numerical, min =  1917.419 , mean =  3486.937 , max =  5842.92  
-#&gt;   -&gt; model_info        :  package randomForest , ver. 4.6.14 , task regression ( </span><span style='color: #BBBB00;'> default </span><span> ) 
-#&gt;   -&gt; residual function :  difference between y and yhat ( </span><span style='color: #BBBB00;'> default </span><span> )
-#&gt;  </span><span style='color: #00BB00;'> A new explainer has been created! </span><span> </div><div class='input'><span class='no'>model_lok</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='individual_surrogate_model.html'>individual_surrogate_model</a></span>(<span class='no'>explainer</span>, <span class='no'>apartments</span>[<span class='fl'>5</span>, -<span class='fl'>1</span>],
-                                        <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>500</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>17</span>,
-                                        <span class='kw'>kernel</span> <span class='kw'>=</span> <span class='no'>identity_kernel</span>)
-<span class='co'># In this case each simulated observation has equal weight</span>
-<span class='co'># when explanation model (LASSO) is fitted.</span>
-<span class='no'>model_lok</span></div><div class='output co'>#&gt;   estimated                                          variable original_variable
-#&gt; 1 3486.9367                                      (Model mean)                  
-#&gt; 2 3245.5658                                       (Intercept)                  
-#&gt; 3 -230.1591                                     surface &gt; 125           surface
-#&gt; 4  516.2736 district = Mokotow, Ochota, Srodmiescie, Zoliborz          district
-#&gt;   dev_ratio response predicted_value        model
-#&gt; 1 0.5241099                 3145.381 randomForest
-#&gt; 2 0.5241099                 3145.381 randomForest
-#&gt; 3 0.5241099                 3145.381 randomForest
-#&gt; 4 0.5241099                 3145.381 randomForest</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/plot.html'>plot</a></span>(<span class='no'>model_lok</span>)</div><div class='img'><img src='identity_kernel-1.png' alt='' width='700' height='433' /></div><div class='input'>
-</div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
