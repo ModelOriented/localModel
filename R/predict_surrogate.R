@@ -9,6 +9,8 @@
 #' @param type which implementation of thee LIME method should be used. Either \code{localModel} (default), \code{lime} or \code{iml}.
 #' @param n_features will be passed to the lime implementation, by default 4
 #' @param n_permutations will be passed to the lime implementation, by default 1000
+#' @param size will be passed to the localModel implementation, by default 1000
+#' @param seed seed for random number generator, by default 1313
 #' @param labels will be passed to the lime implementation, by default first value in the y vector
 #'
 #' @return Depending on the \code{type} there are different classess of the resulting object.
@@ -30,8 +32,14 @@ predict_surrogate <- function(explainer, new_observation, ..., type = "localMode
 #' @name predict_surrogate
 #' @importFrom lime lime explain plot_features
 #' @export
-predict_surrogate_local_model <- function(explainer, new_observation, ...) {
-
+predict_surrogate_local_model <- function(explainer,
+                                          new_observation,
+                                          size = 1000,
+                                          seed = 1313, ...) {
+  individual_surrogate_model(explainer,
+                               new_observation,
+                               size = size,
+                               seed = seed)
 }
 
 #' @title Model type for lime

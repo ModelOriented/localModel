@@ -14,7 +14,13 @@
 \usage{
 predict_surrogate(explainer, new_observation, ..., type = "localModel")
 
-predict_surrogate_local_model(explainer, new_observation, ...)
+predict_surrogate_local_model(
+  explainer,
+  new_observation,
+  size = 1000,
+  seed = 1313,
+  ...
+)
 
 predict_surrogate_lime(
   explainer,
@@ -37,6 +43,10 @@ predict_surrogate_iml(explainer, new_observation, ...)
 \item{...}{other parameters that will be passed to}
 
 \item{type}{which implementation of thee LIME method should be used. Either \code{localModel} (default), \code{lime} or \code{iml}.}
+
+\item{size}{will be passed to the localModel implementation, by default 1000}
+
+\item{seed}{seed for random number generator, by default 1313}
 
 \item{n_features}{will be passed to the lime implementation, by default 4}
 
