@@ -1,3 +1,7 @@
+# localModel 0.5
+
+* `predict_surrogate` function is added to provide easier interface of accessing lime/iml/localModel implementations of the LIME method.
+
 # localModel 0.4.1
 
 * Fixes the bug in handling the case where all extracted variables are constant

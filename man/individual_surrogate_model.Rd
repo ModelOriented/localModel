@@ -4,8 +4,15 @@
 \alias{individual_surrogate_model}
 \title{LIME-like explanations based on Ceteris Paribus curves}
 \usage{
-individual_surrogate_model(x, new_observation, size, seed = NULL,
-  kernel = identity_kernel, sampling = "uniform", ...)
+individual_surrogate_model(
+  x,
+  new_observation,
+  size,
+  seed = NULL,
+  kernel = identity_kernel,
+  sampling = "uniform",
+  ...
+)
 }
 \arguments{
 \item{x}{an explainer created with the function DALEX::explain().}

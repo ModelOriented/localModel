@@ -3,7 +3,6 @@
 \docType{package}
 \name{localModel}
 \alias{localModel}
-\alias{localModel-package}
 \title{localModel: LIME-like explanations with interpretable features based on Ceteris Paribus profiles}
 \description{
 This package implements LIME-like explanation method
