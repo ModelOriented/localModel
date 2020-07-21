@@ -33,7 +33,7 @@ predict_surrogate_lime(
 
 \method{plot}{predict_surrogate_lime}(x, ...)
 
-predict_surrogate_iml(explainer, new_observation, ...)
+predict_surrogate_iml(explainer, new_observation, k = 4, ...)
 }
 \arguments{
 \item{explainer}{a model to be explained, preprocessed by the 'explain' function}
@@ -53,6 +53,8 @@ predict_surrogate_iml(explainer, new_observation, ...)
 \item{n_permutations}{will be passed to the lime implementation, by default 1000}
 
 \item{labels}{will be passed to the lime implementation, by default first value in the y vector}
+
+\item{k}{will be passed to the iml implementation, by default 4}
 }
 \value{
 Depending on the \code{type} there are different classess of the resulting object.

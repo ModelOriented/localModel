@@ -8,6 +8,7 @@
 #' @param ... other parameters that will be passed to
 #' @param type which implementation of thee LIME method should be used. Either \code{localModel} (default), \code{lime} or \code{iml}.
 #' @param n_features will be passed to the lime implementation, by default 4
+#' @param k will be passed to the iml implementation, by default 4
 #' @param n_permutations will be passed to the lime implementation, by default 1000
 #' @param size will be passed to the localModel implementation, by default 1000
 #' @param seed seed for random number generator, by default 1313
@@ -83,8 +84,11 @@ plot.predict_surrogate_lime <- function(x, ...) {
   lime::plot_features(x, ...)
 }
 
+
+#' @import iml
 #' @name predict_surrogate
 #' @export
-predict_surrogate_iml <- function(explainer, new_observation, ...) {
-
+predict_surrogate_iml <- function(explainer, new_observation, k = 4, ...) {
+  iml_model <- Predictor$new(model = explainer$model, data = explainer$data[,colnames(new_observation)])
+  LocalModel$new(predictor = iml_model, x.interest = new_observation, k = k)
 }
