@@ -1,6 +1,6 @@
 # localModel 0.5
 
-* `predict_surrogate` function is added to provide easier interface of accessing lime/iml/localModel implementations of the LIME method.
+* `predict_surrogate` function is added to provide easier interface of accessing lime/iml/localModel implementations of the LIME method. (this function wes moved to `DALEXtra`)
 
 # localModel 0.4.1
 
