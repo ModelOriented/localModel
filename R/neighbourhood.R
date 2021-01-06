@@ -101,8 +101,8 @@ transform_to_interpretable <- function(x, new_observation,
                                        feature_representations) {
   encoded_data <- as.data.frame(lapply(feature_representations,
                                        function(x) x[[1]]))
-  colnames(encoded_data) <- intersect(colnames(new_observation),
-                                      colnames(x$data))
+  colnames(encoded_data) <- intersect(colnames(x$data),
+                                      colnames(new_observation))
   encoded_data
 }
 
