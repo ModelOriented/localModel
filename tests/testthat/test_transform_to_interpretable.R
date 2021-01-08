@@ -4,7 +4,9 @@ test_that("Column names correspond to row values", {
   # Test data
   exp <- list(data = DALEX::titanic_imputed[1:10, -8])
   new <- DALEX::titanic_imputed[0, -8]
-  new[1, ] <- c("male", 8, "1st", "Southampton", 72, 0, 0)
+  new[1, ] <- list(gender = "male", age = 8, class = "1st",
+                   embarked = "Southampton", fare = 72,
+                   sibsp = 0, parch = 0)
   feature_rep <- list(
     list(factor(c(2, 1, 2), labels = c("baseline", "gender = male"))),
     list(factor(c(1, 2, 1), labels = c("baseline", "age <= 15.36"))),
